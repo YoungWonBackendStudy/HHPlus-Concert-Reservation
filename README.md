@@ -309,3 +309,181 @@ PassToken {
     date expires_at
 }
 ```
+## API 명세
+### GET /waiting/token (토큰 발급)
+- Request
+
+|pos|name|type|description|
+|---|---|---|---|
+|Param|userId|long|사용자 ID|
+
+- Response
+```json
+{
+    "waitingToken": string
+}
+```
+
+### GET /waiting/check (대기열 Polling API)
+- Request
+
+|pos|name|type|description|
+|---|---|---|---|
+|Param|waitingToken|string|Opaque 대기열 토큰|
+
+- Response Body
+```json
+{
+    "result": boolean,
+    "waitingId": long,
+    "precedingWaiting": long,
+    "passedToken": long,
+    "expireAt": date
+}
+```
+
+### GET /concert (Concert 조회)
+- Request
+
+- Response
+
+```json
+[
+    {
+        "id": long,
+        "name": string,
+        "description": string
+    }
+]
+```
+
+### GET /concert/schedule (Concert 스케줄 조회)
+- Request
+
+|pos|name|type|description|
+|---|---|---|---|
+|Param|passToken|string|Opaque 입장 토큰|
+|Param|concertId|long|콘서트 ID|
+
+- Response
+
+```json
+[
+    {
+        "id": long,
+        "date": date,
+        "address": string
+    }
+]
+```
+
+### GET /concert/schedule/seat (예약 가능 좌석 조회 API)
+- Request
+
+|pos|name|type|description|
+|---|---|---|---|
+|Param|passToken|string|Opaque 입장 토큰|
+|Param|concertScheduleId|long|콘서트 일정 ID|
+
+- Response Body
+
+```json
+[
+    {
+        "id": long,
+        "location": string,
+        "price": long
+    }
+]
+```
+
+### POST /order (좌석 예약 API)
+- Request
+
+|pos|name|type|description|
+|---|---|---|---|
+|Param|passToken|string|Opaque 입장 토큰|
+
+- Request Body
+```json
+{
+    seatIds: [ long ]
+}
+```
+
+- Response Body
+
+```json
+{
+    "orderId": long,
+    "totalPrice": long,
+    "orderedAt": date,
+    "expireAt": date,
+    "orderedSeats": [
+        {
+            "id": long,
+            "location": string,
+            "price": long
+        }
+    ]
+}
+```
+
+### GET /asset (잔액 조회 API)
+- Request
+
+|pos|name|type|description|
+|---|---|---|---|
+|Param|userId|long|사용자 ID|
+
+- Response Body
+
+```json
+{
+    "balance": long
+}
+```
+
+### PATCH /asset/charge (잔액 충전 API)
+- Request
+
+|pos|name|type|description|
+|---|---|---|---|
+|Param|userId|long|사용자 ID|
+
+- Request Body
+```json
+{
+    "amount": long
+}
+```
+
+- Response Body
+```json
+{
+    "balance": long
+}
+```
+
+### PATCH /order/pay (결제 API)
+- Request
+
+|pos|name|type|description|
+|---|---|---|---|
+|Param|passToken|string|Opaque 입장 토큰|
+
+- Request Body
+```json
+{
+    "orderId": long
+}
+```
+
+- Response Body
+
+```json
+{
+    "paidAmount": long,
+    "balance": long
+}
+```
