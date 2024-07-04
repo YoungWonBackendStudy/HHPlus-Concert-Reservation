@@ -233,3 +233,79 @@ Section 배포
     배포 환경 구축  : env_setting, after test_waiting_sch, 2d
     배포 및 테스트  : env_extra, after env_setting, 1d
 ```
+
+
+## ERD
+```mermaid
+erDiagram
+
+User {
+    long user_id PK
+}
+
+User ||--|| Asset: has
+Asset {
+    long id PK
+    long user_id FK
+    long balance
+}
+
+User ||--o{ Order: orders
+Order {
+    long id PK
+    long user_id FK
+    string status "Index"
+    date ordered_at
+    date completed_at
+    date expired_at
+}
+
+Order ||--|{ OrderItem: contains
+OrderItem {
+    long id PK
+    long order_id FK
+    long concert_seat_id FK
+    long price
+}
+
+Concert {
+    long id PK
+    string name
+    string description
+}
+
+Concert ||--|{ ConcertSchedule : contains
+ConcertSchedule {
+    long id PK
+    long concert_id FK
+    string address
+    date date
+}
+
+ConcertSchedule ||--|{ ConcertSeat : contains
+ConcertSeat {
+    long id PK
+    long concert_schedule_id FK
+    string location
+    long price
+    string status "Index"
+    date reserved_at
+}
+
+WaitingToken {
+    long id PK "AUTO_INCREMENT"
+    string token UK
+    long user_id FK
+    date issued_at
+    date deleted_at
+}
+
+PassToken {
+    long id PK "AUTO_INCREMENT"
+    string token UK
+    long user_id FK
+    boolean expired "Index"
+    date issued_at
+    date expires_at
+}
+```
