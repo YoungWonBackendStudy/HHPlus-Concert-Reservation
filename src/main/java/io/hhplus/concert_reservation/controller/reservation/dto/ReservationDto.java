@@ -1,24 +1,25 @@
-package io.hhplus.concert_reservation.controller.order.dto;
+package io.hhplus.concert_reservation.controller.reservation.dto;
 
 import java.util.Date;
 import java.util.List;
 
-public class OrderDto {
+public class ReservationDto {
     public static record Request(
         List<Long> seatIds
     ) {
     }
     public static record Response(
-        long orderId,
+        long reservationId,
+        long paymentId,
         long totalPrice,
-        Date orderedAt,
+        Date reservedAt,
         Date expireAt,
-        List<OrderedSeatInfo> orderedSeats
+        List<ReservedSeatInfo> reservedSeats
     ) {
 
     }
 
-    public static record OrderedSeatInfo(
+    public static record ReservedSeatInfo(
         long id,
         String location,
         long price
