@@ -75,19 +75,19 @@ sequenceDiagram
 sequenceDiagram
     autonumber
     actor 사용자
-    사용자 ->>+ 주문: 콘서트 예약
-    Note over 사용자, 주문: 토큰, 콘서트 날짜, 좌석 정보
+    사용자 ->>+ 예약: 콘서트 예약
+    Note over 사용자, 예약: 토큰, 콘서트 날짜, 좌석 정보
 
-    주문 ->>+ 대기열: 입장 토큰 검증
-    Note over 주문, 대기열: 입장 토큰
-    대기열 -->>- 주문: 토큰 검증 결과
+    예약 ->>+ 대기열: 입장 토큰 검증
+    Note over 예약, 대기열: 입장 토큰
+    대기열 -->>- 예약: 토큰 검증 결과
     break 입장 토큰 검증 실패
-        주문 -->> 사용자: 토큰 검증 실패 메세지
+        예약 -->> 사용자: 토큰 검증 실패 메세지
     end
 
-    주문 ->> 콘서트: 좌석 예약(LOCK)
-    주문 -->>- 사용자: 좌석 예약 완료
-    Note over 사용자, 주문: 주문 정보
+    예약 ->> 콘서트: 좌석 예약(LOCK)
+    예약 -->>- 사용자: 좌석 예약 완료
+    Note over 사용자, 예약: 예약 정보, 결제 정보
 ```
 
 ### 잔액 조회 API
@@ -121,7 +121,7 @@ sequenceDiagram
     actor 사용자
 
     사용자 ->>+ 결제: 결제 요청
-    Note over 사용자, 결제: 입장 토큰, 결제할 주문 정보
+    Note over 사용자, 결제: 입장 토큰, 결제 정보
 
     결제 ->>+ 대기열: 입장 토큰 검증
     Note over 결제, 대기열: 입장 토큰
@@ -130,9 +130,9 @@ sequenceDiagram
         결제 -->> 사용자: 토큰 검증 실패 메세지
     end
 
-    결제 ->>+ 콘서트: 예약 확인
-    Note over 결제, 콘서트: 사용자 정보, 좌석 번호
-    콘서트 -->>- 결제: 예약 여부
+    결제 ->>+ 예약: 좌석 예약 확인
+    Note over 결제, 예약: 예약 정보
+    예약 -->>- 결제: 좌석 예약 여부
 
     break 좌석 예약 안됨 (or 만료됨)
         결제 -->> 사용자: 좌석 예약 안됨
@@ -148,8 +148,8 @@ sequenceDiagram
     잔액 -->>- 결제: 잔액 차감
     결제 ->> 대기열: 입장 토큰 만료
     Note over 결제, 대기열: 입장 토큰
-    결제 -->>- 사용자: 예약 완료
-    Note over 사용자, 결제: 주문 정보
+    결제 -->>- 사용자: 결제 완료
+    Note over 사용자, 결제: 결제 정보
 ```
 
 ### 상태 확인 및 상태값 변경
@@ -158,9 +158,9 @@ sequenceDiagram
 
 Note over 스케줄러: 매 분 00초마다
 스케줄러 ->>+ 대기열: 입장 토큰 확인 및 만료
-스케줄러 ->>+ 주문: 주문 확인 및 예약 만료
-주문 ->>+ 콘서트: 좌석 예약 취소
-Note over 주문, 콘서트: 예약 취소 좌석 List
+스케줄러 ->>+ 예약: 예약 확인 및 만료
+예약 ->>+ 콘서트: 좌석 예약 취소
+Note over 예약, 콘서트: 예약 취소 좌석 List
 ```
 ## Milestone
 ### Tasks
@@ -174,8 +174,9 @@ Note over 주문, 콘서트: 예약 취소 좌석 List
     - 대기열 토큰 검증
 - 콘서트
     - 콘서트 날짜/좌석 조회 API
-- 주문
+- 예약
     - 좌석 예약 API
+- 결제
     - 잔액 조회/충전 API
     - 결제 API
 - 배포
@@ -202,35 +203,34 @@ gantt
 dateFormat YYYY-MM-DD
 
 Section 토큰 발급
-    개발           : dev_get_tok, 2024-07-06, 12h
-    테스트/오류수정 : test_get_tok, after dev_get_tok, 12h
+    개발           : dev_get_tok, 2024-07-06, 6h
+    테스트/오류수정 : test_get_tok, after dev_get_tok, 6h
 Section 날짜/좌석 조회
-    개발           : dev_get_con, after test_get_tok, 12h
-    테스트/오류수정 : test_get_con, after dev_get_con, 12h
+    개발           : dev_get_con, after test_get_tok, 6h
+    테스트/오류수정 : test_get_con, after dev_get_con, 6h
 Section 좌석 예약 ( + 임시 배정/만료)
     개발           : dev_reserve, after test_get_con, 12h
     테스트/오류수정 : test_reserve, after dev_reserve, 12h
 Section 잔액 조회/충전
-    개발           : dev_asset, after test_reserve, 12h
-    테스트/오류수정 : test_asset, after dev_asset, 12h
+    개발           : dev_asset, after test_reserve, 6h
+    테스트/오류수정 : test_asset, after dev_asset, 6h
 Section 결제
-    개발           : dev_pay, after test_asset, 1d
-    테스트/오류수정 : test_pay, after dev_pay, 1d
+    개발           : dev_pay, after test_asset, 12h
+    테스트/오류수정 : test_pay, after dev_pay, 12h
+Section 대기열 Polling API
+    개발           : dev_tok_val, after test_pay, 6h
+    테스트/오류수정 : test_tok_val, after dev_tok_val, 6h
+Section 대기열 스케줄링
+    개발           : dev_waiting_sch, after test_tok_val, 12h
+    테스트/오류수정 : test_waiting_sch, after dev_waiting_sch, 12h
 ```
 
  - 5주차
 ```mermaid
 gantt
 dateFormat YYYY-MM-DD
-
-Section 대기열 Polling API
-    개발           : dev_tok_val, 2024-07-13, 12h
-    테스트/오류수정 : test_tok_val, after dev_tok_val, 12h
-Section 대기열 스케줄링
-    개발           : dev_waiting_sch, after test_tok_val, 1d
-    테스트/오류수정 : test_waiting_sch, after dev_waiting_sch, 1d
 Section 배포
-    배포 환경 구축  : env_setting, after test_waiting_sch, 2d
+    배포 환경 구축  : env_setting, 2024-07-13, 2d
     배포 및 테스트  : env_extra, after env_setting, 1d
 ```
 
@@ -250,22 +250,32 @@ Asset {
     long balance
 }
 
-User ||--o{ Order: orders
-Order {
+User ||--o{ Reservation: reserves
+Reservation {
     long id PK
     long user_id FK
     string status "Index"
-    date ordered_at
+    string concert_name
+    date reserved_at
     date completed_at
-    date expired_at
+    date expires_at
 }
 
-Order ||--|{ OrderItem: contains
-OrderItem {
+Reservation ||--|{ ReservationTicket: contains
+ReservationTicket {
     long id PK
-    long order_id FK
+    long reservation_id FK
     long concert_seat_id FK
+    string seat_location
     long price
+}
+
+Reservation ||--o| Payment: "1:0..1"
+Payment {
+    long id PK
+    long reservation_id FK
+    long price
+    date paid_at
 }
 
 Concert {
@@ -337,12 +347,12 @@ PassToken {
     "result": boolean,
     "waitingId": long,
     "precedingWaiting": long,
-    "passedToken": long,
-    "expireAt": date
+    "passToken": string,
+    "expiresAt": date
 }
 ```
 
-### GET /concert (Concert 조회)
+### GET /concerts (Concert 조회)
 - Request
 
 - Response
@@ -357,7 +367,7 @@ PassToken {
 ]
 ```
 
-### GET /concert/schedule (Concert 스케줄 조회)
+### GET /concerts/schedules (Concert 스케줄 조회)
 - Request
 
 |pos|name|type|description|
@@ -377,7 +387,7 @@ PassToken {
 ]
 ```
 
-### GET /concert/schedule/seat (예약 가능 좌석 조회 API)
+### GET /concerts/schedules/seats (예약 가능 좌석 조회 API)
 - Request
 
 |pos|name|type|description|
@@ -397,7 +407,7 @@ PassToken {
 ]
 ```
 
-### POST /order (좌석 예약 API)
+### POST /reservations (좌석 예약 API)
 - Request
 
 |pos|name|type|description|
@@ -415,11 +425,12 @@ PassToken {
 
 ```json
 {
-    "orderId": long,
+    "reservationId": long,
+    "paymentId": long,
     "totalPrice": long,
-    "orderedAt": date,
-    "expireAt": date,
-    "orderedSeats": [
+    "reservedAt": date,
+    "expiresAt": date,
+    "reservedSeats": [
         {
             "id": long,
             "location": string,
@@ -465,7 +476,7 @@ PassToken {
 }
 ```
 
-### PATCH /order/pay (결제 API)
+### POST /pay (결제 API)
 - Request
 
 |pos|name|type|description|
@@ -475,7 +486,7 @@ PassToken {
 - Request Body
 ```json
 {
-    "orderId": long
+    "paymentId": long
 }
 ```
 

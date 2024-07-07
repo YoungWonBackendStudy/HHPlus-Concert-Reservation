@@ -12,19 +12,19 @@ import io.hhplus.concert_reservation.controller.concert.dto.ConcertScheduleSeatD
 
 @RestController
 public class ConcertController {
-    @GetMapping("concert")
+    @GetMapping("concerts")
     public List<ConcertDto.Response> getConcerts() {
         return List.of(new ConcertDto.Response(0l, "아이유 콘서트", "2024.07.05 ~ 2024.07.06 아이유 콘서트"));
     }
 
-    @GetMapping("concert/schedule")
+    @GetMapping("concerts/schedules")
     public List<ConcertScheduleDto.Response> concertSchedules(
         ConcertScheduleDto.Request concertScheduleRequest
     ) {
         return List.of(new ConcertScheduleDto.Response(0l, new Date(), "서울 잠실"));
     }
 
-    @GetMapping("concert/schedule/seat")
+    @GetMapping("concerts/schedules/seats")
     public List<ConcertScheduleSeatDto.Response> concertScheduleSeats(
         ConcertScheduleSeatDto.Request concertSeatRequest
     ) {

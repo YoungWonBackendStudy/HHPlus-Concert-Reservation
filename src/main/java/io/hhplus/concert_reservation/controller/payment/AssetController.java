@@ -1,4 +1,4 @@
-package io.hhplus.concert_reservation.controller.order;
+package io.hhplus.concert_reservation.controller.payment;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.hhplus.concert_reservation.controller.order.dto.AssetChargeDto;
-import io.hhplus.concert_reservation.controller.order.dto.AssetGetDto;
+import io.hhplus.concert_reservation.controller.payment.dto.AssetChargeDto;
+import io.hhplus.concert_reservation.controller.payment.dto.AssetGetDto;
 
 @RestController
 public class AssetController {
