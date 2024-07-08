@@ -1,4 +1,4 @@
-package io.hhplus.concert_reservation.controller.concert.dto;
+package io.hhplus.concert.controller.concert.dto;
 
 public class ConcertDto {
     public static record Response(

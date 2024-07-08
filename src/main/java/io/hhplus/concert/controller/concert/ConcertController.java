@@ -1,4 +1,4 @@
-package io.hhplus.concert_reservation.controller.concert;
+package io.hhplus.concert.controller.concert;
 
 import java.util.Date;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.hhplus.concert_reservation.controller.concert.dto.ConcertDto;
-import io.hhplus.concert_reservation.controller.concert.dto.ConcertScheduleDto;
-import io.hhplus.concert_reservation.controller.concert.dto.ConcertScheduleSeatDto;
+import io.hhplus.concert.controller.concert.dto.ConcertDto;
+import io.hhplus.concert.controller.concert.dto.ConcertScheduleDto;
+import io.hhplus.concert.controller.concert.dto.ConcertScheduleSeatDto;
 
 @RestController
 public class ConcertController {

@@ -1,4 +1,4 @@
-package io.hhplus.concert_reservation.controller.reservation.dto;
+package io.hhplus.concert.controller.reservation.dto;
 
 import java.util.Date;
 import java.util.List;

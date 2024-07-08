@@ -1,4 +1,4 @@
-package io.hhplus.concert_reservation.controller.payment.dto;
+package io.hhplus.concert.controller.payment.dto;
 
 public class PaymentDto {
     public static record Request(
@@ -10,6 +10,5 @@ public class PaymentDto {
         long paidAmount,
         long balance
     ) {
-        
     }
 }

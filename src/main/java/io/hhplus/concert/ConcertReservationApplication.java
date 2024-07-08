@@ -1,4 +1,4 @@
-package io.hhplus.concert_reservation;
+package io.hhplus.concert;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
