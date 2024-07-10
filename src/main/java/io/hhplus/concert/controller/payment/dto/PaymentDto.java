@@ -2,7 +2,8 @@ package io.hhplus.concert.controller.payment.dto;
 
 public class PaymentDto {
     public static record Request(
-        long paymentId
+        String token,
+        long reservationId
     ) {
     }
 

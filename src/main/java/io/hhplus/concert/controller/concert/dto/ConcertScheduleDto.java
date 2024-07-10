@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class ConcertScheduleDto {
     public static record Request(
-        String passToken,
+        String token,
         long concertId
     ) {
     }

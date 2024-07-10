@@ -2,7 +2,7 @@ package io.hhplus.concert.controller.concert.dto;
 
 public class ConcertScheduleSeatDto {
     public static record Request(
-        String passToken,
+        String token,
         long concertScheduleId
     ) {
     }

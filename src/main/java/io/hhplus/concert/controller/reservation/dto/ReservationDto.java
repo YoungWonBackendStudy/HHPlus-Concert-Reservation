@@ -8,6 +8,7 @@ public class ReservationDto {
         List<Long> seatIds
     ) {
     }
+
     public static record Response(
         long reservationId,
         long paymentId,

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.hhplus.concert.controller.concert.dto.ConcertDto;
@@ -13,7 +14,9 @@ import io.hhplus.concert.controller.concert.dto.ConcertScheduleSeatDto;
 @RestController
 public class ConcertController {
     @GetMapping("concerts")
-    public List<ConcertDto.Response> getConcerts() {
+    public List<ConcertDto.Response> getConcerts(
+       ConcertDto.Request concertRequest 
+    ) {
         return List.of(new ConcertDto.Response(0l, "아이유 콘서트", "2024.07.05 ~ 2024.07.06 아이유 콘서트"));
     }
 
