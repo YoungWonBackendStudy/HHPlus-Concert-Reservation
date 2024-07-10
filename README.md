@@ -5,29 +5,27 @@
 sequenceDiagram
     autonumber
     actor 사용자
-    사용자 ->>+ 대기열 토큰: 토큰 요청
-    Note over 사용자, 대기열 토큰: 사용자 정보
-    대기열 토큰 -->>- 사용자: 대기열 토큰
+    사용자 ->>+ 토큰: 토큰 요청
+    Note over 사용자, 토큰: 사용자 정보
+    토큰 -->>- 사용자: 토큰, 대기 순서
 ```
-### 대기열 Polling API
-```mermaid
-sequenceDiagram
-    autonumber
-    actor 사용자
-    사용자 ->>+ 대기열 토큰: 대기열 토큰
 
-    alt 대기열 잔류
-        대기열 토큰 -->> 사용자: 대기 순서, 대기자 수
-    else 대기열 통과
-        대기열 토큰 -->>- 사용자: 입장 토큰, 토큰 만료 시간
-    end
-```
 ### 콘서트 조회 API
+> 대기열 검증 필요
 ```mermaid
 sequenceDiagram
     autonumber
     actor 사용자
     사용자 ->>+ 콘서트: 콘서트 날짜 조회
+    Note over 사용자, 콘서트: 토큰
+
+    콘서트 ->>+ 대기열: 토큰 검증
+    Note over 콘서트, 대기열: 토큰
+    대기열 -->>- 콘서트: 토큰 검증 결과
+    break 토큰 검증 실패
+        콘서트 -->> 사용자: 토큰 검증 실패 메세지
+    end
+
     콘서트 -->>- 사용자: 예약 가능한 콘서트
 ```
 
@@ -38,12 +36,12 @@ sequenceDiagram
     autonumber
     actor 사용자
     사용자 ->>+ 콘서트: 콘서트 날짜 조회
-    Note over 사용자, 콘서트: 입장 토큰, 콘서트 정보
+    Note over 사용자, 콘서트: 토큰, 콘서트 정보
 
-    콘서트 ->>+ 대기열: 입장 토큰 검증
-    Note over 콘서트, 대기열: 입장 토큰
+    콘서트 ->>+ 대기열: 토큰 검증
+    Note over 콘서트, 대기열: 토큰
     대기열 -->>- 콘서트: 토큰 검증 결과
-    break 입장 토큰 검증 실패
+    break 토큰 검증 실패
         콘서트 -->> 사용자: 토큰 검증 실패 메세지
     end
 
@@ -57,12 +55,12 @@ sequenceDiagram
     autonumber
     actor 사용자
     사용자 ->>+ 콘서트: 콘서트 좌석 조회
-    Note over 사용자, 콘서트: 입장 토큰, 콘서트 날짜 정보
+    Note over 사용자, 콘서트: 토큰, 콘서트 날짜 정보
 
-    콘서트 ->>+ 대기열: 입장 토큰 검증
-    Note over 콘서트, 대기열: 입장 토큰
+    콘서트 ->>+ 대기열: 토큰 검증
+    Note over 콘서트, 대기열: 토큰
     대기열 -->>- 콘서트: 토큰 검증 결과
-    break 입장 토큰 검증 실패
+    break 토큰 검증 실패
         콘서트 -->> 사용자: 토큰 검증 실패 메세지
     end
 
@@ -78,16 +76,15 @@ sequenceDiagram
     사용자 ->>+ 예약: 콘서트 예약
     Note over 사용자, 예약: 토큰, 콘서트 날짜, 좌석 정보
 
-    예약 ->>+ 대기열: 입장 토큰 검증
-    Note over 예약, 대기열: 입장 토큰
+    예약 ->>+ 대기열: 토큰 검증
+    Note over 예약, 대기열: 토큰
     대기열 -->>- 예약: 토큰 검증 결과
-    break 입장 토큰 검증 실패
+    break 토큰 검증 실패
         예약 -->> 사용자: 토큰 검증 실패 메세지
     end
 
-    예약 ->> 콘서트: 좌석 예약(LOCK)
     예약 -->>- 사용자: 좌석 예약 완료
-    Note over 사용자, 예약: 예약 정보, 결제 정보
+    Note over 사용자, 예약: 예약 정보
 ```
 
 ### 잔액 조회 API
@@ -121,12 +118,12 @@ sequenceDiagram
     actor 사용자
 
     사용자 ->>+ 결제: 결제 요청
-    Note over 사용자, 결제: 입장 토큰, 결제 정보
+    Note over 사용자, 결제: 토큰, 예약 정보
 
-    결제 ->>+ 대기열: 입장 토큰 검증
-    Note over 결제, 대기열: 입장 토큰
+    결제 ->>+ 대기열: 토큰 검증
+    Note over 결제, 대기열: 토큰
     대기열 -->>- 결제: 토큰 검증 결과
-    break 입장 토큰 검증 실패
+    break 토큰 검증 실패
         결제 -->> 사용자: 토큰 검증 실패 메세지
     end
 
@@ -138,16 +135,16 @@ sequenceDiagram
         결제 -->> 사용자: 좌석 예약 안됨
     end
 
-    결제 ->>+ 잔액: 잔액 조회
+    결제 ->>+ 잔액: 잔액 차감
 
     break 잔액 없음
         잔액 -->> 결제: 잔액 부족
         결제 -->> 사용자: 잔액 부족
     end
 
-    잔액 -->>- 결제: 잔액 차감
-    결제 ->> 대기열: 입장 토큰 만료
-    Note over 결제, 대기열: 입장 토큰
+    잔액 -->>- 결제: 잔액 차감 완료
+    결제 ->> 대기열: 토큰 만료
+    Note over 결제, 대기열: 토큰
     결제 -->>- 사용자: 결제 완료
     Note over 사용자, 결제: 결제 정보
 ```
@@ -157,7 +154,7 @@ sequenceDiagram
 sequenceDiagram
 
 Note over 스케줄러: 매 분 00초마다
-스케줄러 ->>+ 대기열: 입장 토큰 확인 및 만료
+스케줄러 ->>+ 대기열: 토큰 확인 및 만료
 스케줄러 ->>+ 예약: 예약 확인 및 만료
 예약 ->>+ 콘서트: 좌석 예약 취소
 Note over 예약, 콘서트: 예약 취소 좌석 List
@@ -170,8 +167,7 @@ Note over 예약, 콘서트: 예약 취소 좌석 List
     - API 명세 작성 및 MockAPI 구현
 - 대기열
     - 토큰 발급
-    - 대기열 Polling API
-    - 대기열 토큰 검증
+    - 토큰 만료 스케줄러
 - 콘서트
     - 콘서트 날짜/좌석 조회 API
 - 예약
@@ -217,10 +213,7 @@ Section 잔액 조회/충전
 Section 결제
     개발           : dev_pay, after test_asset, 12h
     테스트/오류수정 : test_pay, after dev_pay, 12h
-Section 대기열 Polling API
-    개발           : dev_tok_val, after test_pay, 6h
-    테스트/오류수정 : test_tok_val, after dev_tok_val, 6h
-Section 대기열 스케줄링
+Section 대기열 만료 스케줄링
     개발           : dev_waiting_sch, after test_tok_val, 12h
     테스트/오류수정 : test_waiting_sch, after dev_waiting_sch, 12h
 ```
@@ -255,10 +248,8 @@ Reservation {
     long id PK
     long user_id FK
     string status "Index"
-    string concert_name
     date reserved_at
     date completed_at
-    date expires_at
 }
 
 Reservation ||--|{ ReservationTicket: contains
@@ -288,8 +279,10 @@ Concert ||--|{ ConcertSchedule : contains
 ConcertSchedule {
     long id PK
     long concert_id FK
-    string address
-    date date
+    string place  "정규화는 나중에..."
+    date reservation_st_date
+    date reservation_end_date
+    date conceert_date
 }
 
 ConcertSchedule ||--|{ ConcertSeat : contains
@@ -298,8 +291,6 @@ ConcertSeat {
     long concert_schedule_id FK
     string location
     long price
-    string status "Index"
-    date reserved_at
 }
 
 WaitingToken {
@@ -308,15 +299,6 @@ WaitingToken {
     long user_id FK
     date issued_at
     date deleted_at
-}
-
-PassToken {
-    long id PK "AUTO_INCREMENT"
-    string token UK
-    long user_id FK
-    boolean expired "Index"
-    date issued_at
-    date expires_at
 }
 ```
 ## API 명세
@@ -330,25 +312,9 @@ PassToken {
 - Response
 ```json
 {
-    "waitingToken": string
-}
-```
-
-### GET /waiting/check (대기열 Polling API)
-- Request
-
-|pos|name|type|description|
-|---|---|---|---|
-|Param|waitingToken|string|Opaque 대기열 토큰|
-
-- Response Body
-```json
-{
-    "result": boolean,
     "waitingId": long,
-    "precedingWaiting": long,
-    "passToken": string,
-    "expiresAt": date
+    "waitingToken": string,
+    "precedingWaiting": long
 }
 ```
 
@@ -372,7 +338,7 @@ PassToken {
 
 |pos|name|type|description|
 |---|---|---|---|
-|Param|passToken|string|Opaque 입장 토큰|
+|Param|passToken|string|토큰|
 |Param|concertId|long|콘서트 ID|
 
 - Response
@@ -392,7 +358,7 @@ PassToken {
 
 |pos|name|type|description|
 |---|---|---|---|
-|Param|passToken|string|Opaque 입장 토큰|
+|Param|passToken|string|토큰|
 |Param|concertScheduleId|long|콘서트 일정 ID|
 
 - Response Body
@@ -412,7 +378,7 @@ PassToken {
 
 |pos|name|type|description|
 |---|---|---|---|
-|Param|passToken|string|Opaque 입장 토큰|
+|Param|passToken|string|토큰|
 
 - Request Body
 ```json
@@ -426,7 +392,6 @@ PassToken {
 ```json
 {
     "reservationId": long,
-    "paymentId": long,
     "totalPrice": long,
     "reservedAt": date,
     "expiresAt": date,
@@ -476,17 +441,17 @@ PassToken {
 }
 ```
 
-### POST /pay (결제 API)
+### POST /payment (결제 API)
 - Request
 
 |pos|name|type|description|
 |---|---|---|---|
-|Param|passToken|string|Opaque 입장 토큰|
+|Param|passToken|string|Opaque 토큰|
 
 - Request Body
 ```json
 {
-    "paymentId": long
+    "reservationId": long
 }
 ```
 
