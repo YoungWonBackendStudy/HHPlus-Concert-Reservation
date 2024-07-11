@@ -1,10 +1,10 @@
-package io.hhplus.concert.controller.payment;
+package io.hhplus.concert.presentation.payment;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.hhplus.concert.controller.payment.dto.PaymentDto;
+import io.hhplus.concert.presentation.payment.dto.PaymentDto;
 
 @RestController
 public class PaymentController {

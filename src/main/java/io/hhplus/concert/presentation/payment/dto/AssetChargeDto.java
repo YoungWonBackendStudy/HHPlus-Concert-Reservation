@@ -1,4 +1,4 @@
-package io.hhplus.concert.controller.payment.dto;
+package io.hhplus.concert.presentation.payment.dto;
 
 public class AssetChargeDto {
     public static record Request(

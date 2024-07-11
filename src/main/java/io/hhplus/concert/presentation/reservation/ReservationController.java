@@ -1,4 +1,4 @@
-package io.hhplus.concert.controller.reservation;
+package io.hhplus.concert.presentation.reservation;
 
 import java.util.Date;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.hhplus.concert.controller.reservation.dto.ReservationDto;
+import io.hhplus.concert.presentation.reservation.dto.ReservationDto;
 
 @RestController
 public class ReservationController {

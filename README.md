@@ -279,10 +279,10 @@ Concert ||--|{ ConcertSchedule : contains
 ConcertSchedule {
     long id PK
     long concert_id FK
-    string place  "정규화는 나중에..."
+    string place
     date reservation_st_date
     date reservation_end_date
-    date conceert_date
+    date concert_date
 }
 
 ConcertSchedule ||--|{ ConcertSeat : contains
@@ -297,7 +297,9 @@ WaitingToken {
     long id PK "AUTO_INCREMENT"
     string token UK
     long user_id FK
+    enum status
     date issued_at
+    date activated_at
     date deleted_at
 }
 ```

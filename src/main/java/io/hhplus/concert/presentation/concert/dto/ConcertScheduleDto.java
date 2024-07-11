@@ -1,4 +1,4 @@
-package io.hhplus.concert.controller.concert.dto;
+package io.hhplus.concert.presentation.concert.dto;
 
 import java.util.Date;
 

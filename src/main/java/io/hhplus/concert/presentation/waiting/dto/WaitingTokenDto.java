@@ -1,4 +1,4 @@
-package io.hhplus.concert.controller.waiting.dto;
+package io.hhplus.concert.presentation.waiting.dto;
 
 public class WaitingTokenDto {
     public static record Response(
