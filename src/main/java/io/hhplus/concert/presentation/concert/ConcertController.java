@@ -30,6 +30,6 @@ public class ConcertController {
     public List<ConcertScheduleSeatDto.Response> concertScheduleSeats(
         ConcertScheduleSeatDto.Request concertSeatRequest
     ) {
-        return List.of(new ConcertScheduleSeatDto.Response(0l, "R1", 120000l));
+        return List.of(new ConcertScheduleSeatDto.Response(0l, "R1", false, 120000l));
     }
 }
