@@ -1,12 +1,15 @@
 package io.hhplus.concert.waiting;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -49,12 +52,33 @@ public class WaitingServiceUnitTest {
         //given
         var tokensToActivate = List.of(new WaitingToken(0), new WaitingToken(1), new WaitingToken(2));
         when(mockWaitingTokenRepository.getTokensByStatus(TokenStatus.ACTIVE)).thenReturn(List.of());
-        when(mockWaitingTokenRepository.getTokensByStatusAndSize(TokenStatus.WAITING, anyInt())).thenReturn(tokensToActivate);
+        when(mockWaitingTokenRepository.getTokensByStatusAndSize(eq(TokenStatus.WAITING), anyLong())).thenReturn(tokensToActivate);
 
         //when
         waitingService.activateWaitings();
 
         //then
         verify(mockWaitingTokenRepository).saveAllTokens(anyList());
+    }
+
+    @Test
+    @DisplayName("활성 인원이 이미 50명인 경우 활성하지 않고 종료")
+    void testOverActivateWaitings() {
+        //given
+        var activeTokens = new ArrayList<WaitingToken>(50);
+        for(int i = 0; i < 50; i++) {
+            var activeToken = new WaitingToken(i);
+            activeToken.activate();
+            activeTokens.add(activeToken);
+        }
+        var tokensToActivate = List.of(new WaitingToken(0), new WaitingToken(1), new WaitingToken(2));
+        when(mockWaitingTokenRepository.getTokensByStatus(TokenStatus.ACTIVE)).thenReturn(activeTokens);
+        when(mockWaitingTokenRepository.getTokensByStatusAndSize(eq(TokenStatus.WAITING), anyLong())).thenReturn(tokensToActivate);
+
+        //when
+        waitingService.activateWaitings();
+
+        //then
+        verify(mockWaitingTokenRepository, times(0));
     }
 }

@@ -1,4 +1,4 @@
-package io.hhplus.concert;
+package io.hhplus.concert.presentation.waiting;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
