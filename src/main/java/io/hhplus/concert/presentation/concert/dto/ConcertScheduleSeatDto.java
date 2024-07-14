@@ -10,6 +10,7 @@ public class ConcertScheduleSeatDto {
     public static record Response(
         long id,
         String location,
+        boolean reserved,
         long price
     ) {
     }
