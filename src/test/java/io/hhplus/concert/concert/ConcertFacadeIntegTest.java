@@ -6,9 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import io.hhplus.concert.application.concert.ConcertFacade;
 import io.hhplus.concert.domain.waiting.TokenService;
 import io.hhplus.concert.domain.waiting.WaitingToken;
-import io.hhplus.concert.facade.concert.ConcertFacade;
 
 @SpringBootTest
 public class ConcertFacadeIntegTest {

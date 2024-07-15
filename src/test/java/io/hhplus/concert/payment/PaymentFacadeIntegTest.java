@@ -10,11 +10,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import io.hhplus.concert.facade.concert.ConcertFacade;
-import io.hhplus.concert.facade.concert.ConcertSeatDto;
-import io.hhplus.concert.facade.payment.PaymentFacade;
-import io.hhplus.concert.facade.reservation.ReservationFacade;
-import io.hhplus.concert.facade.waiting.WaitingFacade;
+import io.hhplus.concert.application.concert.ConcertFacade;
+import io.hhplus.concert.application.concert.ConcertSeatDto;
+import io.hhplus.concert.application.payment.PaymentFacade;
+import io.hhplus.concert.application.reservation.ReservationFacade;
+import io.hhplus.concert.application.waiting.WaitingFacade;
 
 @SpringBootTest
 public class PaymentFacadeIntegTest {
