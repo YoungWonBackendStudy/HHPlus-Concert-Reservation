@@ -11,10 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import io.hhplus.concert.application.waiting.WaitingDto;
+import io.hhplus.concert.application.waiting.WaitingFacade;
 import io.hhplus.concert.domain.waiting.WaitingToken;
 import io.hhplus.concert.domain.waiting.WaitingToken.TokenStatus;
-import io.hhplus.concert.facade.waiting.WaitingDto;
-import io.hhplus.concert.facade.waiting.WaitingFacade;
 
 @SpringBootTest
 public class WaitingFacadeIntegTest {

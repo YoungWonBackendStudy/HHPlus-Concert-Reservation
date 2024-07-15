@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import io.hhplus.concert.facade.user.UserAssetFacade;
+import io.hhplus.concert.application.user.UserAssetFacade;
 
 @SpringBootTest
 public class UserAssetFacadeIntegTest {

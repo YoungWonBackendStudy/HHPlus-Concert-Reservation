@@ -11,7 +11,10 @@
 		"vscode": {
 			"extensions": [
 				"vscjava.vscode-gradle",
-				"vscjava.vscode-java-pack"
+				"vscjava.vscode-java-pack",
+				"streetsidesoftware.code-spell-checker",
+				"bierner.markdown-mermaid",
+				"GitHub.vscode-pull-request-github"
 			]
 		}
 	},
