@@ -2,6 +2,8 @@ package io.hhplus.concert.domain.user;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class UserAssetService {
     UserAssetRepository userAssetRepository;
@@ -14,6 +16,7 @@ public class UserAssetService {
         return userAssetRepository.getByUserId(userId);
     }
 
+    @Transactional
     public UserAsset chargeUserAsset(long userId, long amount) {
         UserAsset userAsset = userAssetRepository.getByUserId(userId);
         userAsset.charge(amount);

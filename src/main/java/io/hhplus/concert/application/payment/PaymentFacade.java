@@ -10,6 +10,7 @@ import io.hhplus.concert.domain.user.UserAssetService;
 import io.hhplus.concert.domain.waiting.TokenService;
 import io.hhplus.concert.domain.waiting.WaitingService;
 import io.hhplus.concert.domain.waiting.WaitingToken;
+import jakarta.transaction.Transactional;
 
 @Component
 public class PaymentFacade {
@@ -28,6 +29,7 @@ public class PaymentFacade {
         this.userAssetService = userAssetService;
     }
 
+    @Transactional
     public PaymentDto placePayment(String token,long reservationId) {
         WaitingToken waitingToken = tokenService.validateAndGetActiveToken(token);
         Reservation reservation = reservationService.validateAndGetReservation(reservationId);

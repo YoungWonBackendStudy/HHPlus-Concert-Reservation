@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class UserAsset {
-    long userId;
+    Long userId;
     long balance;
 
     public void charge(long amount) {

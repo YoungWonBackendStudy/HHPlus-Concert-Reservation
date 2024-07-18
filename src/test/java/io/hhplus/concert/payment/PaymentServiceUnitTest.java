@@ -30,7 +30,8 @@ public class PaymentServiceUnitTest {
     @DisplayName("결제 생성 테스트")
     void testPlacePayment() {
         //given
-        Reservation reservation = new Reservation(0l, List.of(new ConcertSeat(0l, 0l, "R1", 100000l)));
+        Reservation reservation = new Reservation(0l);
+        reservation.makeTickets(List.of(new ConcertSeat(0l, 0l, "R1", 100000l)));
         when(mockPaymentRepository.save(any(Payment.class))).thenAnswer(returnsFirstArg());
         
         //when
