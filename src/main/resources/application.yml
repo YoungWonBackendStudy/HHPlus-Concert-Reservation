@@ -1,1 +1,3 @@
 spring.application.name: concert-reservation
+
+spring.profiles.active: dev
