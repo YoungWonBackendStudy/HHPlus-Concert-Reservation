@@ -9,12 +9,11 @@ public interface WaitingTokenRepository {
     public WaitingToken saveToken(WaitingToken waitingToken);
     public List<WaitingToken> saveAllTokens(List<WaitingToken> waitingTokens);
 
-    public WaitingToken getTokenByUserId(long userId);
     public WaitingToken getTokenByTokenString(String token);
-
-    public WaitingToken getLastTokenByStatus(TokenStatus tokenStatus);
-    public List<WaitingToken> getTokensByStatus(TokenStatus tokenStatus);
-    public List<WaitingToken> getTokensByStatusAndSize(TokenStatus tokenStatus, long size);
+    
+    public WaitingToken getActiveTokenByUserId(long userId);
+    public WaitingToken getFirstTokenOrderByActivatedAtDesc(TokenStatus tokenStatus);
+    public List<WaitingToken> getTokensByStatus(TokenStatus tokenStatus, int size);
 
     public List<WaitingToken> getActiveTokensActivatedAtBefore(Date date);
 }

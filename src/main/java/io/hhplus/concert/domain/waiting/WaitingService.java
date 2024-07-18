@@ -7,7 +7,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class WaitingService {
-    final long waitingSize = 50;
+    final int waitingSize = 50;
 
     WaitingTokenRepository waitingTokenRepository;
 
@@ -16,18 +16,23 @@ public class WaitingService {
     }
 
     public Long getWaitingsAhead(WaitingToken token) {
-        var lastActiveToken = this.waitingTokenRepository.getLastTokenByStatus(TokenStatus.ACTIVE);
+        var lastActiveToken = this.waitingTokenRepository.getFirstTokenOrderByActivatedAtDesc(TokenStatus.ACTIVE);
+        if(lastActiveToken == null) return token.getId();
+    
         return token.getId() - lastActiveToken.getId();
     }
 
     @Transactional
     public void activateWaitings() {
-        var activeTokens = waitingTokenRepository.getTokensByStatus(TokenStatus.ACTIVE);
-        if(activeTokens.size() >= waitingSize) return;
+        var activeTokens = waitingTokenRepository.getTokensByStatus(TokenStatus.ACTIVE, waitingSize + 1);
+        if (activeTokens.size() >= waitingSize)
+            return;
 
-        var tokensToActivate = waitingTokenRepository.getTokensByStatusAndSize(TokenStatus.WAITING, waitingSize - activeTokens.size());
-        if(tokensToActivate == null || tokensToActivate.isEmpty()) return;
-        
+        var tokensToActivate = waitingTokenRepository.getTokensByStatus(TokenStatus.WAITING,
+                waitingSize - activeTokens.size());
+        if (tokensToActivate == null || tokensToActivate.isEmpty())
+            return;
+
         tokensToActivate.stream().forEach(WaitingToken::activate);
         waitingTokenRepository.saveAllTokens(tokensToActivate);
     }
