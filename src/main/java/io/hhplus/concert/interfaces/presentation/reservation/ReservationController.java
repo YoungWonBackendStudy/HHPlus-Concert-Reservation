@@ -1,33 +1,42 @@
 package io.hhplus.concert.interfaces.presentation.reservation;
 
-import java.util.Date;
-import java.util.List;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.hhplus.concert.interfaces.presentation.reservation.dto.ReservationDto;
+import io.hhplus.concert.application.reservation.ReservationFacade;
+import io.hhplus.concert.interfaces.presentation.reservation.dto.ReservationRequest;
+import io.hhplus.concert.interfaces.presentation.reservation.dto.ReservationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Tag(name = "콘서트 좌석 예약")
 @RestController
 public class ReservationController {
+    ReservationFacade reservationFacade;
+    public ReservationController(ReservationFacade reservationFacade) {
+        this.reservationFacade = reservationFacade;
+    }
 
     @Operation(summary = "콘서트 좌석 예약 API")
     @Parameters(value = {
-        @Parameter(name = "token", required = true, description = "ACTIVE상태의 토큰")
+        @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE상태의 토큰"),
+        @Parameter(name = "concertScheduleId", required = true, description = "예약할 콘서트 스케줄"),
+        @Parameter(name = "seatIds", required = true, description = "예약할 콘서트 좌석 List"),
+        @Parameter(name = "userId", hidden = true)
     })
     @PostMapping("reservations")
-    public ReservationDto.Response reservation(
-        @RequestParam("token") String token,
-        @RequestBody ReservationDto.Request reservationRequest
+    public ReservationResponse reservation(
+        HttpServletRequest request,
+        @RequestBody ReservationRequest reservationRequest
     ) {
-        List<ReservationDto.ReservedSeatInfo> seats = List.of(new ReservationDto.ReservedSeatInfo(0, "R1", 120000));
-        return new ReservationDto.Response(0, 0, 120000, new Date(), new Date(System.currentTimeMillis() + 1000l * 60 * 5), seats);
+        long userId = (long) request.getAttribute("userId");
+        var reservationResult = reservationFacade.reserveSeats(userId, reservationRequest.concertScheduleId(), reservationRequest.seatIds());
+        return ReservationResponse.of(reservationResult);
     }
 }

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import io.hhplus.concert.domain.concert.ConcertSeat;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ReservationService {
@@ -16,6 +17,7 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional
     public Reservation reserveConcertSeats(long userId, long concertScheduleId, List<ConcertSeat> seats) {
         List<ReservationTicket> reservedTickets = reservationRepository.getReservedTicketsByConcertScheduleId(concertScheduleId);
         Set<Long> reservedSeats = reservedTickets.stream().map(ReservationTicket::getConcertSeatId).collect(Collectors.toSet());
@@ -23,12 +25,19 @@ public class ReservationService {
             if(reservedSeats.contains(seat.getId())) throw new RuntimeException("이미 예약된 좌석입니다.");
         });
 
-        var newReservation = new Reservation(userId, seats);
-        return reservationRepository.saveReservation(newReservation);
+        var newReservation = new Reservation(userId);
+        newReservation = reservationRepository.saveReservation(newReservation);
+        newReservation.validate();
+        
+        var tickets = newReservation.makeTickets(seats);
+        tickets = reservationRepository.saveReservationTickets(tickets);
+
+        return newReservation;
     }
 
+    @Transactional
     public Reservation validateAndGetReservation(long reservationId) {
-        var reservation = reservationRepository.getById(reservationId);
+        var reservation = reservationRepository.getAndLockById(reservationId);
         reservation.validate();
 
         return reservation;

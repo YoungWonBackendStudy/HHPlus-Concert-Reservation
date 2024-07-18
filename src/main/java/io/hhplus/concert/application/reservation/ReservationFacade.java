@@ -9,7 +9,6 @@ import io.hhplus.concert.domain.concert.ConcertService;
 import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.domain.reservation.ReservationService;
 import io.hhplus.concert.domain.waiting.TokenService;
-import io.hhplus.concert.domain.waiting.WaitingToken;
 
 @Component
 public class ReservationFacade {
@@ -23,11 +22,9 @@ public class ReservationFacade {
         this.tokenService = tokenService;
     }
 
-    public ReservationDto reserveSeats(String token, long concertScheduleId, List<Long> seatIds) {
+    public ReservationDto reserveSeats(long userId, long concertScheduleId, List<Long> seatIds) {
         List<ConcertSeat> concertSeats = concertService.getConcertSeatsByIds(seatIds);
-        WaitingToken waitingToken = tokenService.validateAndGetActiveToken(token);
-
-        Reservation reservation = reservationService.reserveConcertSeats(waitingToken.getUserId(), concertScheduleId, concertSeats);
+        Reservation reservation = reservationService.reserveConcertSeats(userId, concertScheduleId, concertSeats);
 
         return new ReservationDto(reservation);
     }

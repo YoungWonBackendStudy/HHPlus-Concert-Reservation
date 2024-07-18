@@ -13,17 +13,21 @@ public class Reservation {
     static final long expireDurationInMilli = 5 * 60 * 1000l;
     long id;
     long userId;
-    long paymentId;
     Date reservedAt;
     Date completedAt;
     List<ReservationTicket> reservationTickets;
 
-    public Reservation(long userId, List<ConcertSeat> seats) {
+    public Reservation(long userId) {
         this.userId = userId;
         this.reservedAt = new Date();
+    }
+
+    public List<ReservationTicket> makeTickets(List<ConcertSeat> seats) {
         this.reservationTickets = seats.stream().map(seat -> {
-            return new ReservationTicket(userId, seat);
+            return new ReservationTicket(this.id ,seat);
         }).toList();
+
+        return this.reservationTickets;
     }
 
     public long getTotalPrice() {

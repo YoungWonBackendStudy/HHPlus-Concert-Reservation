@@ -54,8 +54,8 @@ public class ReservatinUnitTest {
     @DisplayName("5분전 예약에 대한 예약 만료 테스트")
     void testReservationExpired() {
         //given
-        when(mockReservationRepository.getById(0)).thenReturn(
-            new Reservation(0l, 0l, 0l, new Date(System.currentTimeMillis() - 5 * 60 * 1000l - 1), null, null)
+        when(mockReservationRepository.getAndLockById(0)).thenReturn(
+            new Reservation(0l, 0l, new Date(System.currentTimeMillis() - 5 * 60 * 1000l - 1), null, null)
         );
 
         //when
