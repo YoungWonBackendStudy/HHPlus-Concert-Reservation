@@ -19,7 +19,7 @@ public class UserAssetRepositoryImpl implements UserAssetRepository{
     @Override
     @Transactional
     public UserAsset getAndLockByUserId(long userId) {
-        var entity = this.userAssetJpaRepository.findById(userId);
+        var entity = this.userAssetJpaRepository.findAndLockByUserId(userId);
         if(!entity.isPresent()) throw new CustomNotFoundException(ExceptionCode.USER_ASSET_NOT_FOUND);
 
         return entity.get().toDomain();
