@@ -29,7 +29,7 @@ public class UserAssetServiceUnitTest {
     void testGetBalance() {
         //given
         UserAsset testUserAsset = new UserAsset(0l, 3000);
-        when(mockUserRepository.getByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
+        when(mockUserRepository.getAndLockByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
 
         //when
         var resUserAsset = userAssetService.getUserAsset(testUserAsset.getUserId());
@@ -44,7 +44,7 @@ public class UserAssetServiceUnitTest {
         //given
         UserAsset testUserAsset = new UserAsset(0l, 3000);
         long chargeAmount = 10000;
-        when(mockUserRepository.getByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
+        when(mockUserRepository.getAndLockByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
         when(mockUserRepository.save(any(UserAsset.class))).thenAnswer(returnsFirstArg());
 
         //when
@@ -62,7 +62,7 @@ public class UserAssetServiceUnitTest {
         //given
         UserAsset testUserAsset = new UserAsset(0l, 3000);
         long useAmount = 1000;
-        when(mockUserRepository.getByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
+        when(mockUserRepository.getAndLockByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
         when(mockUserRepository.save(any(UserAsset.class))).thenAnswer(returnsFirstArg());
 
         //when
@@ -80,7 +80,7 @@ public class UserAssetServiceUnitTest {
         //given
         UserAsset testUserAsset = new UserAsset(0l, 3000);
         long useAmount = 10000;
-        when(mockUserRepository.getByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
+        when(mockUserRepository.getAndLockByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
         when(mockUserRepository.save(any(UserAsset.class))).thenAnswer(returnsFirstArg());
 
         //when

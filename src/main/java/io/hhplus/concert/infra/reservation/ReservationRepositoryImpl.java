@@ -29,7 +29,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         var entity = new ReservationEntity(reservation);
         entity = this.reservationJpaRepository.save(entity);
 
-        return entity.toDomain(null);
+        return entity.toDomain(List.of());
     }
 
     @Override
@@ -56,7 +56,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    @Transactional
     public List<ReservationTicket> getReservedTicketsByConcertScheduleId(long concertScheduleId) {
         return this.reservationTicketJpaRepository.findByConcertScheduleId(concertScheduleId)
             .stream().map(ReservationTicketEntity::toDomain)

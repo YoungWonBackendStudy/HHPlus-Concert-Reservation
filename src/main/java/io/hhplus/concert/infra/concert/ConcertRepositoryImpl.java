@@ -46,8 +46,8 @@ public class ConcertRepositoryImpl implements ConcertRepository{
     }
 
     @Override
-    public List<ConcertSeat> getConcertSeatsByIdIn(List<Long> concertSeatIds) {
-        return this.concertSeatJpaRepository.findByIdIn(concertSeatIds)
+    public List<ConcertSeat> getAndLockConcertSeatsByIdIn(List<Long> concertSeatIds) {
+        return this.concertSeatJpaRepository.findAndLockByIdIn(concertSeatIds)
             .stream().map(ConcertSeatEntity::toDomain)
             .toList();
     }

@@ -34,7 +34,7 @@ public class PaymentFacade {
         WaitingToken waitingToken = tokenService.validateAndGetActiveToken(token);
         Reservation reservation = reservationService.validateAndGetReservation(reservationId);
 
-        userAssetService.useUserAsset(waitingToken.getUserId(), reservationId);
+        userAssetService.useUserAsset(waitingToken.getUserId(), reservation.getTotalPrice());
         Payment payment = paymentService.placePayment(reservation);
 
         tokenService.expireToken(token);

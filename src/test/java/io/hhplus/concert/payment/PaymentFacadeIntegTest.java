@@ -41,7 +41,7 @@ public class PaymentFacadeIntegTest {
     ConcertFacade concertFacade;
 
     @Test
-    @DisplayName("5개좌석 예약을 두번 결제시도할 경우 1번째는 정상 결제 && 두번째는 이미 완료된 예약 오류")
+    @DisplayName("좌석 예약을 두번 결제시도할 경우 1번째는 정상 결제 && 두번째는 토큰 만료 (결제 완료 시 토큰 만료)")
     void testPayment() {
         //given
         long userId = 0l;
@@ -52,7 +52,9 @@ public class PaymentFacadeIntegTest {
 
         var concertSeats = concertFacade.getConcertSeats(0l);
         assertThat(concertSeats.size()).isGreaterThanOrEqualTo(5);
-        List<Long> seatsToReserve = concertSeats.subList(0, 5).stream().map(ConcertSeatDto::getId).toList();
+        List<Long> seatsToReserve = concertSeats
+            .stream().filter(seat -> seat.isReserved() == false)
+            .map(ConcertSeatDto::getId).toList();
         
         var reservation = reservationFacade.reserveSeats(userId, concertScheduleId, seatsToReserve);
 
@@ -69,7 +71,7 @@ public class PaymentFacadeIntegTest {
         ThrowingCallable dupPayment = () -> paymentFacade.placePayment(waiting.getToken(), reservation.getReservationId());
 
         //then
-        assertThatThrownBy(dupPayment).hasMessage(ExceptionCode.PAYMENT_ALREADY_COMPLETED.getMessage());
+        assertThatThrownBy(dupPayment).hasMessage(ExceptionCode.WAITING_TOKEN_EXPIRED.getMessage());
     }
 
     @Test
@@ -84,7 +86,9 @@ public class PaymentFacadeIntegTest {
 
         var concertSeats = concertFacade.getConcertSeats(0l);
         assertThat(concertSeats.size()).isGreaterThanOrEqualTo(5);
-        List<Long> seatsToReserve = concertSeats.subList(0, 5).stream().map(ConcertSeatDto::getId).toList();
+        List<Long> seatsToReserve = concertSeats
+            .stream().filter(seat -> seat.isReserved() == false)
+            .map(ConcertSeatDto::getId).toList();
         
         var reservation = reservationFacade.reserveSeats(userId, concertScheduleId, seatsToReserve);
 

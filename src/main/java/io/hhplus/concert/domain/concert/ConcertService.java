@@ -1,6 +1,9 @@
 package io.hhplus.concert.domain.concert;
 
 import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+
 import java.util.List;
 
 @Service
@@ -23,7 +26,8 @@ public class ConcertService {
         return concertRepository.getConcertSeatsByConcertScheduleId(concertScheduleId);
     }
 
+    @Transactional
     public List<ConcertSeat> getConcertSeatsByIds(List<Long> seatIds) {
-        return concertRepository.getConcertSeatsByIdIn(seatIds);
+        return concertRepository.getAndLockConcertSeatsByIdIn(seatIds);
     }
 }

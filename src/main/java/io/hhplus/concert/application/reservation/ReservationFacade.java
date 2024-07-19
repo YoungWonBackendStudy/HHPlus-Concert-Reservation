@@ -9,6 +9,7 @@ import io.hhplus.concert.domain.concert.ConcertService;
 import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.domain.reservation.ReservationService;
 import io.hhplus.concert.domain.waiting.TokenService;
+import jakarta.transaction.Transactional;
 
 @Component
 public class ReservationFacade {
@@ -22,6 +23,7 @@ public class ReservationFacade {
         this.tokenService = tokenService;
     }
 
+    @Transactional
     public ReservationDto reserveSeats(long userId, long concertScheduleId, List<Long> seatIds) {
         List<ConcertSeat> concertSeats = concertService.getConcertSeatsByIds(seatIds);
         Reservation reservation = reservationService.reserveConcertSeats(userId, concertScheduleId, concertSeats);

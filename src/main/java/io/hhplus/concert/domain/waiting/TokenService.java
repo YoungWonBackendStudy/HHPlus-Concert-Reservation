@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
-import jakarta.transaction.Transactional;
 
 @Service
 public class TokenService {
@@ -40,7 +39,6 @@ public class TokenService {
         return waitingToken;
     }
 
-    @Transactional
     public void expireTokens() {
         Date tokenExpireStandard = new Date(System.currentTimeMillis() - expireDurationInMilli);
         List<WaitingToken> tokensToExpire = waitingTokenRepository.getActiveTokensActivatedAtBefore(tokenExpireStandard);

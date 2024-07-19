@@ -18,6 +18,7 @@ import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.domain.reservation.ReservationRepository;
 import io.hhplus.concert.domain.reservation.ReservationService;
+import io.hhplus.concert.support.exception.ExceptionCode;
 
 public class ReservatinUnitTest {
     ReservationService reservationService;
@@ -62,6 +63,6 @@ public class ReservatinUnitTest {
         ThrowableAssert.ThrowingCallable result = () -> reservationService.validateAndGetReservation(0l);
         
         //then
-        assertThatThrownBy(result).hasMessage("예약이 만료되었습니다.");
+        assertThatThrownBy(result).hasMessage(ExceptionCode.RESERVATION_EXPIRED.getMessage());
     }
 }

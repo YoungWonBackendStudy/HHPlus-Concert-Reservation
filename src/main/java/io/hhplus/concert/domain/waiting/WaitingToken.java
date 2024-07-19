@@ -31,6 +31,10 @@ public class WaitingToken {
     }
 
     public void validateActivation() {
+        if(this.status.equals(TokenStatus.EXPIRED)) {
+            throw new CustomBadRequestException(ExceptionCode.WAITING_TOKEN_EXPIRED);
+        }
+
         if(!this.status.equals(TokenStatus.ACTIVE)) {
             throw new CustomBadRequestException(ExceptionCode.WAITING_TOKEN_NOT_ACTIVATED);
         }

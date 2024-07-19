@@ -19,7 +19,7 @@ public enum ExceptionCode {
 
     PAYMENT_NOT_ENOUGH_BALANCE("잔액이 부족합니다."),
     PAYMENT_ALREADY_COMPLETED("이미 처리 완료된 예약입니다."),
-    PAYMENT_RESERVATION_EXPIRED("만료된 예약입니다.");
+    RESERVATION_EXPIRED("만료된 예약입니다.");
     
     String message;
     ExceptionCode(String message) {

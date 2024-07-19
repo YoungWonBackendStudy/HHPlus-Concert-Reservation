@@ -52,7 +52,7 @@ public class ReservationFacadeIntegTest {
     }
 
     @Test
-    @DisplayName("동시성 테스트: 10명이 동시에 같은 좌석 예약을 시도할 때 1번만 성공 이후는 실패")
+    @DisplayName("동시성 테스트: 10명이 동시에 2개의 같은 예약을 시도할 때 1번만 성공 이후는 실패: Ticket은 2개만 발급")
     void testConsistent() throws InterruptedException {
          //given
          long concertScheduleId = 0;
@@ -81,7 +81,7 @@ public class ReservationFacadeIntegTest {
          latch.await();
          executorService.shutdown();
  
-         //then: 1회의 예약 제외 모두 
+         //then: 1회의 예약 제외 모두 실패 -> Ticket은 2개만 발급
          var ticketsAfter = repository.getReservedTicketsByConcertScheduleId(concertScheduleId);
          assertThat(ticketsAfter.size()).isEqualTo(ticketsBefore.size() + reservationSeats.size());
     }

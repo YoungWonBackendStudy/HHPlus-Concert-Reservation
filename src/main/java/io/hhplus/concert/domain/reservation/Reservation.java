@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import io.hhplus.concert.domain.concert.ConcertSeat;
+import io.hhplus.concert.support.exception.CustomBadRequestException;
+import io.hhplus.concert.support.exception.ExceptionCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -49,8 +51,8 @@ public class Reservation {
 
     public void validate() {
         if(this.completedAt != null)
-            throw new RuntimeException("이미 완료된 예약입니다.");
+            throw new CustomBadRequestException(ExceptionCode.PAYMENT_ALREADY_COMPLETED);
         if(System.currentTimeMillis() > this.getExpireDate().getTime()) 
-            throw new RuntimeException("예약이 만료되었습니다.");
+            throw new CustomBadRequestException(ExceptionCode.RESERVATION_EXPIRED);
     }
 }
