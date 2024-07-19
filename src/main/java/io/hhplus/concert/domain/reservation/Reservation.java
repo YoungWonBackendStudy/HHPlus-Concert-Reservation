@@ -49,7 +49,7 @@ public class Reservation {
         return new Date(this.reservedAt.getTime() + expireDurationInMilli);
     }
 
-    public void validate() {
+    public void validatePayable() {
         if(this.completedAt != null)
             throw new CustomBadRequestException(ExceptionCode.PAYMENT_ALREADY_COMPLETED);
         if(System.currentTimeMillis() > this.getExpireDate().getTime()) 

@@ -51,10 +51,11 @@ public class PaymentFacadeIntegTest {
         waitingFacade.scheduleWaiting();
 
         var concertSeats = concertFacade.getConcertSeats(0l);
-        assertThat(concertSeats.size()).isGreaterThanOrEqualTo(5);
         List<Long> seatsToReserve = concertSeats
             .stream().filter(seat -> seat.isReserved() == false)
-            .map(ConcertSeatDto::getId).toList();
+            .map(ConcertSeatDto::getId).toList().subList(0, 1);
+
+        assertThat(concertSeats.size()).isGreaterThanOrEqualTo(1); //guard assertion
         
         var reservation = reservationFacade.reserveSeats(userId, concertScheduleId, seatsToReserve);
 
@@ -85,10 +86,11 @@ public class PaymentFacadeIntegTest {
         waitingFacade.scheduleWaiting();
 
         var concertSeats = concertFacade.getConcertSeats(0l);
-        assertThat(concertSeats.size()).isGreaterThanOrEqualTo(5);
         List<Long> seatsToReserve = concertSeats
             .stream().filter(seat -> seat.isReserved() == false)
-            .map(ConcertSeatDto::getId).toList();
+            .map(ConcertSeatDto::getId).toList().subList(0, 1);
+
+        assertThat(concertSeats.size()).isGreaterThanOrEqualTo(1);
         
         var reservation = reservationFacade.reserveSeats(userId, concertScheduleId, seatsToReserve);
 

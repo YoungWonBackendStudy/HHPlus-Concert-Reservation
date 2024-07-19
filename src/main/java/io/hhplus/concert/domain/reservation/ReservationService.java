@@ -29,7 +29,6 @@ public class ReservationService {
 
         var newReservation = new Reservation(userId);
         newReservation = reservationRepository.saveReservation(newReservation);
-        newReservation.validate();
         
         var tickets = newReservation.makeTickets(seats);
         tickets = reservationRepository.saveReservationTickets(tickets);
@@ -40,7 +39,7 @@ public class ReservationService {
     @Transactional
     public Reservation validateAndGetReservation(long reservationId) {
         var reservation = reservationRepository.getAndLockById(reservationId);
-        reservation.validate();
+        reservation.validatePayable();
 
         return reservation;
     }
