@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import io.hhplus.concert.domain.concert.ConcertSeat;
+import io.hhplus.concert.support.exception.CustomBadRequestException;
+import io.hhplus.concert.support.exception.ExceptionCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,17 +15,21 @@ public class Reservation {
     static final long expireDurationInMilli = 5 * 60 * 1000l;
     long id;
     long userId;
-    long paymentId;
     Date reservedAt;
     Date completedAt;
     List<ReservationTicket> reservationTickets;
 
-    public Reservation(long userId, List<ConcertSeat> seats) {
+    public Reservation(long userId) {
         this.userId = userId;
         this.reservedAt = new Date();
+    }
+
+    public List<ReservationTicket> makeTickets(List<ConcertSeat> seats) {
         this.reservationTickets = seats.stream().map(seat -> {
-            return new ReservationTicket(userId, seat);
+            return new ReservationTicket(this.id ,seat);
         }).toList();
+
+        return this.reservationTickets;
     }
 
     public long getTotalPrice() {
@@ -43,10 +49,10 @@ public class Reservation {
         return new Date(this.reservedAt.getTime() + expireDurationInMilli);
     }
 
-    public void validate() {
+    public void validatePayable() {
         if(this.completedAt != null)
-            throw new RuntimeException("이미 완료된 예약입니다.");
+            throw new CustomBadRequestException(ExceptionCode.PAYMENT_ALREADY_COMPLETED);
         if(System.currentTimeMillis() > this.getExpireDate().getTime()) 
-            throw new RuntimeException("예약이 만료되었습니다.");
+            throw new CustomBadRequestException(ExceptionCode.RESERVATION_EXPIRED);
     }
 }

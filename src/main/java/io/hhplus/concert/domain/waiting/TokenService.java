@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
+import io.hhplus.concert.support.exception.CustomBadRequestException;
+import io.hhplus.concert.support.exception.ExceptionCode;
 
 @Service
 public class TokenService {
@@ -18,20 +19,26 @@ public class TokenService {
     }
 
     public WaitingToken getToken(long userId) {
-        var waitingToken = waitingTokenRepository.getTokenByUserId(userId);
-        if(waitingToken != null) return waitingToken;
+        var waitingToken = waitingTokenRepository.getActiveTokenByUserId(userId);
+        if(waitingToken != null) {
+            waitingToken.validateWaiting();
+            return waitingToken;
+        }
 
         waitingToken = new WaitingToken(userId);
-        return this.waitingTokenRepository.saveToken(waitingToken);
+        waitingToken = this.waitingTokenRepository.saveToken(waitingToken);
+
+        return waitingToken;
     }
 
     public WaitingToken validateAndGetActiveToken(String token) {
         var waitingToken = this.waitingTokenRepository.getTokenByTokenString(token);
+        if(waitingToken == null) throw new CustomBadRequestException(ExceptionCode.WAITING_TOKEN_NOT_FOUND);
+    
         waitingToken.validateActivation();
         return waitingToken;
     }
 
-    @Transactional
     public void expireTokens() {
         Date tokenExpireStandard = new Date(System.currentTimeMillis() - expireDurationInMilli);
         List<WaitingToken> tokensToExpire = waitingTokenRepository.getActiveTokensActivatedAtBefore(tokenExpireStandard);

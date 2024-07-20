@@ -3,6 +3,7 @@ package io.hhplus.concert.domain.payment;
 import org.springframework.stereotype.Service;
 
 import io.hhplus.concert.domain.reservation.Reservation;
+import jakarta.transaction.Transactional;
 
 @Service
 public class PaymentService {
@@ -12,6 +13,7 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
+    @Transactional
     public Payment placePayment(Reservation reservation) {
         Payment payment = new Payment(reservation);
         return paymentRepository.save(payment);

@@ -1,8 +1,9 @@
 package io.hhplus.concert.waiting;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -37,7 +38,7 @@ public class WaitingServiceUnitTest {
         long lastActiveWaitingId = 10;
         WaitingToken token = new WaitingToken(myWaitingId, "lastActiveToken", TokenStatus.WAITING, 0, null, null, null);
         WaitingToken lastActiveToken = new WaitingToken(lastActiveWaitingId, "lastActiveToken", TokenStatus.ACTIVE, 1, null, null, null);
-        when(this.mockWaitingTokenRepository.getLastTokenByStatus(TokenStatus.ACTIVE)).thenReturn(lastActiveToken);
+        when(this.mockWaitingTokenRepository.getFirstTokenOrderByActivatedAtDesc(TokenStatus.ACTIVE)).thenReturn(lastActiveToken);
 
         //when
         long waitingsAhead = waitingService.getWaitingsAhead(token);
@@ -51,8 +52,8 @@ public class WaitingServiceUnitTest {
     void testActivateWaitings() {
         //given
         var tokensToActivate = List.of(new WaitingToken(0), new WaitingToken(1), new WaitingToken(2));
-        when(mockWaitingTokenRepository.getTokensByStatus(TokenStatus.ACTIVE)).thenReturn(List.of());
-        when(mockWaitingTokenRepository.getTokensByStatusAndSize(eq(TokenStatus.WAITING), anyLong())).thenReturn(tokensToActivate);
+        when(mockWaitingTokenRepository.getTokensByStatus(eq(TokenStatus.ACTIVE), anyInt())).thenReturn(List.of());
+        when(mockWaitingTokenRepository.getTokensByStatus(eq(TokenStatus.WAITING), anyInt())).thenReturn(tokensToActivate);
 
         //when
         waitingService.activateWaitings();
@@ -72,13 +73,13 @@ public class WaitingServiceUnitTest {
             activeTokens.add(activeToken);
         }
         var tokensToActivate = List.of(new WaitingToken(0), new WaitingToken(1), new WaitingToken(2));
-        when(mockWaitingTokenRepository.getTokensByStatus(TokenStatus.ACTIVE)).thenReturn(activeTokens);
-        when(mockWaitingTokenRepository.getTokensByStatusAndSize(eq(TokenStatus.WAITING), anyLong())).thenReturn(tokensToActivate);
+        when(mockWaitingTokenRepository.getTokensByStatus(eq(TokenStatus.ACTIVE), anyInt())).thenReturn(activeTokens);
+        when(mockWaitingTokenRepository.getTokensByStatus(eq(TokenStatus.WAITING), anyInt())).thenReturn(tokensToActivate);
 
         //when
         waitingService.activateWaitings();
 
         //then
-        verify(mockWaitingTokenRepository, times(0));
+        verify(mockWaitingTokenRepository, times(0)).saveAllTokens(anyList());
     }
 }

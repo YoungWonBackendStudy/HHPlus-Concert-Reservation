@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Payment {
-    long id;
+    Long id;
     long price;
     long reservationId;
     Date paidAt;

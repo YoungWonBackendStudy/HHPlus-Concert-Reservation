@@ -4,44 +4,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import io.hhplus.concert.application.concert.ConcertFacade;
-import io.hhplus.concert.domain.waiting.TokenService;
-import io.hhplus.concert.domain.waiting.WaitingToken;
 
 @SpringBootTest
+@Sql(scripts = "classpath:testinit.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class ConcertFacadeIntegTest {
+    @Autowired
     ConcertFacade concertFacade;
-    TokenService tokenService;
-
-    public ConcertFacadeIntegTest(ConcertFacade concertFacade, TokenService tokenService) {
-        this.concertFacade = concertFacade;
-        this.tokenService = tokenService;
-    }
 
     @Test
     @DisplayName("콘서트 조회 통합 테스트")
     void testConcertIntegTest() {
-        //given
-        WaitingToken testToken = tokenService.getToken(0l);
-
         //when
-        var concerts = concertFacade.getConcerts(testToken.getToken());
+        var concerts = concertFacade.getConcerts();
         
         //then
         assertThat(concerts).isNotNull();
         assertThat(concerts).isNotEmpty();
 
         //when
-        var concertSchedules = concertFacade.getConcertSchedules(testToken.getToken(), concerts.get(0).getId());
+        var concertSchedules = concertFacade.getConcertSchedules(concerts.get(0).getId());
 
         //then
         assertThat(concertSchedules).isNotNull();
         assertThat(concertSchedules).isNotEmpty();
 
         //when
-        var concertSeats = concertFacade.getConcertSeats(testToken.getToken(), concertSchedules.get(0).getId());
+        var concertSeats = concertFacade.getConcertSeats(concertSchedules.get(0).getId());
         
         //then
         assertThat(concertSeats).isNotNull();

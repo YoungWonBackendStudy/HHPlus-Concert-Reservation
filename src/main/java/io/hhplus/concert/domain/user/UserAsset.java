@@ -1,12 +1,14 @@
 package io.hhplus.concert.domain.user;
 
+import io.hhplus.concert.support.exception.CustomBadRequestException;
+import io.hhplus.concert.support.exception.ExceptionCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public class UserAsset {
-    long userId;
+    Long userId;
     long balance;
 
     public void charge(long amount) {
@@ -14,7 +16,7 @@ public class UserAsset {
     }
 
     public void use(long amount) {
-        if(this.balance < amount) throw new RuntimeException("잔액이 부족합니다.");
+        if(this.balance < amount) throw new CustomBadRequestException(ExceptionCode.PAYMENT_NOT_ENOUGH_BALANCE);
 
         this.balance -= amount;
     }

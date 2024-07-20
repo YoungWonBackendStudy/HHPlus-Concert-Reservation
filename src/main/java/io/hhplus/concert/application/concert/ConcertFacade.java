@@ -23,21 +23,16 @@ public class ConcertFacade {
         this.reservationService = reservationService;
     }
 
-    public List<ConcertDto> getConcerts(String token) {
-        tokenService.validateAndGetActiveToken(token);
-
+    public List<ConcertDto> getConcerts() {
         return concertService.getConcerts().stream().map(ConcertDto::new).toList();
     }
 
-    public List<ConcertScheduleDto> getConcertSchedules(String token, long concertId) {
-        tokenService.validateAndGetActiveToken(token);
-
+    public List<ConcertScheduleDto> getConcertSchedules(long concertId) {
         return concertService.getConcertSchedules(concertId)
             .stream().map(ConcertScheduleDto::new).toList();
     }
 
-    public List<ConcertSeatDto> getConcertSeats(String token, long concertScheduleId) {
-        tokenService.validateAndGetActiveToken(token);
+    public List<ConcertSeatDto> getConcertSeats(long concertScheduleId) {
         List<ReservationTicket> tickets = reservationService.getReservedTickets(concertScheduleId);
         Set<Long> reservedSeatIds = tickets.stream().map(ReservationTicket::getConcertSeatId).collect(Collectors.toSet());
         

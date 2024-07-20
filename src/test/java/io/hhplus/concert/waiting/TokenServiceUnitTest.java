@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import io.hhplus.concert.domain.waiting.TokenService;
 import io.hhplus.concert.domain.waiting.WaitingToken;
 import io.hhplus.concert.domain.waiting.WaitingToken.TokenStatus;
+import io.hhplus.concert.support.exception.ExceptionCode;
 import io.hhplus.concert.domain.waiting.WaitingTokenRepository;
 
 public class TokenServiceUnitTest {
@@ -91,7 +92,7 @@ public class TokenServiceUnitTest {
         };
 
         //then
-        assertThatThrownBy(result).hasMessage("토큰이 활성화 상태가 아닙니다.");
+        assertThatThrownBy(result).hasMessage(ExceptionCode.WAITING_TOKEN_NOT_ACTIVATED.getMessage());
     }
 
     @Test
@@ -108,6 +109,6 @@ public class TokenServiceUnitTest {
         };
 
         //then
-        assertThatThrownBy(result).hasMessage("토큰이 활성화 상태가 아닙니다.");
+        assertThatThrownBy(result).hasMessage(ExceptionCode.WAITING_TOKEN_EXPIRED.getMessage());
     }
 }

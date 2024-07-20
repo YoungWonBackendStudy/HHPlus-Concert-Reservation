@@ -2,26 +2,37 @@ package io.hhplus.concert.interfaces.presentation.payment;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.hhplus.concert.interfaces.presentation.payment.dto.PaymentDto;
+import io.hhplus.concert.application.payment.PaymentFacade;
+import io.hhplus.concert.interfaces.presentation.payment.dto.PaymentRequest;
+import io.hhplus.concert.interfaces.presentation.payment.dto.PaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "결제")
 @RestController
 public class PaymentController {
+    PaymentFacade paymentFacade;
+    public PaymentController(PaymentFacade paymentFacade) {
+        this.paymentFacade = paymentFacade;
+    }
+
     @Operation(summary = "결제 API")
+    
     @Parameters(value = {
-        @Parameter(name = "token", required = true, description = "ACTIVE상태의 토큰"),
-        @Parameter(name = "reservationId", required = true, description = "결제할 예약 정보의 ID")
+        @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE상태의 토큰")
     })
-    @PostMapping("pay")
-    public PaymentDto.Response placePayment(
-        @RequestBody PaymentDto.Request paymentRequest
+    @PostMapping("payment")
+    public PaymentResponse placePayment(    
+        @RequestHeader(name = "WAITING_TOKEN") String token,
+        @RequestBody PaymentRequest paymentRequest
     ) {
-        return new PaymentDto.Response(120000, 480000);
+        return PaymentResponse.of(paymentFacade.placePayment(token, paymentRequest.reservationId()));
     }
 }

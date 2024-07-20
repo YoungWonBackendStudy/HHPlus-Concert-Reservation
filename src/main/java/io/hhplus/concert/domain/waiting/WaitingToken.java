@@ -3,6 +3,8 @@ package io.hhplus.concert.domain.waiting;
 import java.util.Date;
 import java.util.UUID;
 
+import io.hhplus.concert.support.exception.CustomBadRequestException;
+import io.hhplus.concert.support.exception.ExceptionCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -29,8 +31,18 @@ public class WaitingToken {
     }
 
     public void validateActivation() {
+        if(this.status.equals(TokenStatus.EXPIRED)) {
+            throw new CustomBadRequestException(ExceptionCode.WAITING_TOKEN_EXPIRED);
+        }
+
         if(!this.status.equals(TokenStatus.ACTIVE)) {
-            throw new RuntimeException("토큰이 활성화 상태가 아닙니다.");
+            throw new CustomBadRequestException(ExceptionCode.WAITING_TOKEN_NOT_ACTIVATED);
+        }
+    }
+
+    public void validateWaiting() {
+        if(!this.status.equals(TokenStatus.WAITING)) {
+            throw new CustomBadRequestException(ExceptionCode.WAITING_TOKEN_NOT_WAITING);
         }
     }
 
