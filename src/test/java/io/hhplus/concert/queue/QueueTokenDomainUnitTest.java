@@ -1,4 +1,4 @@
-package io.hhplus.concert.waiting;
+package io.hhplus.concert.queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -8,17 +8,17 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import io.hhplus.concert.domain.waiting.WaitingToken;
-import io.hhplus.concert.domain.waiting.WaitingToken.TokenStatus;
+import io.hhplus.concert.domain.queue.QueueToken;
+import io.hhplus.concert.domain.queue.QueueToken.TokenStatus;
 import io.hhplus.concert.support.exception.ExceptionCode;
 
-public class WaitingTokenDomainUnitTest {
+public class QueueTokenDomainUnitTest {
     @Test
     @DisplayName("Active상태가 아닌 토큰을 Activate하면 상태가 ACTIVE상태로 변경")
     void testActivate() {
         //given
         long userId = 0;
-        WaitingToken token = new WaitingToken(userId);
+        QueueToken token = new QueueToken(userId);
         assertThat(token.getStatus()).isNotEqualTo(TokenStatus.ACTIVE);
 
         //when
@@ -33,7 +33,7 @@ public class WaitingTokenDomainUnitTest {
     void testExpire() {
         //given
         long userId = 0;
-        WaitingToken token = new WaitingToken(userId);
+        QueueToken token = new QueueToken(userId);
         assertThat(token.getStatus()).isNotEqualTo(TokenStatus.EXPIRED);
 
         //when
@@ -48,14 +48,14 @@ public class WaitingTokenDomainUnitTest {
     void testWaitingTokenValidateActivation() {
         //given
         long userId = 0;
-        WaitingToken token = new WaitingToken(userId);
+        QueueToken token = new QueueToken(userId);
         assertThat(token.getStatus()).isEqualTo(TokenStatus.WAITING);
 
         //when
         ThrowableAssert.ThrowingCallable result = () -> token.validateActivation();
 
         //then
-        assertThatThrownBy(result).hasMessage(ExceptionCode.WAITING_TOKEN_NOT_ACTIVATED.getMessage());
+        assertThatThrownBy(result).hasMessage(ExceptionCode.TOKEN_NOT_ACTIVATED.getMessage());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class WaitingTokenDomainUnitTest {
     void testExpiredTokenValidateActivation() {
         //given
         long userId = 0;
-        WaitingToken token = new WaitingToken(userId);
+        QueueToken token = new QueueToken(userId);
         token.expire();
         assertThat(token.getStatus()).isEqualTo(TokenStatus.EXPIRED);
 
@@ -71,7 +71,7 @@ public class WaitingTokenDomainUnitTest {
         ThrowableAssert.ThrowingCallable result = () -> token.validateActivation();
 
         //then
-        assertThatThrownBy(result).hasMessage(ExceptionCode.WAITING_TOKEN_EXPIRED.getMessage());
+        assertThatThrownBy(result).hasMessage(ExceptionCode.TOKEN_EXPIRED.getMessage());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class WaitingTokenDomainUnitTest {
     void testValidateActivation() {
         //given
         long userId = 0;
-        WaitingToken token = new WaitingToken(userId);
+        QueueToken token = new QueueToken(userId);
         token.activate();
         assertThat(token.getStatus()).isEqualTo(TokenStatus.ACTIVE);
 
@@ -95,7 +95,7 @@ public class WaitingTokenDomainUnitTest {
     void testValidateWaiting() {
         //given
         long userId = 0;
-        WaitingToken token = new WaitingToken(userId);
+        QueueToken token = new QueueToken(userId);
         token.activate();
         assertThat(token.getStatus()).isEqualTo(TokenStatus.ACTIVE);
 
@@ -103,7 +103,7 @@ public class WaitingTokenDomainUnitTest {
         ThrowableAssert.ThrowingCallable result = () -> token.validateWaiting();
 
         //then
-        assertThatThrownBy(result).hasMessage(ExceptionCode.WAITING_TOKEN_NOT_WAITING.getMessage());
+        assertThatThrownBy(result).hasMessage(ExceptionCode.TOKEN_NOT_WAITING.getMessage());
     }
 
     @Test
@@ -111,7 +111,7 @@ public class WaitingTokenDomainUnitTest {
     void testActiveTokenValidateWaiting() {
         //given
         long userId = 0;
-        WaitingToken token = new WaitingToken(userId);
+        QueueToken token = new QueueToken(userId);
         assertThat(token.getStatus()).isEqualTo(TokenStatus.WAITING);
 
         //when

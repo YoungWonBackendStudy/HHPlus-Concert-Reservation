@@ -1,12 +1,7 @@
-package io.hhplus.concert.waiting;
+package io.hhplus.concert.queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
 
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -15,16 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import io.hhplus.concert.application.waiting.WaitingDto;
-import io.hhplus.concert.application.waiting.WaitingFacade;
+import io.hhplus.concert.application.queue.WaitingQueueDto;
+import io.hhplus.concert.application.queue.QueueFacade;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 
 @SpringBootTest
 @Sql(scripts = "classpath:testinit.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class WaitingFacadeIntegTest {
+public class QueueFacadeIntegTest {
     @Autowired
-    WaitingFacade waitingFacade;
+    QueueFacade queueFacade;
 
     @Test
     @DisplayName("토큰 발급, Activation 통합 테스트")
@@ -33,20 +28,20 @@ public class WaitingFacadeIntegTest {
         long userId = 0;
 
         //when
-        WaitingDto waitingInfo = waitingFacade.getWaitingToken(userId);
+        WaitingQueueDto queueInfo = queueFacade.getQueueToken(userId);
 
         //then
-        assertThat(waitingInfo).isNotNull();
-        assertThat(waitingInfo.getToken()).isNotBlank();
+        assertThat(queueInfo).isNotNull();
+        assertThat(queueInfo.getToken()).isNotBlank();
         
         //when
-        waitingFacade.scheduleWaiting();
-        ThrowableAssert.ThrowingCallable resActivated = () -> waitingFacade.getWaitingToken(userId);
+        queueFacade.scheduleWaitingQueue();
+        ThrowableAssert.ThrowingCallable resActivated = () -> queueFacade.getQueueToken(userId);
 
         //then
         assertThatThrownBy(resActivated)
             .isInstanceOf(CustomBadRequestException.class)
-            .hasMessage(ExceptionCode.WAITING_TOKEN_NOT_WAITING.getMessage());
+            .hasMessage(ExceptionCode.TOKEN_NOT_WAITING.getMessage());
     }
     
 }

@@ -1,4 +1,4 @@
-package io.hhplus.concert.domain.waiting;
+package io.hhplus.concert.domain.queue;
 
 import java.util.Date;
 import java.util.UUID;
@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class WaitingToken {
+public class QueueToken {
     public static enum TokenStatus {
         WAITING, ACTIVE, EXPIRED
     }
@@ -23,7 +23,7 @@ public class WaitingToken {
     Date activatedAt;
     Date deletedAt;
 
-    public WaitingToken(long userId) {
+    public QueueToken(long userId) {
         this.userId = userId;
         this.token = UUID.randomUUID().toString();
         this.issuedAt = new Date();
@@ -32,17 +32,17 @@ public class WaitingToken {
 
     public void validateActivation() {
         if(this.status.equals(TokenStatus.EXPIRED)) {
-            throw new CustomBadRequestException(ExceptionCode.WAITING_TOKEN_EXPIRED);
+            throw new CustomBadRequestException(ExceptionCode.TOKEN_EXPIRED);
         }
 
         if(!this.status.equals(TokenStatus.ACTIVE)) {
-            throw new CustomBadRequestException(ExceptionCode.WAITING_TOKEN_NOT_ACTIVATED);
+            throw new CustomBadRequestException(ExceptionCode.TOKEN_NOT_ACTIVATED);
         }
     }
 
     public void validateWaiting() {
         if(!this.status.equals(TokenStatus.WAITING)) {
-            throw new CustomBadRequestException(ExceptionCode.WAITING_TOKEN_NOT_WAITING);
+            throw new CustomBadRequestException(ExceptionCode.TOKEN_NOT_WAITING);
         }
     }
 

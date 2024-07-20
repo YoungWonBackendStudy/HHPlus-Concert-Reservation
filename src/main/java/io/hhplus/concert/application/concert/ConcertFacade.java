@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import io.hhplus.concert.domain.concert.ConcertService;
 import io.hhplus.concert.domain.reservation.ReservationService;
 import io.hhplus.concert.domain.reservation.ReservationTicket;
-import io.hhplus.concert.domain.waiting.TokenService;
+import io.hhplus.concert.domain.queue.TokenService;
 
 @Component
 public class ConcertFacade {

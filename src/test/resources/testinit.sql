@@ -1,4 +1,4 @@
-delete from waiting_token;
+delete from queue_token;
 delete from concert;
 delete from concert_schedule;
 delete from concert_seat;

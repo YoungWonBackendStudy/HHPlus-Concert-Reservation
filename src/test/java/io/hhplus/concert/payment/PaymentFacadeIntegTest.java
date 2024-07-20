@@ -21,7 +21,7 @@ import io.hhplus.concert.application.concert.ConcertSeatDto;
 import io.hhplus.concert.application.payment.PaymentFacade;
 import io.hhplus.concert.application.reservation.ReservationFacade;
 import io.hhplus.concert.application.user.UserAssetFacade;
-import io.hhplus.concert.application.waiting.WaitingFacade;
+import io.hhplus.concert.application.queue.QueueFacade;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 
@@ -31,7 +31,7 @@ public class PaymentFacadeIntegTest {
     @Autowired
     PaymentFacade paymentFacade;
     @Autowired
-    WaitingFacade waitingFacade;
+    QueueFacade queueFacade;
     @Autowired
     ReservationFacade reservationFacade;
     @Autowired
@@ -47,8 +47,8 @@ public class PaymentFacadeIntegTest {
         long userId = 0l;
         long concertScheduleId = 0;
         
-        var waiting = waitingFacade.getWaitingToken(userId);
-        waitingFacade.scheduleWaiting();
+        var queueToken = queueFacade.getQueueToken(userId);
+        queueFacade.scheduleWaitingQueue();
 
         var concertSeats = concertFacade.getConcertSeats(0l);
         List<Long> seatsToReserve = concertSeats
@@ -62,17 +62,17 @@ public class PaymentFacadeIntegTest {
         userAssetFacade.chargeBalance(userId, reservation.getTotalPrice());
         
         //when
-        var payment = paymentFacade.placePayment(waiting.getToken(), reservation.getReservationId());
+        var payment = paymentFacade.placePayment(queueToken.getToken(), reservation.getReservationId());
 
         //then
         assertThat(payment).isNotNull();
         assertThat(payment.getTotalPrice()).isEqualTo(reservation.getTotalPrice());
 
         //when: 중복 결제
-        ThrowingCallable dupPayment = () -> paymentFacade.placePayment(waiting.getToken(), reservation.getReservationId());
+        ThrowingCallable dupPayment = () -> paymentFacade.placePayment(queueToken.getToken(), reservation.getReservationId());
 
         //then
-        assertThatThrownBy(dupPayment).hasMessage(ExceptionCode.WAITING_TOKEN_EXPIRED.getMessage());
+        assertThatThrownBy(dupPayment).hasMessage(ExceptionCode.TOKEN_EXPIRED.getMessage());
     }
 
     @Test
@@ -82,8 +82,8 @@ public class PaymentFacadeIntegTest {
         long userId = 0l;
         long concertScheduleId = 0;
         int executionCnt = 5;
-        var waiting = waitingFacade.getWaitingToken(userId);
-        waitingFacade.scheduleWaiting();
+        var waiting = queueFacade.getQueueToken(userId);
+        queueFacade.scheduleWaitingQueue();
 
         var concertSeats = concertFacade.getConcertSeats(0l);
         List<Long> seatsToReserve = concertSeats

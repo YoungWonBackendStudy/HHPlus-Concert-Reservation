@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum ExceptionCode {
-    WAITING_TOKEN_NOT_FOUND("토큰을 찾을 수 없습니다."),
-    WAITING_TOKEN_NOT_WAITING("토큰이 대기 상태가 아닙니다."),
-    WAITING_TOKEN_NOT_ACTIVATED("토큰이 활성화 상태가 아닙니다."),
-    WAITING_TOKEN_EXPIRED("만료된 토큰입니다."),
+    TOKEN_NOT_FOUND("토큰을 찾을 수 없습니다."),
+    TOKEN_NOT_WAITING("토큰이 대기 상태가 아닙니다."),
+    TOKEN_NOT_ACTIVATED("토큰이 활성화 상태가 아닙니다."),
+    TOKEN_EXPIRED("만료된 토큰입니다."),
 
     CONCERT_NOT_FOUND("콘서트 정보를 찾을 수 없습니다."),
     CONCERT_SCHEDULE_NOT_FOUND("콘서트 스케줄 정보를 찾을 수 없습니다."),

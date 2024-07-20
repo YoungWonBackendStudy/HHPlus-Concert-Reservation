@@ -19,7 +19,7 @@ import io.hhplus.concert.interfaces.presentation.reservation.dto.ReservationResp
 import io.hhplus.concert.interfaces.presentation.user.dto.AssetChargeRequest;
 import io.hhplus.concert.interfaces.presentation.user.dto.AssetChargeResponse;
 import io.hhplus.concert.interfaces.presentation.user.dto.AssetGetResponse;
-import io.hhplus.concert.interfaces.presentation.waiting.dto.WaitingResponse;
+import io.hhplus.concert.interfaces.presentation.queue.dto.WaitingQueueResponse;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import io.restassured.RestAssured;
 
@@ -36,44 +36,44 @@ public class E2ETest {
         long userId = 0;
 
         //when
-        WaitingResponse waitingRes = RestAssured
+        WaitingQueueResponse queueRes = RestAssured
             .given()
                 .accept("application/json")
                 .port(port)
                 .param("userId", userId)
             .when()
-                .get("/waiting/token")
+                .get("/queue/token")
             .then()
                 .statusCode(200)
-                .extract().as(WaitingResponse.class);
+                .extract().as(WaitingQueueResponse.class);
 
         //then
-        assertThat(waitingRes).isNotNull();
-        assertThat(waitingRes.waitingToken()).isNotNull();
+        assertThat(queueRes).isNotNull();
+        assertThat(queueRes.token()).isNotNull();
 
         //when:5초 대기 후 조회 시 Token 대기 상태가 아닙니다 Error 발생
         Thread.sleep(5 * 1000l);
-        var waitingErrorRes = RestAssured
+        var queueErrorRes = RestAssured
             .given()
                 .accept("application/json")
                 .port(port)
                 .param("userId", userId)
             .when()
-                .get("/waiting/token")
+                .get("/queue/token")
             .then()
                 .statusCode(400)
                 .extract().as(ErrorResponse.class);
         
         //then
-        assertThat(waitingErrorRes).isNotNull();
-        assertThat(waitingErrorRes.message()).isEqualTo(ExceptionCode.WAITING_TOKEN_NOT_WAITING.getMessage());
+        assertThat(queueErrorRes).isNotNull();
+        assertThat(queueErrorRes.message()).isEqualTo(ExceptionCode.TOKEN_NOT_WAITING.getMessage());
 
         //when
         ConcertResponse[] concertsRes = RestAssured
             .given()
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", waitingRes.waitingToken())
+                .header("WAITING_TOKEN", queueRes.token())
             .when()
                 .get("/concerts")
             .then()
@@ -88,7 +88,7 @@ public class E2ETest {
             .given()
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", waitingRes.waitingToken())
+                .header("WAITING_TOKEN", queueRes.token())
                 .param("concertId", concertsRes[0].id())
             .when()
                 .get("/concerts/schedules")
@@ -104,7 +104,7 @@ public class E2ETest {
             .given()
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", waitingRes.waitingToken())
+                .header("WAITING_TOKEN", queueRes.token())
                 .param("concertScheduleId", concertSchedulesRes[0].id())
             .when()
                 .get("/concerts/schedules/seats")
@@ -127,7 +127,7 @@ public class E2ETest {
                 .contentType("application/json")
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", waitingRes.waitingToken())
+                .header("WAITING_TOKEN", queueRes.token())
                 .body(reservationRequest)
             .when()
                 .post("/reservations")
@@ -184,7 +184,7 @@ public class E2ETest {
                 .contentType("application/json")
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", waitingRes.waitingToken())
+                .header("WAITING_TOKEN", queueRes.token())
                 .body(paymentRequest)
             .when()
                 .post("/payment")
