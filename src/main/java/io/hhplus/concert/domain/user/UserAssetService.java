@@ -26,7 +26,7 @@ public class UserAssetService {
 
     public UserAsset useUserAsset(long userId, long amount) {
         UserAsset userAsset = userAssetRepository.getAndLockByUserId(userId);
-        userAsset.use(amount);
+        userAsset.useAsset(amount);
         userAssetRepository.save(userAsset);
         return userAsset;
     }

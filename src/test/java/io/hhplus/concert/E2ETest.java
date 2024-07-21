@@ -226,10 +226,11 @@ public class E2ETest {
             .when()
                 .get("/concerts")
             .then()
-                .statusCode(400)
+                .statusCode(404)
                 .extract().as(ErrorResponse.class);
 
         //then
         assertThat(errorRes).isInstanceOf(ErrorResponse.class);
+        assertThat(errorRes.message()).isEqualTo(ExceptionCode.TOKEN_NOT_FOUND.getMessage());
     }
 }

@@ -17,7 +17,7 @@ public class QueueFacade {
     }
 
     public WaitingQueueDto getQueueToken(long userId) {
-        QueueToken token = tokenService.getToken(userId);
+        QueueToken token = tokenService.validateAndGetWaitingToken(userId);
         long waitingTokensAhead = queueService.getWaitingTokensAhead(token);
         return new WaitingQueueDto(token, waitingTokensAhead);
     }

@@ -46,7 +46,7 @@ public class ConcertServiceUnitTest {
         //given
         var concertId = 0;
         var expectedConcertSchedules = List.of(new ConcertSchedule(0L, 0L, "잠실", new Date(), new Date(), new Date()));
-        when(mockConcertRepository.getConcertSchedulesByScheduleId(concertId)).thenReturn(expectedConcertSchedules);
+        when(mockConcertRepository.getConcertSchedulesByConcertId(concertId)).thenReturn(expectedConcertSchedules);
         
         //when
         var resConcertSchedules = this.concertService.getConcertSchedules(concertId);

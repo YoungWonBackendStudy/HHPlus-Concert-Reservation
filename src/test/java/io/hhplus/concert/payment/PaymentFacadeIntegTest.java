@@ -77,7 +77,7 @@ public class PaymentFacadeIntegTest {
         //given
         long userId = 0L;
         int executionCnt = 5;
-        var waiting = queueFacade.getQueueToken(userId);
+        var queue = queueFacade.getQueueToken(userId);
         queueFacade.scheduleWaitingQueue();
 
         var concertSeats = concertFacade.getConcertSeats(0L);
@@ -99,7 +99,7 @@ public class PaymentFacadeIntegTest {
         for (int i =0; i < executionCnt; i++) {
             executorService.submit(() -> {
                 try{ 
-                    paymentFacade.placePayment(waiting.getToken(), reservation.getReservationId());
+                    paymentFacade.placePayment(queue.getToken(), reservation.getReservationId());
                 }
                 catch(CustomBadRequestException e) {
                 }finally {

@@ -4,14 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import io.hhplus.concert.support.exception.CustomNotFoundException;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,10 +36,12 @@ public class TokenServiceUnitTest {
     void testGetQueueToken() {
         //given
         long userId = 0;
+        when(mockQueueTokenRepository.getActiveTokenByUserId(anyLong()))
+                .thenThrow(new CustomNotFoundException(ExceptionCode.TOKEN_NOT_FOUND));
         when(mockQueueTokenRepository.saveToken(any(QueueToken.class))).thenAnswer(returnsFirstArg());
 
         //when
-        var token = this.tokenService.getToken(userId);
+        var token = this.tokenService.validateAndGetWaitingToken(userId);
 
         //then
         assertThat(token).isNotNull();
@@ -56,9 +58,7 @@ public class TokenServiceUnitTest {
         when(mockQueueTokenRepository.getTokenByTokenString(testToken.getToken())).thenReturn(testToken);
 
         //when
-        ThrowableAssert.ThrowingCallable result = () -> {
-            this.tokenService.validateAndGetActiveToken(testToken.getToken());
-        };
+        ThrowableAssert.ThrowingCallable result = () -> this.tokenService.validateAndGetActiveToken(testToken.getToken());
 
         //then
         assertThatCode(result).doesNotThrowAnyException();
@@ -86,9 +86,7 @@ public class TokenServiceUnitTest {
         when(mockQueueTokenRepository.getTokenByTokenString(testToken.getToken())).thenReturn(testToken);
 
         //when
-        ThrowableAssert.ThrowingCallable result = () -> {
-            this.tokenService.validateAndGetActiveToken(testToken.getToken());
-        };
+        ThrowableAssert.ThrowingCallable result = () -> this.tokenService.validateAndGetActiveToken(testToken.getToken());
 
         //then
         assertThatThrownBy(result).hasMessage(ExceptionCode.TOKEN_NOT_ACTIVATED.getMessage());
@@ -103,9 +101,7 @@ public class TokenServiceUnitTest {
         when(mockQueueTokenRepository.getTokenByTokenString(testToken.getToken())).thenReturn(testToken);
 
         //when
-        ThrowableAssert.ThrowingCallable result = () -> {
-            this.tokenService.validateAndGetActiveToken(testToken.getToken());
-        };
+        ThrowableAssert.ThrowingCallable result = () -> this.tokenService.validateAndGetActiveToken(testToken.getToken());
 
         //then
         assertThatThrownBy(result).hasMessage(ExceptionCode.TOKEN_EXPIRED.getMessage());
