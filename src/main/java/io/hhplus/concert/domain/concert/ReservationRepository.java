@@ -1,11 +1,9 @@
-package io.hhplus.concert.domain.reservation;
+package io.hhplus.concert.domain.concert;
 
 import java.util.List;
-
 public interface ReservationRepository {
+    Reservation getAndLockById(Long id);
     Reservation saveReservation(Reservation reservation);
     List<ReservationTicket> saveReservationTickets(List<ReservationTicket> reservationTickets);
-
-    Reservation getAndLockById(long reservationId);
     List<ReservationTicket> getReservedTicketsByConcertScheduleId(long concertScheduleId);
 }

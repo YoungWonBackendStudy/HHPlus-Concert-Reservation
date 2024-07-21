@@ -1,6 +1,6 @@
-package io.hhplus.concert.application.reservation;
+package io.hhplus.concert.application.concert;
 
-import io.hhplus.concert.domain.reservation.ReservationTicket;
+import io.hhplus.concert.domain.concert.ReservationTicket;
 import lombok.Getter;
 
 @Getter

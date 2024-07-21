@@ -1,4 +1,4 @@
-package io.hhplus.concert.reservation;
+package io.hhplus.concert.concert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import io.hhplus.concert.domain.concert.ConcertSeat;
-import io.hhplus.concert.domain.reservation.Reservation;
+import io.hhplus.concert.domain.concert.Reservation;
 import io.hhplus.concert.support.exception.ExceptionCode;
 
 public class ReservationDomainUnitTest {
@@ -21,8 +21,8 @@ public class ReservationDomainUnitTest {
         //given
         long userId = 0;
         List<ConcertSeat> seats = List.of(
-            new ConcertSeat(0l, 0l, "R1", 10000l),
-            new ConcertSeat(1l, 0l, "R2", 20000l)
+            new ConcertSeat(0L, 0L, "R1", 10000L, false),
+            new ConcertSeat(1L, 0L, "R2", 20000L, false)
         );
         
         //when
@@ -37,7 +37,7 @@ public class ReservationDomainUnitTest {
     void testExpireDate() {
         //given
         long userId = 0;
-        long expireDurationInMilli = 5 * 60 * 1000l;
+        long expireDurationInMilli = 5 * 60 * 1000L;
        
 
         //when
@@ -68,8 +68,8 @@ public class ReservationDomainUnitTest {
          //given
          long userId = 0;
          List<ConcertSeat> seats = List.of(
-             new ConcertSeat(0l, 0l, "R1", 10000l),
-             new ConcertSeat(1l, 0l, "R2", 20000l)
+             new ConcertSeat(0L, 0L, "R1", 10000L, false),
+             new ConcertSeat(1L, 0L, "R2", 20000L, false)
          );
          
          //when
@@ -85,14 +85,14 @@ public class ReservationDomainUnitTest {
 
     @Test
     @DisplayName("이미 결제까지 완료된 예약을 ValidatePayable 경우 ALREADY_COMPLETED 오류 발생 ")
-    void testvalidatePayableCompletedReservation() {
+    void testValidatePayableCompletedReservation() {
         //given
         long userId = 0;
         Reservation reservation = new Reservation(userId);
         reservation.completed();
 
         //when
-        ThrowableAssert.ThrowingCallable result = () -> reservation.validatePayable();
+        ThrowableAssert.ThrowingCallable result = reservation::validatePayable;
 
         //then
         assertThatThrownBy(result).hasMessage(ExceptionCode.PAYMENT_ALREADY_COMPLETED.getMessage());
@@ -100,13 +100,13 @@ public class ReservationDomainUnitTest {
 
     @Test
     @DisplayName("결제가 필요한 예약을 validatePayable할 경우 정상 동작")
-    void testvalidatePayable() {
+    void testValidatePayable() {
         //given
         long userId = 0;
         Reservation reservation = new Reservation(userId);
 
         //when
-        ThrowableAssert.ThrowingCallable result = () -> reservation.validatePayable();
+        ThrowableAssert.ThrowingCallable result = reservation::validatePayable;
 
         //then
         assertThatCode(result).doesNotThrowAnyException();

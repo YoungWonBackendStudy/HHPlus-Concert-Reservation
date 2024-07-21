@@ -1,10 +1,11 @@
 delete from queue_token;
-delete from concert;
-delete from concert_schedule;
-delete from concert_seat;
-delete from user_asset;
-delete from reservation;
 delete from payment;
+delete from reservation_ticket;
+delete from reservation;
+delete from concert_seat;
+delete from concert_schedule;
+delete from concert;
+delete from user_asset;
 
 insert into 
     user_asset(user_id, balance)

@@ -10,4 +10,5 @@ public class ConcertSeat {
     Long ConcertScheduleId;
     String location;
     Long price;
+    boolean reserved;
 }

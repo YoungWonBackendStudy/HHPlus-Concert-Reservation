@@ -1,12 +1,7 @@
-package io.hhplus.concert.infra.reservation;
+package io.hhplus.concert.infra.concert;
 
-import io.hhplus.concert.domain.reservation.ReservationTicket;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import io.hhplus.concert.domain.concert.ReservationTicket;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -31,6 +26,11 @@ public class ReservationTicketEntity {
 
     @Column(name = "price")
     long price;
+
+    @OneToOne
+    @JoinColumn(name = "concert_seat_id", updatable = false, insertable = false)
+    ConcertSeatEntity concertSeat;
+
 
     public ReservationTicketEntity(ReservationTicket domain) {
         this.id = domain.getId();

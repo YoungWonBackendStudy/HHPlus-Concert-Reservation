@@ -1,4 +1,4 @@
-package io.hhplus.concert.infra.reservation;
+package io.hhplus.concert.infra.concert;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;

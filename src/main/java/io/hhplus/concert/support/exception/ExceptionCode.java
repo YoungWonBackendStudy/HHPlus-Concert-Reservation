@@ -13,7 +13,7 @@ public enum ExceptionCode {
     CONCERT_SCHEDULE_NOT_FOUND("콘서트 스케줄 정보를 찾을 수 없습니다."),
 
     RESERVATION_NOT_FOUND("예약 정보를 찾을 수 없습니다."),
-    RESERVATION_ALREADY_RESERVED("이미 예약된 좌석입니다."),
+    SEAT_ALREADY_RESERVED("이미 예약된 좌석입니다."),
 
     USER_ASSET_NOT_FOUND("사용자 자산 정보를 찾을 수 없습니다."),
 
@@ -21,7 +21,7 @@ public enum ExceptionCode {
     PAYMENT_ALREADY_COMPLETED("이미 처리 완료된 예약입니다."),
     RESERVATION_EXPIRED("만료된 예약입니다.");
     
-    String message;
+    final String message;
     ExceptionCode(String message) {
         this.message = message;
     }

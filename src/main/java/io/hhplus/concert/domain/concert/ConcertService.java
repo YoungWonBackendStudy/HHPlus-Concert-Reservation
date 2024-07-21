@@ -8,10 +8,9 @@ import java.util.List;
 
 @Service
 public class ConcertService {
-    ConcertRepository concertRepository;
-
-    public ConcertService(ConcertRepository concertSeatRepository) {
-        this.concertRepository = concertSeatRepository;
+    private final ConcertRepository concertRepository;
+    public ConcertService(ConcertRepository concertRepository) {
+        this.concertRepository = concertRepository;
     }
 
     public List<Concert> getConcerts() {

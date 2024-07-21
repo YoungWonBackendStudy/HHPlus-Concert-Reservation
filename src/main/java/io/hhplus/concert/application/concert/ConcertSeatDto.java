@@ -10,10 +10,10 @@ public class ConcertSeatDto {
     boolean reserved;
     Long price;
 
-    public ConcertSeatDto(ConcertSeat domain, boolean reserved){
+    public ConcertSeatDto(ConcertSeat domain){
         this.id = domain.getId();
         this.location = domain.getLocation();
         this.price = domain.getPrice();
-        this.reserved = reserved;
+        this.reserved = domain.isReserved();
     }
 }

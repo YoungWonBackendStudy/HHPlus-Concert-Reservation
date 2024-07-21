@@ -17,8 +17,7 @@ public class TokenValidationInterceptor implements HandlerInterceptor{
     }
     
     @Override
-    public boolean preHandle(@NonNull HttpServletRequest request,@NonNull  HttpServletResponse response,@NonNull  Object handler)
-            throws Exception {
+    public boolean preHandle(@NonNull HttpServletRequest request,@NonNull  HttpServletResponse response,@NonNull  Object handler) {
 
         String token = request.getHeader("WAITING_TOKEN");
         QueueToken queueToken = tokenService.validateAndGetActiveToken(token);

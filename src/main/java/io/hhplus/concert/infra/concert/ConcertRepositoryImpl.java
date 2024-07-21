@@ -2,23 +2,17 @@ package io.hhplus.concert.infra.concert;
 
 import java.util.List;
 
+import io.hhplus.concert.domain.concert.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
-
-import io.hhplus.concert.domain.concert.Concert;
-import io.hhplus.concert.domain.concert.ConcertRepository;
-import io.hhplus.concert.domain.concert.ConcertSchedule;
-import io.hhplus.concert.domain.concert.ConcertSeat;
 
 @Repository
 public class ConcertRepositoryImpl implements ConcertRepository{
-    ConcertJpaRepository concertJpaRepository;
-    ConcertScheduleJpaRepository concertScheduleJpaRepository;
-    ConcertSeatJpaRepository concertSeatJpaRepository;
+    private final ConcertJpaRepository concertJpaRepository;
+    private final ConcertScheduleJpaRepository concertScheduleJpaRepository;
+    private final ConcertSeatJpaRepository concertSeatJpaRepository;
 
-    
-    public ConcertRepositoryImpl(ConcertJpaRepository concertJpaRepository,
-            ConcertScheduleJpaRepository concertScheduleJpaRepository,
-            ConcertSeatJpaRepository concertSeatJpaRepository) {
+    public ConcertRepositoryImpl(ConcertJpaRepository concertJpaRepository, ConcertScheduleJpaRepository concertScheduleJpaRepository, ConcertSeatJpaRepository concertSeatJpaRepository) {
         this.concertJpaRepository = concertJpaRepository;
         this.concertScheduleJpaRepository = concertScheduleJpaRepository;
         this.concertSeatJpaRepository = concertSeatJpaRepository;
@@ -46,10 +40,10 @@ public class ConcertRepositoryImpl implements ConcertRepository{
     }
 
     @Override
+    @Transactional
     public List<ConcertSeat> getAndLockConcertSeatsByIdIn(List<Long> concertSeatIds) {
         return this.concertSeatJpaRepository.findAndLockByIdIn(concertSeatIds)
             .stream().map(ConcertSeatEntity::toDomain)
             .toList();
     }
-    
 }

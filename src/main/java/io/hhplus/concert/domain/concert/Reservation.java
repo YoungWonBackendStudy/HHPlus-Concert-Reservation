@@ -1,9 +1,8 @@
-package io.hhplus.concert.domain.reservation;
+package io.hhplus.concert.domain.concert;
 
 import java.util.Date;
 import java.util.List;
 
-import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Reservation {
-    static final long expireDurationInMilli = 5 * 60 * 1000l;
+    static final long expireDurationInMilli = 5 * 60 * 1000L;
     long id;
     long userId;
     Date reservedAt;
@@ -22,14 +21,11 @@ public class Reservation {
     public Reservation(long userId) {
         this.userId = userId;
         this.reservedAt = new Date();
+        reservationTickets = List.of();
     }
 
-    public List<ReservationTicket> makeTickets(List<ConcertSeat> seats) {
-        this.reservationTickets = seats.stream().map(seat -> {
-            return new ReservationTicket(this.id ,seat);
-        }).toList();
-
-        return this.reservationTickets;
+    public void makeTickets(List<ConcertSeat> seats) {
+        this.reservationTickets = seats.stream().map(seat -> new ReservationTicket(this.id ,seat)).toList();
     }
 
     public long getTotalPrice() {

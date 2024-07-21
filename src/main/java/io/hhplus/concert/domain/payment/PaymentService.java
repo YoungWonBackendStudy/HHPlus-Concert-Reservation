@@ -2,7 +2,7 @@ package io.hhplus.concert.domain.payment;
 
 import org.springframework.stereotype.Service;
 
-import io.hhplus.concert.domain.reservation.Reservation;
+import io.hhplus.concert.domain.concert.Reservation;
 import jakarta.transaction.Transactional;
 
 @Service

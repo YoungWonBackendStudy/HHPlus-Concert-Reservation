@@ -1,6 +1,6 @@
-package io.hhplus.concert.interfaces.presentation.reservation.dto;
+package io.hhplus.concert.interfaces.presentation.concert.dto;
 
-import io.hhplus.concert.application.reservation.ReservationTicketDto;
+import io.hhplus.concert.application.concert.ReservationTicketDto;
 
 public record ReservedSeatInfo(
     long id,

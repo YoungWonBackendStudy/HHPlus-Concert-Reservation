@@ -17,8 +17,8 @@ import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.domain.concert.ConcertService;
 
 public class ConcertServiceUnitTest {
-    ConcertService concertService;
-    ConcertRepository mockConcertRepository;
+    private final ConcertService concertService;
+    private final ConcertRepository mockConcertRepository;
 
     public ConcertServiceUnitTest() {
         this.mockConcertRepository = mock(ConcertRepository.class);
@@ -29,7 +29,7 @@ public class ConcertServiceUnitTest {
     @DisplayName("콘서트 조회 성공 테스트")
     public void testGetConcerts() {
         //given
-        var expectedConcerts = List.of(new Concert(0l, "아이유 콘서트", "아이유 콘서트 2024.07.12"));
+        var expectedConcerts = List.of(new Concert(0L, "아이유 콘서트", "아이유 콘서트 2024.07.12"));
         when(mockConcertRepository.getConcerts()).thenReturn(expectedConcerts);
         
         //when
@@ -45,7 +45,7 @@ public class ConcertServiceUnitTest {
     public void testGetConcertSchedules() {
         //given
         var concertId = 0;
-        var expectedConcertSchedules = List.of(new ConcertSchedule(0l, 0l, "잠실", new Date(), new Date(), new Date()));
+        var expectedConcertSchedules = List.of(new ConcertSchedule(0L, 0L, "잠실", new Date(), new Date(), new Date()));
         when(mockConcertRepository.getConcertSchedulesByScheduleId(concertId)).thenReturn(expectedConcertSchedules);
         
         //when
@@ -61,7 +61,7 @@ public class ConcertServiceUnitTest {
     public void testGetConcertSeat() {
         //given
         var concertScheduleId = 0;
-        var expectedConcertSeats = List.of(new ConcertSeat(0l, 0l, "R1", 100000l));
+        var expectedConcertSeats = List.of(new ConcertSeat(0L, 0L, "R1", 100000L, false));
         when(mockConcertRepository.getConcertSeatsByConcertScheduleId(concertScheduleId)).thenReturn(expectedConcertSeats);
         
         //when

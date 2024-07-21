@@ -28,7 +28,7 @@ public class UserAssetServiceUnitTest {
     @DisplayName("잔액 조회 테스트")
     void testGetBalance() {
         //given
-        UserAsset testUserAsset = new UserAsset(0l, 3000);
+        UserAsset testUserAsset = new UserAsset(0L, 3000);
         when(mockUserRepository.getAndLockByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
 
         //when
@@ -42,7 +42,7 @@ public class UserAssetServiceUnitTest {
     @DisplayName("잔액 10000원 충전 성공 테스트")
     void testChargeBalance() {
         //given
-        UserAsset testUserAsset = new UserAsset(0l, 3000);
+        UserAsset testUserAsset = new UserAsset(0L, 3000);
         long chargeAmount = 10000;
         when(mockUserRepository.getAndLockByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
         when(mockUserRepository.save(any(UserAsset.class))).thenAnswer(returnsFirstArg());
@@ -60,7 +60,7 @@ public class UserAssetServiceUnitTest {
     @DisplayName("잔액 1000원 사용 성공 테스트")
     void testUseBalance() {
         //given
-        UserAsset testUserAsset = new UserAsset(0l, 3000);
+        UserAsset testUserAsset = new UserAsset(0L, 3000);
         long useAmount = 1000;
         when(mockUserRepository.getAndLockByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
         when(mockUserRepository.save(any(UserAsset.class))).thenAnswer(returnsFirstArg());
@@ -78,7 +78,7 @@ public class UserAssetServiceUnitTest {
     @DisplayName("잔액 부족으로 10000원 사용 불가 테스트")
     void testUseBalanceOver() {
         //given
-        UserAsset testUserAsset = new UserAsset(0l, 3000);
+        UserAsset testUserAsset = new UserAsset(0L, 3000);
         long useAmount = 10000;
         when(mockUserRepository.getAndLockByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
         when(mockUserRepository.save(any(UserAsset.class))).thenAnswer(returnsFirstArg());

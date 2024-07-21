@@ -1,12 +1,7 @@
 package io.hhplus.concert.infra.concert;
 
 import io.hhplus.concert.domain.concert.ConcertSeat;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -26,6 +21,9 @@ public class ConcertSeatEntity {
     @Column(name = "price")
     Long price;
 
+    @OneToOne(mappedBy = "concertSeat")
+    ReservationTicketEntity ticket;
+
     public ConcertSeatEntity(ConcertSeat concertSeat) {
         this.id = concertSeat.getId();
         this.concertScheduleId = concertSeat.getConcertScheduleId();
@@ -34,6 +32,6 @@ public class ConcertSeatEntity {
     }
 
     public ConcertSeat toDomain() {
-        return new ConcertSeat(this.id, this.concertScheduleId, this.location, this.price);
+        return new ConcertSeat(this.id, this.concertScheduleId, this.location, this.price, ticket != null);
     }
 }

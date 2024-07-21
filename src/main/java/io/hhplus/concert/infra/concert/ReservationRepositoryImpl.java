@@ -1,12 +1,12 @@
-package io.hhplus.concert.infra.reservation;
+package io.hhplus.concert.infra.concert;
 
 import java.util.List;
 
+import io.hhplus.concert.domain.concert.ReservationRepository;
 import org.springframework.stereotype.Repository;
 
-import io.hhplus.concert.domain.reservation.Reservation;
-import io.hhplus.concert.domain.reservation.ReservationRepository;
-import io.hhplus.concert.domain.reservation.ReservationTicket;
+import io.hhplus.concert.domain.concert.Reservation;
+import io.hhplus.concert.domain.concert.ReservationTicket;
 import io.hhplus.concert.support.exception.CustomNotFoundException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import jakarta.transaction.Transactional;
@@ -25,29 +25,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     @Transactional
-    public Reservation saveReservation(Reservation reservation) {
-        var entity = new ReservationEntity(reservation);
-        entity = this.reservationJpaRepository.save(entity);
-
-        return entity.toDomain(List.of());
-    }
-
-    @Override
-    public List<ReservationTicket> saveReservationTickets(List<ReservationTicket> reservationTickets) {
-        var ticketEntities = reservationTickets
-            .stream().map(ReservationTicketEntity::new)
-            .toList();
-        
-        ticketEntities = this.reservationTicketJpaRepository.saveAll(ticketEntities);
-        var ticketDomains = ticketEntities.stream().map(ReservationTicketEntity::toDomain).toList();
-        return ticketDomains;
-    }
-
-    @Override
-    @Transactional
-    public Reservation getAndLockById(long reservationId) {
-        var reservationEntityOptional = this.reservationJpaRepository.findAndLockById(reservationId);
-        if(!reservationEntityOptional.isPresent()) throw new CustomNotFoundException(ExceptionCode.RESERVATION_NOT_FOUND);
+    public Reservation getAndLockById(Long id) {
+        var reservationEntityOptional = this.reservationJpaRepository.findAndLockById(id);
+        if(reservationEntityOptional.isEmpty()) throw new CustomNotFoundException(ExceptionCode.RESERVATION_NOT_FOUND);
 
         var reservationEntity = reservationEntityOptional.get();
         var ticketEntities = this.reservationTicketJpaRepository.findByReservationId(reservationEntity.getId());
@@ -56,10 +36,30 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
+    @Transactional
+    public Reservation saveReservation(Reservation reservation) {
+        var entity = new ReservationEntity(reservation);
+        entity = this.reservationJpaRepository.save(entity);
+
+        if(reservation.getReservationTickets() == null)
+            return entity.toDomain(List.of());
+
+        var tickets = this.saveReservationTickets(reservation.getReservationTickets());
+        return entity.toDomain(tickets);
+    }
+
+    @Override
+    public List<ReservationTicket> saveReservationTickets(List<ReservationTicket> reservationTickets) {
+        var ticketEntities = reservationTickets
+                .stream().map(ReservationTicketEntity::new)
+                .toList();
+        ticketEntities = this.reservationTicketJpaRepository.saveAll(ticketEntities);
+        return ticketEntities.stream().map(ReservationTicketEntity::toDomain).toList();
+    }
+
+    @Override
     public List<ReservationTicket> getReservedTicketsByConcertScheduleId(long concertScheduleId) {
         return this.reservationTicketJpaRepository.findByConcertScheduleId(concertScheduleId)
-            .stream().map(ReservationTicketEntity::toDomain)
-            .toList();
+                .stream().map(ReservationTicketEntity::toDomain).toList();
     }
-    
 }
