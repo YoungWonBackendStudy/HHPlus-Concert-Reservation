@@ -1,18 +1,19 @@
 package io.hhplus.concert.infra.queue;
 
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.data.domain.Limit;
-import org.springframework.stereotype.Repository;
-
 import io.hhplus.concert.domain.queue.QueueToken;
 import io.hhplus.concert.domain.queue.QueueToken.TokenStatus;
 import io.hhplus.concert.domain.queue.QueueTokenRepository;
+import io.hhplus.concert.support.exception.CustomNotFoundException;
+import io.hhplus.concert.support.exception.ExceptionCode;
+import org.springframework.data.domain.Limit;
+import org.springframework.stereotype.Repository;
+
+import java.util.Date;
+import java.util.List;
 
 @Repository
 public class QueueTokenRepositoryImpl implements QueueTokenRepository {
-    private QueueTokenJpaRepository queueTokenJpaRepository;
+    private final QueueTokenJpaRepository queueTokenJpaRepository;
 
     public QueueTokenRepositoryImpl(QueueTokenJpaRepository queueTokenJpaRepository) {
         this.queueTokenJpaRepository = queueTokenJpaRepository;
@@ -35,7 +36,7 @@ public class QueueTokenRepositoryImpl implements QueueTokenRepository {
     @Override
     public QueueToken getActiveTokenByUserId(long userId) {
         var entity = this.queueTokenJpaRepository.findByStatusAndUserId(TokenStatus.ACTIVE, userId);
-        if(entity == null) return null;
+        if(entity == null) throw new CustomNotFoundException(ExceptionCode.TOKEN_NOT_FOUND);
 
         return entity.toDomain();
     }
@@ -43,15 +44,15 @@ public class QueueTokenRepositoryImpl implements QueueTokenRepository {
     @Override
     public QueueToken getTokenByTokenString(String token) {
         var entity = this.queueTokenJpaRepository.findByToken(token);
-        if(entity == null) return null;
+        if(entity == null) throw new CustomNotFoundException(ExceptionCode.TOKEN_NOT_FOUND);
 
         return entity.toDomain();
     }
 
     @Override
-    public QueueToken getFirstTokenOrderByActivatedAtDesc(TokenStatus tokenStatus) {
-        var entity = this.queueTokenJpaRepository.findFirstByStatusOrderByActivatedAt(tokenStatus);
-        if(entity == null) return null;
+    public QueueToken getFirstTokenByStatus(TokenStatus tokenStatus) {
+        var entity = this.queueTokenJpaRepository.findFirstByStatus(tokenStatus);
+        if(entity == null) throw new CustomNotFoundException(ExceptionCode.TOKEN_NOT_FOUND);
 
         return entity.toDomain();
     }

@@ -1,29 +1,22 @@
 package io.hhplus.concert.queue;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import io.hhplus.concert.domain.queue.QueueService;
 import io.hhplus.concert.domain.queue.QueueToken;
 import io.hhplus.concert.domain.queue.QueueToken.TokenStatus;
 import io.hhplus.concert.domain.queue.QueueTokenRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class QueueServiceUnitTest {
-    public QueueService queueService;
-    public QueueTokenRepository mockQueueTokenRepository;
+    public final QueueService queueService;
+    public final QueueTokenRepository mockQueueTokenRepository;
 
     public QueueServiceUnitTest() {
         this.mockQueueTokenRepository = mock(QueueTokenRepository.class);
@@ -35,16 +28,16 @@ public class QueueServiceUnitTest {
     void testGetWaitingTokensAhead() {
         //given
         long myWaitingId = 30;
-        long lastActiveWaitingId = 10;
-        QueueToken token = new QueueToken(myWaitingId, "lastActiveToken", TokenStatus.WAITING, 0, null, null, null);
-        QueueToken lastActiveToken = new QueueToken(lastActiveWaitingId, "lastActiveToken", TokenStatus.ACTIVE, 1, null, null, null);
-        when(this.mockQueueTokenRepository.getFirstTokenOrderByActivatedAtDesc(TokenStatus.ACTIVE)).thenReturn(lastActiveToken);
+        long firstWaitingTokenId = 10;
+        QueueToken token = new QueueToken(myWaitingId, "myToken", TokenStatus.WAITING, 0, null, null, null);
+        QueueToken firstWaitingToken = new QueueToken(firstWaitingTokenId, "firstWaitingToken", TokenStatus.WAITING, 1, null, null, null);
+        when(this.mockQueueTokenRepository.getFirstTokenByStatus(TokenStatus.WAITING)).thenReturn(firstWaitingToken);
 
         //when
         long waitingTokensAhead = queueService.getWaitingTokensAhead(token);
 
         //then
-        assertThat(waitingTokensAhead).isEqualTo(myWaitingId - lastActiveWaitingId);
+        assertThat(waitingTokensAhead).isEqualTo(myWaitingId - firstWaitingTokenId);
     }
 
     @Test

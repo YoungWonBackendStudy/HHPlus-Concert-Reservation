@@ -3,14 +3,14 @@ package io.hhplus.concert.domain.queue;
 import java.util.Date;
 import java.util.List;
 
+import io.hhplus.concert.support.exception.CustomNotFoundException;
 import org.springframework.stereotype.Service;
 
-import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 
 @Service
 public class TokenService {
-    private final long expireDurationInMilli = 30 * 60 * 1000l;
+    private final long expireDurationInMilli = 30 * 60 * 1000L;
 
     QueueTokenRepository queueTokenRepository;
 
@@ -18,22 +18,23 @@ public class TokenService {
         this.queueTokenRepository = queueTokenRepository;
     }
 
-    public QueueToken getToken(long userId) {
-        var queueToken = queueTokenRepository.getActiveTokenByUserId(userId);
-        if(queueToken != null) {
-            queueToken.validateWaiting();
-            return queueToken;
+    public QueueToken validateAndGetWaitingToken(long userId) {
+        QueueToken queueToken;
+        try {
+            queueToken = queueTokenRepository.getActiveTokenByUserId(userId);
+        } catch(CustomNotFoundException e) {
+            if(!e.getCode().equals(ExceptionCode.TOKEN_NOT_FOUND)) throw e;
+
+            queueToken = new QueueToken(userId);
+            queueToken = this.queueTokenRepository.saveToken(queueToken);
         }
 
-        queueToken = new QueueToken(userId);
-        queueToken = this.queueTokenRepository.saveToken(queueToken);
-
+        queueToken.validateWaiting();
         return queueToken;
     }
 
     public QueueToken validateAndGetActiveToken(String token) {
         var queueToken = this.queueTokenRepository.getTokenByTokenString(token);
-        if(queueToken == null) throw new CustomBadRequestException(ExceptionCode.TOKEN_NOT_FOUND);
     
         queueToken.validateActivation();
         return queueToken;

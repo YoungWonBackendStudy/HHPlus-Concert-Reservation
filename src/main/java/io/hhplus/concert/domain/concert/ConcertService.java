@@ -18,7 +18,7 @@ public class ConcertService {
     }
 
     public List<ConcertSchedule> getConcertSchedules(long concertId) {
-        return concertRepository.getConcertSchedulesByScheduleId(concertId);
+        return concertRepository.getConcertSchedulesByConcertId(concertId);
     }
 
     public List<ConcertSeat> getConcertSeats(long concertScheduleId) {

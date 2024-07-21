@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class QueueToken {
-    public static enum TokenStatus {
+    public enum TokenStatus {
         WAITING, ACTIVE, EXPIRED
     }
 
