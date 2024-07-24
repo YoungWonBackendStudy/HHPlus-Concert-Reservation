@@ -1,8 +1,7 @@
-package io.hhplus.concert.payment;
+package io.hhplus.concert.application.payment;
 
 import io.hhplus.concert.application.concert.ConcertFacade;
 import io.hhplus.concert.application.concert.ConcertSeatDto;
-import io.hhplus.concert.application.payment.PaymentFacade;
 import io.hhplus.concert.application.queue.QueueFacade;
 import io.hhplus.concert.application.user.UserAssetFacade;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
@@ -14,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,27 +41,36 @@ public class PaymentFacadeIntegTest {
     void testPayment() {
         //given
         long userId = 0L;
+        long concertScheduleId = 0L;
         
         var queueToken = queueFacade.getQueueToken(userId);
         queueFacade.scheduleWaitingQueue();
+        assertThatThrownBy(() -> queueFacade.getQueueToken(userId))
+                .hasMessage(ExceptionCode.TOKEN_NOT_WAITING.getMessage()); //guard assertion
 
+        var reservedConcertIds = concertFacade.getReservedConcertSeats(concertScheduleId)
+                .stream().map(ConcertSeatDto::getId).collect(Collectors.toSet());
         var concertSeats = concertFacade.getConcertSeats(0L);
-        List<Long> seatsToReserve = concertSeats
-            .stream().filter(seat -> !seat.isReserved())
-            .map(ConcertSeatDto::getId).toList().subList(0, 1);
-
+        var seatsToReserve = concertSeats.stream()
+                .map(ConcertSeatDto::getId)
+                .filter(id -> !reservedConcertIds.contains(id))
+                .toList();
         assertThat(concertSeats.size()).isGreaterThanOrEqualTo(1); //guard assertion
         
         var reservation = concertFacade.reserveSeats(userId, seatsToReserve);
 
-        userAssetFacade.chargeBalance(userId, reservation.getTotalPrice());
+        userAssetFacade.chargeBalance(userId, reservation.getTotalPrice() * 10);
         
         //when
+        var userAssetBeforePayment = userAssetFacade.getBalance(userId);
         var payment = paymentFacade.placePayment(queueToken.getToken(), reservation.getReservationId());
 
         //then
         assertThat(payment).isNotNull();
         assertThat(payment.getTotalPrice()).isEqualTo(reservation.getTotalPrice());
+
+        var userAssetAfterPayment = userAssetFacade.getBalance(userId);
+        assertThat(userAssetAfterPayment).isEqualTo(userAssetBeforePayment - payment.getTotalPrice());
 
         //when: 중복 결제
         ThrowingCallable dupPayment = () -> paymentFacade.placePayment(queueToken.getToken(), reservation.getReservationId());
@@ -72,18 +80,22 @@ public class PaymentFacadeIntegTest {
     }
 
     @Test
-    @DisplayName("하나의 결제에 대한 5번 동시 결제 시도할 경우 한번만 결제 됨")
+    @DisplayName("하나의 예약에 대해 5번 동시 결제 시도할 경우 한번만 결제 됨")
     void testPaymentConsistent() throws InterruptedException {
         //given
         long userId = 0L;
+        long concertScheduleId = 0L;
         int executionCnt = 5;
         var queue = queueFacade.getQueueToken(userId);
         queueFacade.scheduleWaitingQueue();
 
+        var reservedConcertIds = concertFacade.getReservedConcertSeats(concertScheduleId)
+                .stream().map(ConcertSeatDto::getId).collect(Collectors.toSet());
         var concertSeats = concertFacade.getConcertSeats(0L);
-        List<Long> seatsToReserve = concertSeats
-            .stream().filter(seat -> !seat.isReserved())
-            .map(ConcertSeatDto::getId).toList().subList(0, 1);
+        var seatsToReserve = concertSeats.stream()
+                .map(ConcertSeatDto::getId)
+                .filter(id -> !reservedConcertIds.contains(id))
+                .toList();
 
         assertThat(concertSeats.size()).isGreaterThanOrEqualTo(1);
         

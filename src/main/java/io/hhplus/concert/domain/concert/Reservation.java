@@ -12,8 +12,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Reservation {
     static final long expireDurationInMilli = 5 * 60 * 1000L;
-    long id;
-    long userId;
+    Long id;
+    Long userId;
     Date reservedAt;
     Date completedAt;
     List<ReservationTicket> reservationTickets;

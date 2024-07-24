@@ -9,7 +9,7 @@ import io.hhplus.concert.domain.concert.Reservation;
 import io.hhplus.concert.domain.user.UserAssetService;
 import io.hhplus.concert.domain.queue.TokenService;
 import io.hhplus.concert.domain.queue.QueueService;
-import io.hhplus.concert.domain.queue.QueueToken;
+import io.hhplus.concert.domain.queue.WaitingQueueToken;
 import jakarta.transaction.Transactional;
 
 @Component
@@ -31,10 +31,10 @@ public class PaymentFacade {
 
     @Transactional
     public PaymentDto placePayment(String token,long reservationId) {
-        QueueToken queueToken = tokenService.validateAndGetActiveToken(token);
-        Reservation reservation = reservationService.validateAndGetReservation(reservationId);
+        WaitingQueueToken waitingQueueToken = tokenService.validateAndGetActiveToken(token);
+        Reservation reservation = reservationService.getReservation(reservationId);
 
-        userAssetService.useUserAsset(queueToken.getUserId(), reservation.getTotalPrice());
+        userAssetService.useUserAsset(waitingQueueToken.getUserId(), reservation.getTotalPrice());
         Payment payment = paymentService.placePayment(reservation);
 
         tokenService.expireToken(token);

@@ -15,6 +15,7 @@ public class PaymentService {
 
     @Transactional
     public Payment placePayment(Reservation reservation) {
+        reservation.validatePayable();
         Payment payment = new Payment(reservation);
         return paymentRepository.save(payment);
     }

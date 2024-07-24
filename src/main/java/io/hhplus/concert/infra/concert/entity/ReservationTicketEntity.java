@@ -1,4 +1,4 @@
-package io.hhplus.concert.infra.concert;
+package io.hhplus.concert.infra.concert.entity;
 
 import io.hhplus.concert.domain.concert.ReservationTicket;
 import jakarta.persistence.*;
@@ -26,10 +26,6 @@ public class ReservationTicketEntity {
 
     @Column(name = "price")
     long price;
-
-    @OneToOne
-    @JoinColumn(name = "concert_seat_id", updatable = false, insertable = false)
-    ConcertSeatEntity concertSeat;
 
 
     public ReservationTicketEntity(ReservationTicket domain) {

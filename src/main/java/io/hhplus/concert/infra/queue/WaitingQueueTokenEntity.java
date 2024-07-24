@@ -2,8 +2,8 @@ package io.hhplus.concert.infra.queue;
 
 import java.util.Date;
 
-import io.hhplus.concert.domain.queue.QueueToken;
-import io.hhplus.concert.domain.queue.QueueToken.TokenStatus;
+import io.hhplus.concert.domain.queue.WaitingQueueToken;
+import io.hhplus.concert.domain.queue.WaitingQueueToken.TokenStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity 
 @Table(name = "queue_token")
 @NoArgsConstructor
-public class QueueTokenEntity {
+public class WaitingQueueTokenEntity {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
     
@@ -37,7 +37,7 @@ public class QueueTokenEntity {
     @Column(name = "deleted_at")
     Date deletedAt;
 
-    public QueueTokenEntity(QueueToken domain) {
+    public WaitingQueueTokenEntity(WaitingQueueToken domain) {
         this.id = domain.getId();
         this.token = domain.getToken();
         this.status = domain.getStatus();
@@ -47,7 +47,7 @@ public class QueueTokenEntity {
         this.deletedAt = domain.getDeletedAt();
     }
 
-    public QueueToken toDomain() {
-        return new QueueToken(this.id, this.token, this.status, this.userId, this.issuedAt, this.activatedAt, this.deletedAt);
+    public WaitingQueueToken toDomain() {
+        return new WaitingQueueToken(this.id, this.token, this.status, this.userId, this.issuedAt, this.activatedAt, this.deletedAt);
     }
 }

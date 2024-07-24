@@ -4,7 +4,6 @@ import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.domain.concert.ConcertService;
 import io.hhplus.concert.domain.concert.Reservation;
 import io.hhplus.concert.domain.concert.ReservationService;
-import io.hhplus.concert.domain.queue.TokenService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +12,10 @@ import java.util.List;
 @Component
 public class ConcertFacade {
     ConcertService concertService;
-    TokenService tokenService;
     ReservationService reservationService;
 
-    public ConcertFacade(ConcertService concertService, TokenService tokenService, ReservationService reservationService) {
+    public ConcertFacade(ConcertService concertService, ReservationService reservationService) {
         this.concertService = concertService;
-        this.tokenService = tokenService;
         this.reservationService = reservationService;
     }
 
@@ -34,6 +31,11 @@ public class ConcertFacade {
     public List<ConcertSeatDto> getConcertSeats(long concertScheduleId) {
         return concertService.getConcertSeats(concertScheduleId).stream()
             .map(ConcertSeatDto::new).toList();
+    }
+
+    public List<ConcertSeatDto> getReservedConcertSeats(long concertScheduleId) {
+        return concertService.getReservedConcertSeats(concertScheduleId).stream()
+                .map(ConcertSeatDto::new).toList();
     }
 
     @Transactional

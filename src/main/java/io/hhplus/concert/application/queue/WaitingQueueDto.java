@@ -1,6 +1,6 @@
 package io.hhplus.concert.application.queue;
 
-import io.hhplus.concert.domain.queue.QueueToken;
+import io.hhplus.concert.domain.queue.WaitingQueueToken;
 import lombok.Getter;
 
 @Getter
@@ -9,7 +9,7 @@ public class WaitingQueueDto {
     long waitingId;
     long waitingAhead;
 
-    public WaitingQueueDto(QueueToken token, long waitingAhead) {
+    public WaitingQueueDto(WaitingQueueToken token, long waitingAhead) {
         this.token = token.getToken();
         this.waitingId = token.getId();
         this.waitingAhead = waitingAhead;

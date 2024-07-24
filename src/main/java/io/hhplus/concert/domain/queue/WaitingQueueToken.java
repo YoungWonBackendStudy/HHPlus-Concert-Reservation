@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class QueueToken {
+public class WaitingQueueToken {
     public enum TokenStatus {
         WAITING, ACTIVE, EXPIRED
     }
@@ -23,7 +23,7 @@ public class QueueToken {
     Date activatedAt;
     Date deletedAt;
 
-    public QueueToken(long userId) {
+    public WaitingQueueToken(long userId) {
         this.userId = userId;
         this.token = UUID.randomUUID().toString();
         this.issuedAt = new Date();

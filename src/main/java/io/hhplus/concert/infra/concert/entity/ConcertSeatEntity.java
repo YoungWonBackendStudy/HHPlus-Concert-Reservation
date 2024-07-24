@@ -1,4 +1,4 @@
-package io.hhplus.concert.infra.concert;
+package io.hhplus.concert.infra.concert.entity;
 
 import io.hhplus.concert.domain.concert.ConcertSeat;
 import jakarta.persistence.*;
@@ -12,8 +12,8 @@ public class ConcertSeatEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    @Column(name = "concert_schedule_id", nullable = false)
-    long concertScheduleId;
+    @Column(name = "concert_place_id", nullable = false)
+    long concertPlaceId;
 
     @Column(name = "location")
     String location;
@@ -21,17 +21,14 @@ public class ConcertSeatEntity {
     @Column(name = "price")
     Long price;
 
-    @OneToOne(mappedBy = "concertSeat")
-    ReservationTicketEntity ticket;
-
     public ConcertSeatEntity(ConcertSeat concertSeat) {
         this.id = concertSeat.getId();
-        this.concertScheduleId = concertSeat.getConcertScheduleId();
+        this.concertPlaceId = concertSeat.getConcertPlaceId();
         this.location = concertSeat.getLocation();
         this.price = concertSeat.getPrice();
     }
 
     public ConcertSeat toDomain() {
-        return new ConcertSeat(this.id, this.concertScheduleId, this.location, this.price, ticket != null);
+        return new ConcertSeat(this.id, this.concertPlaceId, this.location, this.price);
     }
 }

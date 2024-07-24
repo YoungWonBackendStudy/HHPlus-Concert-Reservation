@@ -3,6 +3,9 @@ package io.hhplus.concert.infra.concert;
 import java.util.List;
 
 import io.hhplus.concert.domain.concert.*;
+import io.hhplus.concert.infra.concert.entity.ConcertEntity;
+import io.hhplus.concert.infra.concert.entity.ConcertScheduleEntity;
+import io.hhplus.concert.infra.concert.entity.ConcertSeatEntity;
 import io.hhplus.concert.support.exception.CustomNotFoundException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import jakarta.transaction.Transactional;
@@ -38,11 +41,16 @@ public class ConcertRepositoryImpl implements ConcertRepository{
     }
 
     @Override
-    public List<ConcertSeat> getConcertSeatsByConcertScheduleId(long concertScheduleId) {
+    public ConcertSchedule getConcertScheduleById(long concertScheduleId) {
         var concertScheduleEntity = this.concertScheduleJpaRepository.findById(concertScheduleId);
         if(concertScheduleEntity.isEmpty()) throw new CustomNotFoundException(ExceptionCode.CONCERT_SCHEDULE_NOT_FOUND);
 
-        return this.concertSeatJpaRepository.findByConcertScheduleId(concertScheduleEntity.get().getId())
+        return concertScheduleEntity.get().toDomain();
+    }
+
+    @Override
+    public List<ConcertSeat> getConcertSeatsByConcertPlaceId(long concertPlaceId) {
+        return this.concertSeatJpaRepository.findByConcertPlaceId(concertPlaceId)
             .stream().map(ConcertSeatEntity::toDomain)
             .toList();
     }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import io.hhplus.concert.domain.queue.TokenService;
-import io.hhplus.concert.domain.queue.QueueToken;
+import io.hhplus.concert.domain.queue.WaitingQueueToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -20,8 +20,8 @@ public class TokenValidationInterceptor implements HandlerInterceptor{
     public boolean preHandle(@NonNull HttpServletRequest request,@NonNull  HttpServletResponse response,@NonNull  Object handler) {
 
         String token = request.getHeader("WAITING_TOKEN");
-        QueueToken queueToken = tokenService.validateAndGetActiveToken(token);
-        request.setAttribute("userId", queueToken.getUserId());
+        WaitingQueueToken waitingQueueToken = tokenService.validateAndGetActiveToken(token);
+        request.setAttribute("userId", waitingQueueToken.getUserId());
         return true;
     }
     
