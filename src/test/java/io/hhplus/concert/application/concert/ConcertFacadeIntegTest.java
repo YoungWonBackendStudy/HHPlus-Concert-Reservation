@@ -1,6 +1,5 @@
-package io.hhplus.concert.concert;
+package io.hhplus.concert.application.concert;
 
-import io.hhplus.concert.application.concert.ConcertFacade;
 import io.hhplus.concert.domain.concert.ReservationRepository;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
@@ -30,7 +29,7 @@ public class ConcertFacadeIntegTest {
     ReservationRepository reservationRepository;
 
     @Test
-    @DisplayName("콘서트 조회 통합 테스트")
+    @DisplayName("콘서트/스케줄/좌석 조회 통합 테스트")
     void testConcertIntegTest() {
         //when
         var concerts = concertFacade.getConcerts();
@@ -55,7 +54,7 @@ public class ConcertFacadeIntegTest {
     }
 
     @Test
-    @DisplayName("두 좌석에 대한 예약을 두번 시도할 경우 -> 1번은 정상 예약, 2번째는 이미 예약된 좌석 에러")
+    @DisplayName("두 좌석에 대한 예약을 두번 시도할 경우 -> 1번은 정상 예약, 2번째는 이미 예약된 좌석 오류")
     void testReservationAndDuplicate() {
         //given
         long userId = 0;
@@ -91,7 +90,7 @@ public class ConcertFacadeIntegTest {
 
 
         //when: 10번 동시에 예약할 때
-        var ticketsBefore = reservationRepository.getReservedTicketsByConcertScheduleId(concertScheduleId);
+        var ticketsBefore = reservationRepository.getCompletedOrReservedUnder5mins(concertScheduleId);
         for (Long userId : userIdsToApply) {
             executorService.submit(() -> {
                 try{ concertFacade.reserveSeats(userId, reservationSeats); }
@@ -105,7 +104,7 @@ public class ConcertFacadeIntegTest {
         executorService.shutdown();
 
         //then: 1회의 예약 제외 모두 실패 -> ReservationTicket 2개만 발급
-        var ticketsAfter = reservationRepository.getReservedTicketsByConcertScheduleId(concertScheduleId);
+        var ticketsAfter = reservationRepository.getCompletedOrReservedUnder5mins(concertScheduleId);
         assertThat(ticketsAfter.size()).isEqualTo(ticketsBefore.size() + reservationSeats.size());
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 public interface ConcertRepository {
     List<Concert> getConcerts();
     List<ConcertSchedule> getConcertSchedulesByConcertId(long concertId);
-    List<ConcertSeat> getConcertSeatsByConcertScheduleId(long concertScheduleId);
+    ConcertSchedule getConcertScheduleById(long concertScheduleId);
+    List<ConcertSeat> getConcertSeatsByConcertPlaceId(long concertPlaceId);
     List<ConcertSeat> getAndLockConcertSeatsByIdIn(List<Long> concertSeatIds);
 }

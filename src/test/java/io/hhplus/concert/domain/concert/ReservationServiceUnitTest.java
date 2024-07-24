@@ -1,20 +1,18 @@
-package io.hhplus.concert.concert;
+package io.hhplus.concert.domain.concert;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Date;
-import java.util.List;
-
-import io.hhplus.concert.domain.concert.*;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import io.hhplus.concert.support.exception.ExceptionCode;
+import java.util.Date;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ReservationServiceUnitTest {
     ReservationService reservationService;
@@ -26,14 +24,14 @@ public class ReservationServiceUnitTest {
     }
 
     @Test
-    @DisplayName("콘서트 좌석 2개 예약 성공")
+    @DisplayName("콘서트 좌석 예약 성공")
     void testReservation() {
         //given
         long userId = 0;
         long concertScheduleId = 0;
         List<ConcertSeat> seats = List.of(
-            new ConcertSeat(0L, concertScheduleId, "R1", 100000L, false)
-            , new ConcertSeat(1L, concertScheduleId, "R2", 120000L, false)
+            new ConcertSeat(0L, concertScheduleId, "R1", 100000L)
+            , new ConcertSeat(1L, concertScheduleId, "R2", 120000L)
         );
         List<ReservationTicket> tickets = seats
                 .stream().map(seat -> new ReservationTicket(0L, seat))
@@ -52,17 +50,28 @@ public class ReservationServiceUnitTest {
     }
 
     @Test
-    @DisplayName("5분전 예약에 대한 예약 만료 테스트")
-    void testReservationExpired() {
+    @DisplayName("이미 예약된 좌석을 예약시도할 경우 실패")
+    void testReservationAlreadyReserved() {
         //given
-        when(mockReservationRepository.getAndLockById(0L)).thenReturn(
-            new Reservation(0L, 0L, new Date(System.currentTimeMillis() - 5 * 60 * 1000L - 1), null, List.of())
+        long userId = 0;
+        long concertPlaceId = 0;
+        long reservationId = 0;
+        List<ConcertSeat> seats = List.of(
+                new ConcertSeat(0L, concertPlaceId, "R1", 100000L)
+                , new ConcertSeat(1L, concertPlaceId, "R2", 120000L)
         );
+        List<ReservationTicket> tickets = seats
+                .stream().map(seat -> new ReservationTicket(reservationId, seat))
+                .toList();
+        Reservation reservation = new Reservation(reservationId, userId, new Date(), null, tickets);
+
+        when(mockReservationRepository.getCompletedOrReservedUnder5mins(anyList())).thenReturn(tickets);
+        when(mockReservationRepository.saveReservation(any(Reservation.class))).thenReturn(reservation);
 
         //when
-        ThrowableAssert.ThrowingCallable result = () -> reservationService.validateAndGetReservation(0L);
-        
+        ThrowableAssert.ThrowingCallable reservationRes = () -> reservationService.reserveConcertSeats(userId, seats);
+
         //then
-        assertThatThrownBy(result).hasMessage(ExceptionCode.RESERVATION_EXPIRED.getMessage());
+        assertThatThrownBy(reservationRes).isNotNull();
     }
 }

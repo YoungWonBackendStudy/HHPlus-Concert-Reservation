@@ -1,19 +1,14 @@
-package io.hhplus.concert.concert;
+package io.hhplus.concert.domain.concert;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.Date;
-import java.util.List;
-
+import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import io.hhplus.concert.domain.concert.ConcertSeat;
-import io.hhplus.concert.domain.concert.Reservation;
-import io.hhplus.concert.support.exception.ExceptionCode;
+import java.util.Date;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class ReservationDomainUnitTest {
     @Test
@@ -21,8 +16,8 @@ public class ReservationDomainUnitTest {
         //given
         long userId = 0;
         List<ConcertSeat> seats = List.of(
-            new ConcertSeat(0L, 0L, "R1", 10000L, false),
-            new ConcertSeat(1L, 0L, "R2", 20000L, false)
+            new ConcertSeat(0L, 0L, "R1", 10000L),
+            new ConcertSeat(1L, 0L, "R2", 20000L)
         );
         
         //when
@@ -68,8 +63,8 @@ public class ReservationDomainUnitTest {
          //given
          long userId = 0;
          List<ConcertSeat> seats = List.of(
-             new ConcertSeat(0L, 0L, "R1", 10000L, false),
-             new ConcertSeat(1L, 0L, "R2", 20000L, false)
+             new ConcertSeat(0L, 0L, "R1", 10000L),
+             new ConcertSeat(1L, 0L, "R2", 20000L)
          );
          
          //when

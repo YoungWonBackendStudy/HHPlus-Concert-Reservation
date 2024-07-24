@@ -1,7 +1,5 @@
 package io.hhplus.concert.domain.concert;
 
-import io.hhplus.concert.support.exception.CustomBadRequestException;
-import io.hhplus.concert.support.exception.ExceptionCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,14 +13,12 @@ public class ReservationTicket {
     String seatLocation;
     long price;
 
-    public ReservationTicket(long reservationId, ConcertSeat concertSeat) {
-        if(concertSeat.isReserved())
-            throw new CustomBadRequestException(ExceptionCode.SEAT_ALREADY_RESERVED);
-
+    public ReservationTicket(Long reservationId, ConcertSeat concertSeat) {
         this.reservationId = reservationId;
-        this.concertScheduleId = concertSeat.getConcertScheduleId();
+        this.concertScheduleId = concertSeat.getConcertPlaceId();
         this.concertSeatId = concertSeat.getId();
         this.price = concertSeat.getPrice();
         this.seatLocation = concertSeat.getLocation();
     }
+
 }

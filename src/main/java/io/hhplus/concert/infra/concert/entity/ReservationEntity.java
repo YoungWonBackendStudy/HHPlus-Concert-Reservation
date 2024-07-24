@@ -1,4 +1,4 @@
-package io.hhplus.concert.infra.concert;
+package io.hhplus.concert.infra.concert.entity;
 
 import java.util.Date;
 

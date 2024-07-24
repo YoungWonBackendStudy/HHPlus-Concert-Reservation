@@ -1,4 +1,4 @@
-package io.hhplus.concert.user;
+package io.hhplus.concert.application.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-
-import io.hhplus.concert.application.user.UserAssetFacade;
 
 @SpringBootTest
 @Sql(scripts = "classpath:testinit.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

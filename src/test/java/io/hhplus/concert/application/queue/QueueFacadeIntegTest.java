@@ -1,4 +1,4 @@
-package io.hhplus.concert.queue;
+package io.hhplus.concert.application.queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import io.hhplus.concert.application.queue.WaitingQueueDto;
-import io.hhplus.concert.application.queue.QueueFacade;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import io.hhplus.concert.domain.queue.TokenService;
 import io.hhplus.concert.domain.queue.QueueService;
-import io.hhplus.concert.domain.queue.QueueToken;
+import io.hhplus.concert.domain.queue.WaitingQueueToken;
 
 @Component
 public class QueueFacade {
@@ -17,7 +17,7 @@ public class QueueFacade {
     }
 
     public WaitingQueueDto getQueueToken(long userId) {
-        QueueToken token = tokenService.validateAndGetWaitingToken(userId);
+        WaitingQueueToken token = tokenService.validateAndGetWaitingToken(userId);
         long waitingTokensAhead = queueService.getWaitingTokensAhead(token);
         return new WaitingQueueDto(token, waitingTokensAhead);
     }

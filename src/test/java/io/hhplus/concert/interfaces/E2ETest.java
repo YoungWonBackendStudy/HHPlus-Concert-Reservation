@@ -1,4 +1,4 @@
-package io.hhplus.concert;
+package io.hhplus.concert.interfaces;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,5 +1,7 @@
 package io.hhplus.concert.domain.concert;
 
+import io.hhplus.concert.support.exception.CustomBadRequestException;
+import io.hhplus.concert.support.exception.ExceptionCode;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,12 @@ public class ReservationService {
 
     @Transactional
     public Reservation reserveConcertSeats(long userId, List<ConcertSeat> seats) {
+        var seatIds = seats.stream().map(ConcertSeat::getId).toList();
+        var reservationTickets = reservationRepository.getCompletedOrReservedUnder5mins(seatIds);
+        if(!reservationTickets.isEmpty()) throw new CustomBadRequestException(ExceptionCode.SEAT_ALREADY_RESERVED);
+
         var newReservation = new Reservation(userId);
         newReservation = reservationRepository.saveReservation(newReservation);
-
         newReservation.makeTickets(seats);
         newReservation = reservationRepository.saveReservation(newReservation);
 
@@ -25,11 +30,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation validateAndGetReservation(long reservationId) {
-        var reservation = reservationRepository.getAndLockById(reservationId);
-        reservation.validatePayable();
-
-        return reservation;
+    public Reservation getReservation(long reservationId) {
+        return reservationRepository.getAndLockById(reservationId);
     }
 
     public void completeReservation(Reservation reservation) {
