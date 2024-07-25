@@ -17,10 +17,14 @@ import static org.mockito.Mockito.when;
 public class ReservationServiceUnitTest {
     ReservationService reservationService;
     ReservationRepository mockReservationRepository;
+    ReservationRedissonClient mockReservationRedissonClient;
+    ConcertRepository mockConcertRepository;
 
     public ReservationServiceUnitTest() {
         mockReservationRepository = mock(ReservationRepository.class);
-        reservationService = new ReservationService(mockReservationRepository);
+        mockReservationRedissonClient = mock(ReservationRedissonClient.class);
+        mockConcertRepository = mock(ConcertRepository.class);
+        reservationService = new ReservationService(mockReservationRepository, mockReservationRedissonClient, mockConcertRepository);
     }
 
     @Test
@@ -30,8 +34,8 @@ public class ReservationServiceUnitTest {
         long userId = 0;
         long concertScheduleId = 0;
         List<ConcertSeat> seats = List.of(
-            new ConcertSeat(0L, concertScheduleId, "R1", 100000L)
-            , new ConcertSeat(1L, concertScheduleId, "R2", 120000L)
+            new ConcertSeat(0L, concertScheduleId, "R1", 0L,100000L)
+            , new ConcertSeat(1L, concertScheduleId, "R2", 0L, 120000L)
         );
         List<ReservationTicket> tickets = seats
                 .stream().map(seat -> new ReservationTicket(0L, seat))
@@ -57,8 +61,8 @@ public class ReservationServiceUnitTest {
         long concertPlaceId = 0;
         long reservationId = 0;
         List<ConcertSeat> seats = List.of(
-                new ConcertSeat(0L, concertPlaceId, "R1", 100000L)
-                , new ConcertSeat(1L, concertPlaceId, "R2", 120000L)
+                new ConcertSeat(0L, concertPlaceId, "R1", 0L, 100000L)
+                , new ConcertSeat(1L, concertPlaceId, "R2", 0L, 120000L)
         );
         List<ReservationTicket> tickets = seats
                 .stream().map(seat -> new ReservationTicket(reservationId, seat))

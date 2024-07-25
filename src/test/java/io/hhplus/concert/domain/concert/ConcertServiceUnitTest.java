@@ -58,7 +58,7 @@ public class ConcertServiceUnitTest {
         //given
         var concertScheduleId = 0L;
         var concertPlaceId = 0L;
-        var expectedConcertSeats = List.of(new ConcertSeat(0L, concertPlaceId, "R1", 100000L));
+        var expectedConcertSeats = List.of(new ConcertSeat(0L, concertPlaceId, "R1", 0L, 100000L));
         var concertSchedule = new ConcertSchedule(0L, 0L, new ConcertPlace(concertPlaceId, "잠실"), new Date(), new Date(System.currentTimeMillis() + 24* 60*1000L), new Date());
         when(mockConcertRepository.getConcertScheduleById(concertScheduleId)).thenReturn(concertSchedule);
         when(mockConcertRepository.getConcertSeatsByConcertPlaceId(concertScheduleId)).thenReturn(expectedConcertSeats);
@@ -77,10 +77,10 @@ public class ConcertServiceUnitTest {
         //given
         var concertScheduleId = 0L;
         var concertPlaceId = 0L;
-        var expectedConcertSeats = List.of(new ConcertSeat(0L, concertPlaceId, "R1", 100000L));
+        var expectedConcertSeats = List.of(new ConcertSeat(0L, concertPlaceId, "R1", 0L, 100000L));
         var expectedReservationTickets = List.of(new ReservationTicket(0L, expectedConcertSeats.get(0)));
         when(mockReservationRepository.getCompletedOrReservedUnder5mins(concertScheduleId)).thenReturn(expectedReservationTickets);
-        when(mockConcertRepository.getAndLockConcertSeatsByIdIn(List.of(expectedConcertSeats.get(0).getId()))).thenReturn(expectedConcertSeats);
+        when(mockConcertRepository.getConcertSeatsByIdIn(List.of(expectedConcertSeats.get(0).getId()))).thenReturn(expectedConcertSeats);
 
         //when
         var resConcertSeats = this.concertService.getReservedConcertSeats(concertScheduleId);

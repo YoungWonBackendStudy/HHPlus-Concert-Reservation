@@ -1,6 +1,5 @@
 package io.hhplus.concert.domain.concert;
 
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,11 +29,11 @@ public class ConcertService {
     public List<ConcertSeat> getReservedConcertSeats(long concertScheduleId) {
         var reservedTickets = reservationRepository.getCompletedOrReservedUnder5mins(concertScheduleId);
         var seatIds = reservedTickets.stream().map(ReservationTicket::getConcertSeatId).toList();
-        return concertRepository.getAndLockConcertSeatsByIdIn(seatIds);
+        return concertRepository.getConcertSeatsByIdIn(seatIds);
     }
 
-    @Transactional
+
     public List<ConcertSeat> getConcertSeatsByIds(List<Long> seatIds) {
-        return concertRepository.getAndLockConcertSeatsByIdIn(seatIds);
+        return concertRepository.getConcertSeatsByIdIn(seatIds);
     }
 }

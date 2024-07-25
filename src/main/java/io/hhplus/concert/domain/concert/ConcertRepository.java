@@ -7,5 +7,6 @@ public interface ConcertRepository {
     List<ConcertSchedule> getConcertSchedulesByConcertId(long concertId);
     ConcertSchedule getConcertScheduleById(long concertScheduleId);
     List<ConcertSeat> getConcertSeatsByConcertPlaceId(long concertPlaceId);
-    List<ConcertSeat> getAndLockConcertSeatsByIdIn(List<Long> concertSeatIds);
+
+    List<ConcertSeat> getConcertSeatsByIdIn(List<Long> concertSeatIds);
 }

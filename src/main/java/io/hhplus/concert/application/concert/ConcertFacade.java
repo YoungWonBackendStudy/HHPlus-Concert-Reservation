@@ -4,8 +4,8 @@ import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.domain.concert.ConcertService;
 import io.hhplus.concert.domain.concert.Reservation;
 import io.hhplus.concert.domain.concert.ReservationService;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class ConcertFacade {
     @Transactional
     public ReservationDto reserveSeats(long userId, List<Long> seatIds) {
         List<ConcertSeat> concertSeats = concertService.getConcertSeatsByIds(seatIds);
-        Reservation reservation = reservationService.reserveConcertSeats(userId, concertSeats);
+        Reservation reservation = reservationService.lockAndReserveConcertSeats(userId, concertSeats);
         return new ReservationDto(reservation);
     }
 }

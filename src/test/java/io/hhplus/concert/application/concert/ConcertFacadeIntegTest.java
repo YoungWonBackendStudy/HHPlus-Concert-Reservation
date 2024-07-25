@@ -74,22 +74,22 @@ public class ConcertFacadeIntegTest {
     }
 
     @Test
-    @DisplayName("동시성 테스트: 10명이 동시에 2개의 같은 좌석을 예약할 때 1명만 성공 이후는 실패 -> Ticket은 2개만 발급")
+    @DisplayName("동시성 테스트: 100명이 동시에 2개의 같은 좌석을 예약할 때 1명만 성공 이후는 실패 -> Ticket은 2개만 발급")
     void testConsistent() throws InterruptedException {
         //given
         long concertScheduleId = 0;
         List<Long> reservationSeats = List.of(2L, 3L);
 
-        int userCnt = 10;
+        int userCnt = 100;
         List<Long> userIdsToApply = new ArrayList<>(userCnt);
         for(long i = 0; i < userCnt; i++) {
             userIdsToApply.add(i);
         }
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        ExecutorService executorService = Executors.newFixedThreadPool(userCnt);
         CountDownLatch latch = new CountDownLatch(userCnt);
 
 
-        //when: 10번 동시에 예약할 때
+        //when: 100번 동시에 예약할 때
         var ticketsBefore = reservationRepository.getCompletedOrReservedUnder5mins(concertScheduleId);
         for (Long userId : userIdsToApply) {
             executorService.submit(() -> {

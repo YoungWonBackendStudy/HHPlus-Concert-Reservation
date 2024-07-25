@@ -1,15 +1,17 @@
 package io.hhplus.concert.infra.concert;
 
-import java.util.List;
-
-import io.hhplus.concert.domain.concert.*;
+import io.hhplus.concert.domain.concert.Concert;
+import io.hhplus.concert.domain.concert.ConcertRepository;
+import io.hhplus.concert.domain.concert.ConcertSchedule;
+import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.infra.concert.entity.ConcertEntity;
 import io.hhplus.concert.infra.concert.entity.ConcertScheduleEntity;
 import io.hhplus.concert.infra.concert.entity.ConcertSeatEntity;
 import io.hhplus.concert.support.exception.CustomNotFoundException;
 import io.hhplus.concert.support.exception.ExceptionCode;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class ConcertRepositoryImpl implements ConcertRepository{
@@ -56,10 +58,9 @@ public class ConcertRepositoryImpl implements ConcertRepository{
     }
 
     @Override
-    @Transactional
-    public List<ConcertSeat> getAndLockConcertSeatsByIdIn(List<Long> concertSeatIds) {
-        return this.concertSeatJpaRepository.findAndLockByIdIn(concertSeatIds)
-            .stream().map(ConcertSeatEntity::toDomain)
-            .toList();
+    public List<ConcertSeat> getConcertSeatsByIdIn(List<Long> concertSeatIds) {
+        return this.concertSeatJpaRepository.findByIdIn(concertSeatIds)
+                .stream().map(ConcertSeatEntity::toDomain)
+                .toList();
     }
 }

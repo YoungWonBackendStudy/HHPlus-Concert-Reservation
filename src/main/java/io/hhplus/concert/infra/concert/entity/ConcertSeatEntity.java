@@ -18,6 +18,9 @@ public class ConcertSeatEntity {
     @Column(name = "location")
     String location;
 
+    @Version
+    Long version;
+
     @Column(name = "price")
     Long price;
 
@@ -25,10 +28,11 @@ public class ConcertSeatEntity {
         this.id = concertSeat.getId();
         this.concertPlaceId = concertSeat.getConcertPlaceId();
         this.location = concertSeat.getLocation();
+        this.version = concertSeat.getVersion();
         this.price = concertSeat.getPrice();
     }
 
     public ConcertSeat toDomain() {
-        return new ConcertSeat(this.id, this.concertPlaceId, this.location, this.price);
+        return new ConcertSeat(this.id, this.concertPlaceId, this.location, this.version, this.price);
     }
 }

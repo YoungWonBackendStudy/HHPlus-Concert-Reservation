@@ -16,8 +16,8 @@ public class ReservationDomainUnitTest {
         //given
         long userId = 0;
         List<ConcertSeat> seats = List.of(
-            new ConcertSeat(0L, 0L, "R1", 10000L),
-            new ConcertSeat(1L, 0L, "R2", 20000L)
+            new ConcertSeat(0L, 0L, "R1", 0L,10000L),
+            new ConcertSeat(1L, 0L, "R2", 0L,20000L)
         );
         
         //when
@@ -63,8 +63,8 @@ public class ReservationDomainUnitTest {
          //given
          long userId = 0;
          List<ConcertSeat> seats = List.of(
-             new ConcertSeat(0L, 0L, "R1", 10000L),
-             new ConcertSeat(1L, 0L, "R2", 20000L)
+             new ConcertSeat(0L, 0L, "R1", 0L, 10000L),
+             new ConcertSeat(1L, 0L, "R2", 0L, 20000L)
          );
          
          //when

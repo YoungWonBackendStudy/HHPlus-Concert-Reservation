@@ -7,7 +7,6 @@ import io.hhplus.concert.infra.concert.entity.ReservationEntity;
 import io.hhplus.concert.infra.concert.entity.ReservationTicketEntity;
 import io.hhplus.concert.support.exception.CustomNotFoundException;
 import io.hhplus.concert.support.exception.ExceptionCode;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,7 +24,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    @Transactional
     public Reservation getAndLockById(Long id) {
         var reservationEntityOptional = this.reservationJpaRepository.findAndLockById(id);
         if(reservationEntityOptional.isEmpty()) throw new CustomNotFoundException(ExceptionCode.RESERVATION_NOT_FOUND);
@@ -37,7 +35,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    @Transactional
     public Reservation saveReservation(Reservation reservation) {
         var reservationEntity = new ReservationEntity(reservation);
         reservationEntity = this.reservationJpaRepository.save(reservationEntity);

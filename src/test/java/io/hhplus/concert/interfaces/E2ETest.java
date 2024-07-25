@@ -107,7 +107,7 @@ public class E2ETest {
                 .header("WAITING_TOKEN", queueRes.token())
                 .param("concertScheduleId", concertSchedulesRes[0].id())
             .when()
-                .get("/concerts/schedules/seats")
+                .get("/concerts/seats")
             .then()
                 .statusCode(200)
                 .extract().as(ConcertSeatResponse[].class);

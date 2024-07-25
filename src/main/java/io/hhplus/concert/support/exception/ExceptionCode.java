@@ -22,7 +22,9 @@ public enum ExceptionCode {
 
     NOT_ENOUGH_BALANCE("400", "잔액이 부족합니다."),
     PAYMENT_AMOUNT_CANNOT_BE_NEGATIVE("400", "0보다 적은 금액은 결제할 수 없습니다."),
-    PAYMENT_ALREADY_COMPLETED("400", "이미 처리 완료된 예약입니다.");
+    PAYMENT_ALREADY_COMPLETED("400", "이미 처리 완료된 예약입니다."),
+
+    RESERVATION_FAIL_TO_GET_REDISSON_LOCK("400", "이미 예약이 진행 중입니다.");
 
     final String errorCode;
     final String message;
