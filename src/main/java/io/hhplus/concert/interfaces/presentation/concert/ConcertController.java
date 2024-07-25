@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "콘서트 정보")
+@Tag(name = "콘서트")
 @RestController
 public class ConcertController {
     private final ConcertFacade concertFacade;
@@ -62,13 +62,27 @@ public class ConcertController {
         @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
         @Parameter(name = "concertScheduleId", required = true, description = "조회할 콘서트 스케줄의 ID")
     })
-    @GetMapping("concerts/schedules/seats")
-    public List<ConcertSeatResponse> concertScheduleSeats(
+    @GetMapping("concerts/seats")
+    public List<ConcertSeatResponse> concertSeats(
         ConcertSeatRequest concertSeatRequest
     ) {
         return concertFacade.getConcertSeats(concertSeatRequest.concertScheduleId())
             .stream().map(ConcertSeatResponse::of)
             .toList();
+    }
+
+    @Operation(summary = "예약된 콘서트 좌석 조회 API")
+    @Parameters(value = {
+            @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
+            @Parameter(name = "concertScheduleId", required = true, description = "조회할 콘서트 스케줄의 ID")
+    })
+    @GetMapping("concerts/seats/reserved")
+    public List<ConcertSeatResponse> reservedConcertSeats(
+            ConcertSeatRequest concertSeatRequest
+    ) {
+        return concertFacade.getReservedConcertSeats(concertSeatRequest.concertScheduleId())
+                .stream().map(ConcertSeatResponse::of)
+                .toList();
     }
 
     @Operation(summary = "콘서트 좌석 예약 API")

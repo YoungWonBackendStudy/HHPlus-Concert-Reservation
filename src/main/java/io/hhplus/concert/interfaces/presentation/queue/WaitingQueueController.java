@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "대기열 토큰")
+@Tag(name = "대기열")
 @RestController
 public class WaitingQueueController {
     QueueFacade queueFacade;

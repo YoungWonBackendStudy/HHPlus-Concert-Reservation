@@ -213,6 +213,9 @@ Section 잔액 조회/충전
 Section 결제
     개발           : dev_pay, after test_asset, 12h
     테스트/오류수정 : test_pay, after dev_pay, 12h
+Section 토큰 검증
+    개발          : dev_tok_val, after test_pay, 6h
+    테스트/오류 수정 : test_tok_val, after dev_tok_val, 6h
 Section 대기열 만료 스케줄링
     개발           : dev_waiting_sch, after test_tok_val, 12h
     테스트/오류수정 : test_waiting_sch, after dev_waiting_sch, 12h
@@ -226,3 +229,89 @@ Section 배포
     배포 환경 구축  : env_setting, 2024-07-13, 2d
     배포 및 테스트  : env_extra, after env_setting, 1d
 ```
+
+## ERD
+```mermaid
+erDiagram
+
+User {
+    long user_id PK
+}
+
+User ||--|| Asset: has
+Asset {
+    long id PK
+    long user_id FK
+    long balance
+}
+
+User ||--o{ Reservation: reserves
+Reservation {
+    long id PK
+    long user_id FK
+    enum status "Index"
+    date reserved_at
+    date completed_at
+}
+
+Reservation ||--|{ ReservationTicket: contains
+ReservationTicket {
+    long id PK
+    long reservation_id FK
+    long concert_schedule_id FK
+    long concert_seat_id FK
+    string seat_location
+    long price
+}
+
+Reservation ||--o| Payment: "1:0..1"
+Payment {
+    long id PK
+    long reservation_id FK
+    long price
+    date paid_at
+}
+
+Concert {
+    long id PK
+    string name
+    string description
+}
+
+ConcertPlace {
+    long id PK
+    String place 
+}
+
+Concert ||--|{ ConcertSchedule : contains
+ConcertPlace ||--|{ ConcertSchedule : contains
+ConcertSchedule {
+    long id PK
+    long concert_id FK
+    long concert_place_id FK
+    date reservation_st_date
+    date reservation_end_date
+    date concert_date
+}
+
+ConcertPlace ||--|{ ConcertSeat : contains
+ConcertSeat {
+    long id PK
+    long concert_place_id FK
+    string location
+    long price
+}
+
+WaitingToken {
+    long id PK "AUTO_INCREMENT"
+    string token UK
+    long user_id FK
+    enum status
+    date issued_at
+    date activated_at
+    date deleted_at
+}
+```
+
+## API 명세서
+![Swagger](document%2Fswagger.png)
