@@ -10,7 +10,7 @@ import io.hhplus.concert.domain.user.UserAssetService;
 import io.hhplus.concert.domain.queue.TokenService;
 import io.hhplus.concert.domain.queue.QueueService;
 import io.hhplus.concert.domain.queue.WaitingQueueToken;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class PaymentFacade {
@@ -32,7 +32,7 @@ public class PaymentFacade {
     @Transactional
     public PaymentDto placePayment(String token,long reservationId) {
         WaitingQueueToken waitingQueueToken = tokenService.validateAndGetActiveToken(token);
-        Reservation reservation = reservationService.getReservation(reservationId);
+        Reservation reservation = reservationService.getAndLockReservation(reservationId);
 
         userAssetService.useUserAsset(waitingQueueToken.getUserId(), reservation.getTotalPrice());
         Payment payment = paymentService.placePayment(reservation);

@@ -29,7 +29,7 @@ public class PaymentServiceUnitTest {
     void testPlacePayment() {
         //given
         Reservation reservation = new Reservation(0L, 0L, new Date(), null, List.of());
-        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 100000L)));
+        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 0L,100000L)));
         when(mockPaymentRepository.save(any(Payment.class))).thenAnswer(returnsFirstArg());
         
         //when
@@ -44,7 +44,7 @@ public class PaymentServiceUnitTest {
     void testPlacePaymentWithExpiredReservation() {
         //given
         Reservation reservation = new Reservation(0L, 0L, new Date(System.currentTimeMillis() - 5 * 60 * 1000L - 1), null, List.of());
-        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 100000L)));
+        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 0L,100000L)));
         when(mockPaymentRepository.save(any(Payment.class))).thenAnswer(returnsFirstArg());
 
         //when
@@ -59,7 +59,7 @@ public class PaymentServiceUnitTest {
     void testPlacePaymentWithCompletedReservation() {
         //given
         Reservation reservation = new Reservation(0L, 0L, new Date(), new Date(), List.of());
-        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 100000L)));
+        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 0L,100000L)));
         when(mockPaymentRepository.save(any(Payment.class))).thenAnswer(returnsFirstArg());
 
         //when

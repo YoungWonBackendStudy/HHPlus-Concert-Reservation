@@ -57,7 +57,7 @@ public class PaymentFacadeIntegTest {
                 .toList();
         assertThat(concertSeats.size()).isGreaterThanOrEqualTo(1); //guard assertion
         
-        var reservation = concertFacade.reserveSeats(userId, seatsToReserve);
+        var reservation = concertFacade.reserveSeats(userId, seatsToReserve.subList(2,3));
 
         userAssetFacade.chargeBalance(userId, reservation.getTotalPrice() * 10);
         
@@ -80,7 +80,7 @@ public class PaymentFacadeIntegTest {
     }
 
     @Test
-    @DisplayName("하나의 예약에 대해 5번 동시 결제 시도할 경우 한번만 결제 됨")
+    @DisplayName("동시성 테스트: 하나의 예약에 대해 5번 동시 결제 시도할 경우 한번만 결제 됨")
     void testPaymentConsistent() throws InterruptedException {
         //given
         long userId = 0L;
@@ -99,11 +99,11 @@ public class PaymentFacadeIntegTest {
 
         assertThat(concertSeats.size()).isGreaterThanOrEqualTo(1);
         
-        var reservation = concertFacade.reserveSeats(userId, seatsToReserve);
+        var reservation = concertFacade.reserveSeats(userId, seatsToReserve.subList(3,4));
 
         userAssetFacade.chargeBalance(userId, reservation.getTotalPrice());
 
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        ExecutorService executorService = Executors.newFixedThreadPool(executionCnt);
         CountDownLatch latch = new CountDownLatch(executionCnt);
         
         //when
