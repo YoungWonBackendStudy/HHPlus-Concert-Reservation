@@ -213,11 +213,8 @@ Section 잔액 조회/충전
 Section 결제
     개발           : dev_pay, after test_asset, 12h
     테스트/오류수정 : test_pay, after dev_pay, 12h
-Section 토큰 검증
-    개발          : dev_tok_val, after test_pay, 6h
-    테스트/오류 수정 : test_tok_val, after dev_tok_val, 6h
 Section 대기열 만료 스케줄링
-    개발           : dev_waiting_sch, after test_tok_val, 12h
+    개발           : dev_waiting_sch, after test_pay, 12h
     테스트/오류수정 : test_waiting_sch, after dev_waiting_sch, 12h
 ```
 
@@ -229,6 +226,8 @@ Section 배포
     배포 환경 구축  : env_setting, 2024-07-13, 2d
     배포 및 테스트  : env_extra, after env_setting, 1d
 ```
+
+
 
 ## ERD
 ```mermaid
@@ -312,6 +311,5 @@ WaitingToken {
     date deleted_at
 }
 ```
-
-## API 명세서
-![Swagger](document%2Fswagger.png)
+## API 명세
+![Swagger API](document%2Fswagger.png)
