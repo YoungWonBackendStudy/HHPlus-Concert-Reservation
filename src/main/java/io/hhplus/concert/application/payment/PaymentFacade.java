@@ -1,29 +1,29 @@
 package io.hhplus.concert.application.payment;
 
+import io.hhplus.concert.domain.concert.ReservationService;
 import org.springframework.stereotype.Component;
 
 import io.hhplus.concert.domain.payment.Payment;
 import io.hhplus.concert.domain.payment.PaymentService;
-import io.hhplus.concert.domain.reservation.Reservation;
-import io.hhplus.concert.domain.reservation.ReservationService;
+import io.hhplus.concert.domain.concert.Reservation;
 import io.hhplus.concert.domain.user.UserAssetService;
-import io.hhplus.concert.domain.waiting.TokenService;
-import io.hhplus.concert.domain.waiting.WaitingService;
-import io.hhplus.concert.domain.waiting.WaitingToken;
+import io.hhplus.concert.domain.queue.TokenService;
+import io.hhplus.concert.domain.queue.QueueService;
+import io.hhplus.concert.domain.queue.WaitingQueueToken;
 import jakarta.transaction.Transactional;
 
 @Component
 public class PaymentFacade {
     TokenService tokenService;
-    WaitingService waitingService;
+    QueueService queueService;
     ReservationService reservationService;
     PaymentService paymentService;
     UserAssetService userAssetService;
     
-    public PaymentFacade(TokenService tokenService,  WaitingService waitingService, ReservationService reservationService, PaymentService paymentService,
-            UserAssetService userAssetService) {
+    public PaymentFacade(TokenService tokenService, QueueService queueService, ReservationService reservationService, PaymentService paymentService,
+                         UserAssetService userAssetService) {
         this.tokenService = tokenService;
-        this.waitingService = waitingService;
+        this.queueService = queueService;
         this.reservationService = reservationService;
         this.paymentService = paymentService;
         this.userAssetService = userAssetService;
@@ -31,14 +31,14 @@ public class PaymentFacade {
 
     @Transactional
     public PaymentDto placePayment(String token,long reservationId) {
-        WaitingToken waitingToken = tokenService.validateAndGetActiveToken(token);
-        Reservation reservation = reservationService.validateAndGetReservation(reservationId);
+        WaitingQueueToken waitingQueueToken = tokenService.validateAndGetActiveToken(token);
+        Reservation reservation = reservationService.getReservation(reservationId);
 
-        userAssetService.useUserAsset(waitingToken.getUserId(), reservation.getTotalPrice());
+        userAssetService.useUserAsset(waitingQueueToken.getUserId(), reservation.getTotalPrice());
         Payment payment = paymentService.placePayment(reservation);
 
         tokenService.expireToken(token);
-        waitingService.activateWaitings();
+        queueService.activateTokens();
         reservationService.completeReservation(reservation);
 
         return new PaymentDto(payment);

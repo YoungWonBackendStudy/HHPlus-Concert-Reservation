@@ -1,0 +1,92 @@
+package io.hhplus.concert.domain.concert;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Date;
+import java.util.List;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+public class ConcertServiceUnitTest {
+    private final ConcertService concertService;
+    private final ConcertRepository mockConcertRepository;
+    private final ReservationRepository mockReservationRepository;
+
+    public ConcertServiceUnitTest() {
+        this.mockConcertRepository = mock(ConcertRepository.class);
+        this.mockReservationRepository = mock(ReservationRepository.class);
+        this.concertService = new ConcertService(mockConcertRepository, mockReservationRepository);
+    }
+    
+    @Test
+    @DisplayName("콘서트 조회 성공 테스트")
+    public void testGetConcerts() {
+        //given
+        var expectedConcerts = List.of(new Concert(0L, "아이유 콘서트", "아이유 콘서트 2024.07.12"));
+        when(mockConcertRepository.getConcerts()).thenReturn(expectedConcerts);
+        
+        //when
+        var resConcerts = this.concertService.getConcerts();
+
+        //then
+        assertThat(resConcerts).isNotNull();
+        assertThat(resConcerts).isEqualTo(expectedConcerts);
+    }
+
+    @Test
+    @DisplayName("콘서트 스케줄 조회 성공 테스트")
+    public void testGetConcertSchedules() {
+        //given
+        var concertId = 0L;
+        var expectedConcertSchedules = List.of(new ConcertSchedule(0L, concertId, new ConcertPlace(0L, "잠실"), new Date(), new Date(), new Date()));
+        when(mockConcertRepository.getConcertSchedulesByConcertId(concertId)).thenReturn(expectedConcertSchedules);
+        
+        //when
+        var resConcertSchedules = this.concertService.getConcertSchedules(concertId);
+
+        //then
+        assertThat(resConcertSchedules).isNotNull();
+        assertThat(resConcertSchedules).isEqualTo(expectedConcertSchedules);
+    }
+
+    @Test
+    @DisplayName("콘서트 좌석 조회 성공 테스트")
+    public void testGetConcertSeat() {
+        //given
+        var concertScheduleId = 0L;
+        var concertPlaceId = 0L;
+        var expectedConcertSeats = List.of(new ConcertSeat(0L, concertPlaceId, "R1", 100000L));
+        var concertSchedule = new ConcertSchedule(0L, 0L, new ConcertPlace(concertPlaceId, "잠실"), new Date(), new Date(System.currentTimeMillis() + 24* 60*1000L), new Date());
+        when(mockConcertRepository.getConcertScheduleById(concertScheduleId)).thenReturn(concertSchedule);
+        when(mockConcertRepository.getConcertSeatsByConcertPlaceId(concertScheduleId)).thenReturn(expectedConcertSeats);
+        
+        //when
+        var resConcertSeats = this.concertService.getConcertSeats(concertScheduleId);
+
+        //then
+        assertThat(resConcertSeats).isNotNull();
+        assertThat(resConcertSeats).isEqualTo(expectedConcertSeats);
+    }
+
+    @Test
+    @DisplayName("콘서트 예약된 좌석 조회 성공 테스트")
+    public void testGetReservedConcertSeat() {
+        //given
+        var concertScheduleId = 0L;
+        var concertPlaceId = 0L;
+        var expectedConcertSeats = List.of(new ConcertSeat(0L, concertPlaceId, "R1", 100000L));
+        var expectedReservationTickets = List.of(new ReservationTicket(0L, expectedConcertSeats.get(0)));
+        when(mockReservationRepository.getCompletedOrReservedUnder5mins(concertScheduleId)).thenReturn(expectedReservationTickets);
+        when(mockConcertRepository.getAndLockConcertSeatsByIdIn(List.of(expectedConcertSeats.get(0).getId()))).thenReturn(expectedConcertSeats);
+
+        //when
+        var resConcertSeats = this.concertService.getReservedConcertSeats(concertScheduleId);
+
+        //then
+        assertThat(resConcertSeats).isNotNull();
+        assertThat(resConcertSeats).isEqualTo(expectedConcertSeats);
+    }
+}

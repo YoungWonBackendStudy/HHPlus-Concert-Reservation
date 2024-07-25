@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "사용자 자산")
 @RestController
 public class AssetController {
-    UserAssetFacade userAssetFacade;
+    private final UserAssetFacade userAssetFacade;
 
     public AssetController(UserAssetFacade userAssetFacade) {
         this.userAssetFacade = userAssetFacade;

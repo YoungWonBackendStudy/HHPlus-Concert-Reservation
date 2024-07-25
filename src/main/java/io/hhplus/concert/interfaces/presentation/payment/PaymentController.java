@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "결제")
@@ -26,7 +25,7 @@ public class PaymentController {
     @Operation(summary = "결제 API")
     
     @Parameters(value = {
-        @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE상태의 토큰")
+        @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE 상태의 토큰")
     })
     @PostMapping("payment")
     public PaymentResponse placePayment(    

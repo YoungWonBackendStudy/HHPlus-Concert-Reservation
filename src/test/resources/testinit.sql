@@ -1,10 +1,12 @@
-delete from waiting_token;
-delete from concert;
-delete from concert_schedule;
-delete from concert_seat;
-delete from user_asset;
-delete from reservation;
+delete from queue_token;
 delete from payment;
+delete from reservation_ticket;
+delete from reservation;
+delete from concert_seat;
+delete from concert_schedule;
+delete from concert_place;
+delete from concert;
+delete from user_asset;
 
 insert into 
     user_asset(user_id, balance)
@@ -17,15 +19,20 @@ insert into
 values 
     (0, '아이유 콘서트', '2024.07.17 ~ 2024.07.19');
 
-insert into 
-    concert_schedule(id, concert_id, place, reservation_st_date, reservation_end_date, concert_date)
-values 
-    (0, 0, '잠실', '2024-07-01', '2024-07-05', '2024-07-17'),
-    (1, 0, '잠실', '2024-07-01', '2024-07-05', '2024-07-18'),
-    (2, 0, '잠실', '2024-07-01', '2024-07-05', '2024-07-19');
+insert into
+    concert_place(id, place)
+values
+    (0, '잠실');
 
 insert into 
-    concert_seat(id, concert_schedule_id, location, price)
+    concert_schedule(id, concert_id, concert_place_id, reservation_st_date, reservation_end_date, concert_date)
+values 
+    (0, 0, 0, '2024-07-01', '2024-07-05', '2024-07-17'),
+    (1, 0, 0, '2024-07-01', '2024-07-05', '2024-07-18'),
+    (2, 0, 0, '2024-07-01', '2024-07-05', '2024-07-19');
+
+insert into 
+    concert_seat(id, concert_place_id, location, price)
 values
     (0, 0, 'R1', 100000),
     (1, 0, 'R2', 120000),

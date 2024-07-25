@@ -214,7 +214,7 @@ Section 결제
     개발           : dev_pay, after test_asset, 12h
     테스트/오류수정 : test_pay, after dev_pay, 12h
 Section 대기열 만료 스케줄링
-    개발           : dev_waiting_sch, after test_tok_val, 12h
+    개발           : dev_waiting_sch, after test_pay, 12h
     테스트/오류수정 : test_waiting_sch, after dev_waiting_sch, 12h
 ```
 
@@ -226,6 +226,7 @@ Section 배포
     배포 환경 구축  : env_setting, 2024-07-13, 2d
     배포 및 테스트  : env_extra, after env_setting, 1d
 ```
+
 
 
 ## ERD
@@ -247,7 +248,7 @@ User ||--o{ Reservation: reserves
 Reservation {
     long id PK
     long user_id FK
-    string status "Index"
+    enum status "Index"
     date reserved_at
     date completed_at
 }
@@ -256,6 +257,7 @@ Reservation ||--|{ ReservationTicket: contains
 ReservationTicket {
     long id PK
     long reservation_id FK
+    long concert_schedule_id FK
     long concert_seat_id FK
     string seat_location
     long price
@@ -275,20 +277,26 @@ Concert {
     string description
 }
 
+ConcertPlace {
+    long id PK
+    String place 
+}
+
 Concert ||--|{ ConcertSchedule : contains
+ConcertPlace ||--|{ ConcertSchedule : contains
 ConcertSchedule {
     long id PK
     long concert_id FK
-    string place
+    long concert_place_id FK
     date reservation_st_date
     date reservation_end_date
     date concert_date
 }
 
-ConcertSchedule ||--|{ ConcertSeat : contains
+ConcertPlace ||--|{ ConcertSeat : contains
 ConcertSeat {
     long id PK
-    long concert_schedule_id FK
+    long concert_place_id FK
     string location
     long price
 }
@@ -305,6 +313,3 @@ WaitingToken {
 ```
 ## API 명세
 ![Swagger API](document%2Fswagger.png)
-
-## Test Result
-![Test Result](document%2Ftest-result.png)
