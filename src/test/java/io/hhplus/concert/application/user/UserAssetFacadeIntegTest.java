@@ -42,7 +42,7 @@ public class UserAssetFacadeIntegTest {
         long userId = 0;
         long chargeAmount = 10000;
         int executionCnt = 10;
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        ExecutorService executorService = Executors.newFixedThreadPool(executionCnt);
         CountDownLatch latch = new CountDownLatch(executionCnt);
 
         //when

@@ -26,7 +26,7 @@ public class UserAssetServiceUnitTest {
     void testGetBalance() {
         //given
         UserAsset testUserAsset = new UserAsset(0L, 3000);
-        when(mockUserRepository.getAndLockByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
+        when(mockUserRepository.getByUserId(testUserAsset.getUserId())).thenReturn(testUserAsset);
 
         //when
         var resUserAsset = userAssetService.getUserAsset(testUserAsset.getUserId());
