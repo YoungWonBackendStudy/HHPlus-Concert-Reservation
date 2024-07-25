@@ -4,16 +4,15 @@ import java.util.Date;
 
 import io.hhplus.concert.domain.queue.WaitingQueueToken;
 import io.hhplus.concert.domain.queue.WaitingQueueToken.TokenStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity 
-@Table(name = "queue_token")
+@Table(name = "queue_token"
+        ,uniqueConstraints = {
+                @UniqueConstraint(name = "lectureScheduleUserUnique", columnNames = {"userId", "status"})
+        }
+)
 @NoArgsConstructor
 public class WaitingQueueTokenEntity {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)

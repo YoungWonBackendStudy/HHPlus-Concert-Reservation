@@ -5,7 +5,6 @@ import io.hhplus.concert.support.exception.ExceptionCode;
 import org.springframework.stereotype.Service;
 
 import io.hhplus.concert.domain.queue.WaitingQueueToken.TokenStatus;
-import jakarta.transaction.Transactional;
 
 @Service
 public class QueueService {
@@ -29,7 +28,6 @@ public class QueueService {
         return token.getId() - firstWaitingToken.getId();
     }
 
-    @Transactional
     public void activateTokens() {
         var activeTokens = waitingQueueTokenRepository.getTokensByStatus(TokenStatus.ACTIVE, queueSize + 1);
         if (activeTokens.size() >= queueSize)
