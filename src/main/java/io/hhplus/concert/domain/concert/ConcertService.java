@@ -2,16 +2,15 @@ package io.hhplus.concert.domain.concert;
 
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
-
 import java.util.List;
 
 @Service
 public class ConcertService {
-    ConcertRepository concertRepository;
-
-    public ConcertService(ConcertRepository concertSeatRepository) {
-        this.concertRepository = concertSeatRepository;
+    private final ConcertRepository concertRepository;
+    private final ReservationRepository reservationRepository;
+    public ConcertService(ConcertRepository concertRepository, ReservationRepository reservationRepository) {
+        this.concertRepository = concertRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<Concert> getConcerts() {
@@ -19,15 +18,22 @@ public class ConcertService {
     }
 
     public List<ConcertSchedule> getConcertSchedules(long concertId) {
-        return concertRepository.getConcertSchedulesByScheduleId(concertId);
+        return concertRepository.getConcertSchedulesByConcertId(concertId);
     }
 
     public List<ConcertSeat> getConcertSeats(long concertScheduleId) {
-        return concertRepository.getConcertSeatsByConcertScheduleId(concertScheduleId);
+        var concertSchedule = concertRepository.getConcertScheduleById(concertScheduleId);
+        return concertRepository.getConcertSeatsByConcertPlaceId(concertSchedule.getConcertPlace().getId());
     }
 
-    @Transactional
+    public List<ConcertSeat> getReservedConcertSeats(long concertScheduleId) {
+        var reservedTickets = reservationRepository.getCompletedOrReservedUnder5mins(concertScheduleId);
+        var seatIds = reservedTickets.stream().map(ReservationTicket::getConcertSeatId).toList();
+        return concertRepository.getConcertSeatsByIdIn(seatIds);
+    }
+
+
     public List<ConcertSeat> getConcertSeatsByIds(List<Long> seatIds) {
-        return concertRepository.getAndLockConcertSeatsByIdIn(seatIds);
+        return concertRepository.getConcertSeatsByIdIn(seatIds);
     }
 }

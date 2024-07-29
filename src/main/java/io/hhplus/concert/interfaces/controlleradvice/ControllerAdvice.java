@@ -1,7 +1,6 @@
 package io.hhplus.concert.interfaces.controlleradvice;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,12 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 class ApiControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = CustomNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCustomNotFoundException(CustomNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("404", e.getMessage()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getCode().getErrorCode(), e.getMessage()));
     }
 
     @ExceptionHandler(value = CustomBadRequestException.class)
     public ResponseEntity<ErrorResponse> handleCustomBadRequestException(CustomBadRequestException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("400", e.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getCode().getErrorCode(), e.getMessage()));
     }
 
 

@@ -2,7 +2,7 @@ package io.hhplus.concert.domain.payment;
 
 import java.util.Date;
 
-import io.hhplus.concert.domain.reservation.Reservation;
+import io.hhplus.concert.domain.concert.Reservation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

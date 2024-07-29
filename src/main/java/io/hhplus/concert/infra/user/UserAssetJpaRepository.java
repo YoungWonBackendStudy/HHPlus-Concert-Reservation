@@ -10,5 +10,5 @@ import jakarta.persistence.LockModeType;
 
 public interface UserAssetJpaRepository extends JpaRepository<UserAssetEntity, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    public Optional<UserAssetEntity> findAndLockByUserId(@NonNull Long userId);
+    Optional<UserAssetEntity> findAndLockByUserId(@NonNull Long userId);
 }

@@ -2,9 +2,7 @@ package io.hhplus.concert.domain.payment;
 
 import org.springframework.stereotype.Service;
 
-import io.hhplus.concert.domain.reservation.Reservation;
-import jakarta.transaction.Transactional;
-
+import io.hhplus.concert.domain.concert.Reservation;
 @Service
 public class PaymentService {
     PaymentRepository paymentRepository;
@@ -13,8 +11,8 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
-    @Transactional
     public Payment placePayment(Reservation reservation) {
+        reservation.validatePayable();
         Payment payment = new Payment(reservation);
         return paymentRepository.save(payment);
     }

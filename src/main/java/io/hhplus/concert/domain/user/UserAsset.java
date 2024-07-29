@@ -12,11 +12,14 @@ public class UserAsset {
     long balance;
 
     public void charge(long amount) {
+        if(amount < 0) throw new CustomBadRequestException(ExceptionCode.CHARGE_AMOUNT_CANNOT_BE_NEGATIVE);
+
         this.balance += amount;
     }
 
-    public void use(long amount) {
-        if(this.balance < amount) throw new CustomBadRequestException(ExceptionCode.PAYMENT_NOT_ENOUGH_BALANCE);
+    public void useAsset(long amount) {
+        if(amount < 0) throw new CustomBadRequestException(ExceptionCode.PAYMENT_AMOUNT_CANNOT_BE_NEGATIVE);
+        if(this.balance < amount) throw new CustomBadRequestException(ExceptionCode.NOT_ENOUGH_BALANCE);
 
         this.balance -= amount;
     }

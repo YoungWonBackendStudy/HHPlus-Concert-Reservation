@@ -2,7 +2,7 @@ package io.hhplus.concert.domain.user;
 
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserAssetService {
@@ -13,7 +13,7 @@ public class UserAssetService {
     }
 
     public UserAsset getUserAsset(long userId) {
-        return userAssetRepository.getAndLockByUserId(userId);
+        return userAssetRepository.getByUserId(userId);
     }
 
     @Transactional
@@ -24,9 +24,10 @@ public class UserAssetService {
         return userAsset;
     }
 
+    @Transactional
     public UserAsset useUserAsset(long userId, long amount) {
         UserAsset userAsset = userAssetRepository.getAndLockByUserId(userId);
-        userAsset.use(amount);
+        userAsset.useAsset(amount);
         userAssetRepository.save(userAsset);
         return userAsset;
     }
