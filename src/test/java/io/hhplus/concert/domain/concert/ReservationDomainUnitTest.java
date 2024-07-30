@@ -1,5 +1,6 @@
 package io.hhplus.concert.domain.concert;
 
+import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,8 @@ public class ReservationDomainUnitTest {
         //given
         long userId = 0;
         List<ConcertSeat> seats = List.of(
-            new ConcertSeat(0L, 0L, "R1", 0L,10000L),
-            new ConcertSeat(1L, 0L, "R2", 0L,20000L)
+            new ConcertSeat(0L, 0L, "R1", 10000L, false),
+            new ConcertSeat(1L, 0L, "R2", 20000L, false)
         );
         
         //when
@@ -63,8 +64,8 @@ public class ReservationDomainUnitTest {
          //given
          long userId = 0;
          List<ConcertSeat> seats = List.of(
-             new ConcertSeat(0L, 0L, "R1", 0L, 10000L),
-             new ConcertSeat(1L, 0L, "R2", 0L, 20000L)
+             new ConcertSeat(0L, 0L, "R1", 10000L, false),
+             new ConcertSeat(1L, 0L, "R2", 20000L, false)
          );
          
          //when

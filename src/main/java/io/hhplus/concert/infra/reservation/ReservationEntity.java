@@ -1,9 +1,9 @@
-package io.hhplus.concert.infra.concert.entity;
+package io.hhplus.concert.infra.reservation;
 
 import java.util.Date;
 
-import io.hhplus.concert.domain.concert.Reservation;
-import io.hhplus.concert.domain.concert.ReservationTicket;
+import io.hhplus.concert.domain.reservation.Reservation;
+import io.hhplus.concert.domain.reservation.ReservationTicket;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

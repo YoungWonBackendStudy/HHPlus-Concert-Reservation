@@ -343,27 +343,22 @@ Concert {
     string description
 }
 
-ConcertPlace {
-    long id PK
-    String place 
-}
-
 Concert ||--|{ ConcertSchedule : contains
-ConcertPlace ||--|{ ConcertSchedule : contains
 ConcertSchedule {
     long id PK
     long concert_id FK
-    long concert_place_id FK
+    string place
     date reservation_st_date
     date reservation_end_date
     date concert_date
 }
 
-ConcertPlace ||--|{ ConcertSeat : contains
+  ConcertSchedule ||--|{ ConcertSeat : contains
 ConcertSeat {
     long id PK
-    long concert_place_id FK
+    long concert_schedule_id FK
     string location
+    boolean reserved
     long price
 }
 

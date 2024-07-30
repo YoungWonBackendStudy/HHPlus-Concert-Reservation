@@ -1,24 +1,22 @@
 package io.hhplus.concert.domain.concert;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.List;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ConcertServiceUnitTest {
     private final ConcertService concertService;
     private final ConcertRepository mockConcertRepository;
-    private final ReservationRepository mockReservationRepository;
 
     public ConcertServiceUnitTest() {
         this.mockConcertRepository = mock(ConcertRepository.class);
-        this.mockReservationRepository = mock(ReservationRepository.class);
-        this.concertService = new ConcertService(mockConcertRepository, mockReservationRepository);
+        this.concertService = new ConcertService(mockConcertRepository);
     }
     
     @Test
@@ -41,7 +39,7 @@ public class ConcertServiceUnitTest {
     public void testGetConcertSchedules() {
         //given
         var concertId = 0L;
-        var expectedConcertSchedules = List.of(new ConcertSchedule(0L, concertId, new ConcertPlace(0L, "잠실"), new Date(), new Date(), new Date()));
+        var expectedConcertSchedules = List.of(new ConcertSchedule(0L, concertId, "잠실", new Date(), new Date(), new Date()));
         when(mockConcertRepository.getConcertSchedulesByConcertId(concertId)).thenReturn(expectedConcertSchedules);
         
         //when
@@ -57,33 +55,13 @@ public class ConcertServiceUnitTest {
     public void testGetConcertSeat() {
         //given
         var concertScheduleId = 0L;
-        var concertPlaceId = 0L;
-        var expectedConcertSeats = List.of(new ConcertSeat(0L, concertPlaceId, "R1", 0L, 100000L));
-        var concertSchedule = new ConcertSchedule(0L, 0L, new ConcertPlace(concertPlaceId, "잠실"), new Date(), new Date(System.currentTimeMillis() + 24* 60*1000L), new Date());
+        var expectedConcertSeats = List.of(new ConcertSeat(0L, concertScheduleId, "R1", 0L, false));
+        var concertSchedule = new ConcertSchedule(0L, 0L, "잠실", new Date(), new Date(System.currentTimeMillis() + 24* 60*1000L), new Date());
         when(mockConcertRepository.getConcertScheduleById(concertScheduleId)).thenReturn(concertSchedule);
-        when(mockConcertRepository.getConcertSeatsByConcertPlaceId(concertScheduleId)).thenReturn(expectedConcertSeats);
+        when(mockConcertRepository.getConcertSeatsByConcertScheduleId(concertScheduleId)).thenReturn(expectedConcertSeats);
         
         //when
         var resConcertSeats = this.concertService.getConcertSeats(concertScheduleId);
-
-        //then
-        assertThat(resConcertSeats).isNotNull();
-        assertThat(resConcertSeats).isEqualTo(expectedConcertSeats);
-    }
-
-    @Test
-    @DisplayName("콘서트 예약된 좌석 조회 성공 테스트")
-    public void testGetReservedConcertSeat() {
-        //given
-        var concertScheduleId = 0L;
-        var concertPlaceId = 0L;
-        var expectedConcertSeats = List.of(new ConcertSeat(0L, concertPlaceId, "R1", 0L, 100000L));
-        var expectedReservationTickets = List.of(new ReservationTicket(0L, expectedConcertSeats.get(0)));
-        when(mockReservationRepository.getCompletedOrReservedUnder5mins(concertScheduleId)).thenReturn(expectedReservationTickets);
-        when(mockConcertRepository.getConcertSeatsByIdIn(List.of(expectedConcertSeats.get(0).getId()))).thenReturn(expectedConcertSeats);
-
-        //when
-        var resConcertSeats = this.concertService.getReservedConcertSeats(concertScheduleId);
 
         //then
         assertThat(resConcertSeats).isNotNull();

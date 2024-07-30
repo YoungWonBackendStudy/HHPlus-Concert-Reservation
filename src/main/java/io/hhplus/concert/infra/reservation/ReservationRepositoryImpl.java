@@ -1,14 +1,13 @@
-package io.hhplus.concert.infra.concert;
+package io.hhplus.concert.infra.reservation;
 
-import io.hhplus.concert.domain.concert.Reservation;
-import io.hhplus.concert.domain.concert.ReservationRepository;
-import io.hhplus.concert.domain.concert.ReservationTicket;
-import io.hhplus.concert.infra.concert.entity.ReservationEntity;
-import io.hhplus.concert.infra.concert.entity.ReservationTicketEntity;
+import io.hhplus.concert.domain.reservation.Reservation;
+import io.hhplus.concert.domain.reservation.ReservationRepository;
+import io.hhplus.concert.domain.reservation.ReservationTicket;
 import io.hhplus.concert.support.exception.CustomNotFoundException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -61,5 +60,18 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return reservationTicketJpaRepository.findCompletedOrReservedUnder5minByConcertScheduleId(concertScheduleId)
                 .stream().map(ReservationTicketEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public List<Reservation> getReservedOver5mins() {
+        var expiredReservations = reservationJpaRepository.findByReservedAtBefore(new Date(System.currentTimeMillis() - 5 * 60 * 1000L));
+        var expiredTicketDomains = reservationTicketJpaRepository.findByReservationIdIn(expiredReservations.stream().map(ReservationEntity::getId).toList())
+                .stream().map(ReservationTicketEntity::toDomain)
+                .toList();
+
+        return expiredReservations.stream().map(reservation -> {
+            var tickets = expiredTicketDomains.stream().filter(ticket -> ticket.getReservationId().equals(reservation.getId())).toList();
+            return reservation.toDomain(tickets);
+        }).toList();
     }
 }

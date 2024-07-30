@@ -1,5 +1,10 @@
 package io.hhplus.concert.domain.concert;
 
+import io.hhplus.concert.domain.reservation.Reservation;
+import io.hhplus.concert.domain.reservation.ReservationRepository;
+import io.hhplus.concert.domain.reservation.ReservationService;
+import io.hhplus.concert.domain.reservation.ReservationTicket;
+import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,21 +15,18 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ReservationServiceUnitTest {
     ReservationService reservationService;
     ReservationRepository mockReservationRepository;
-    ReservationRedissonClient mockReservationRedissonClient;
     ConcertRepository mockConcertRepository;
 
     public ReservationServiceUnitTest() {
         mockReservationRepository = mock(ReservationRepository.class);
-        mockReservationRedissonClient = mock(ReservationRedissonClient.class);
         mockConcertRepository = mock(ConcertRepository.class);
-        reservationService = new ReservationService(mockReservationRepository, mockReservationRedissonClient, mockConcertRepository);
+        reservationService = new ReservationService(mockReservationRepository, mockConcertRepository);
     }
 
     @Test
@@ -34,8 +36,8 @@ public class ReservationServiceUnitTest {
         long userId = 0;
         long concertScheduleId = 0;
         List<ConcertSeat> seats = List.of(
-            new ConcertSeat(0L, concertScheduleId, "R1", 0L,100000L)
-            , new ConcertSeat(1L, concertScheduleId, "R2", 0L, 120000L)
+            new ConcertSeat(0L, concertScheduleId, "R1", 100000L, false)
+            , new ConcertSeat(1L, concertScheduleId, "R2", 120000L, false)
         );
         List<ReservationTicket> tickets = seats
                 .stream().map(seat -> new ReservationTicket(0L, seat))
@@ -61,21 +63,22 @@ public class ReservationServiceUnitTest {
         long concertPlaceId = 0;
         long reservationId = 0;
         List<ConcertSeat> seats = List.of(
-                new ConcertSeat(0L, concertPlaceId, "R1", 0L, 100000L)
-                , new ConcertSeat(1L, concertPlaceId, "R2", 0L, 120000L)
+                new ConcertSeat(0L, concertPlaceId, "R1", 100000L, false)
+                , new ConcertSeat(1L, concertPlaceId, "R2", 120000L, false)
         );
         List<ReservationTicket> tickets = seats
                 .stream().map(seat -> new ReservationTicket(reservationId, seat))
                 .toList();
+
+        seats.forEach(ConcertSeat::reserved);
         Reservation reservation = new Reservation(reservationId, userId, new Date(), null, tickets);
 
-        when(mockReservationRepository.getCompletedOrReservedUnder5mins(anyList())).thenReturn(tickets);
         when(mockReservationRepository.saveReservation(any(Reservation.class))).thenReturn(reservation);
 
         //when
         ThrowableAssert.ThrowingCallable reservationRes = () -> reservationService.reserveConcertSeats(userId, seats);
 
         //then
-        assertThatThrownBy(reservationRes).isNotNull();
+        assertThatThrownBy(reservationRes).hasMessage(ExceptionCode.SEAT_ALREADY_RESERVED.getMessage());
     }
 }

@@ -13,7 +13,7 @@ public class ConcertScheduleDto {
 
     public ConcertScheduleDto(ConcertSchedule domain) {
         this.id = domain.getId();
-        this.place = domain.getConcertPlace().getPlace();
+        this.place = domain.getPlace();
         this.concertDate = domain.getConcertDate();
     }
 }

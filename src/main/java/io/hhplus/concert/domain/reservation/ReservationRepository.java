@@ -1,4 +1,4 @@
-package io.hhplus.concert.domain.concert;
+package io.hhplus.concert.domain.reservation;
 
 import java.util.List;
 public interface ReservationRepository {
@@ -7,4 +7,5 @@ public interface ReservationRepository {
     List<ReservationTicket> saveReservationTickets(List<ReservationTicket> reservationTickets);
     List<ReservationTicket> getCompletedOrReservedUnder5mins(List<Long> seadIds);
     List<ReservationTicket> getCompletedOrReservedUnder5mins(Long concertScheduleId);
+    List<Reservation> getReservedOver5mins();
 }

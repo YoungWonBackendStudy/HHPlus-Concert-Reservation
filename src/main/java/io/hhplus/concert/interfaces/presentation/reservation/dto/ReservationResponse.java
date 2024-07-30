@@ -1,9 +1,9 @@
-package io.hhplus.concert.interfaces.presentation.concert.dto;
+package io.hhplus.concert.interfaces.presentation.reservation.dto;
 
 import java.util.Date;
 import java.util.List;
 
-import io.hhplus.concert.application.concert.ReservationDto;
+import io.hhplus.concert.application.reservation.ReservationDto;
 
 public record ReservationResponse(
     long reservationId,

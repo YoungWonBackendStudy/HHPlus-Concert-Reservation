@@ -1,4 +1,4 @@
-package io.hhplus.concert.interfaces.presentation.concert.dto;
+package io.hhplus.concert.interfaces.presentation.reservation.dto;
 
 import java.util.List;
 

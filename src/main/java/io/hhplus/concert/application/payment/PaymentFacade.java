@@ -1,11 +1,11 @@
 package io.hhplus.concert.application.payment;
 
-import io.hhplus.concert.domain.concert.ReservationService;
+import io.hhplus.concert.domain.reservation.ReservationService;
 import org.springframework.stereotype.Component;
 
 import io.hhplus.concert.domain.payment.Payment;
 import io.hhplus.concert.domain.payment.PaymentService;
-import io.hhplus.concert.domain.concert.Reservation;
+import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.domain.user.UserAssetService;
 import io.hhplus.concert.domain.queue.TokenService;
 import io.hhplus.concert.domain.queue.QueueService;

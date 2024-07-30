@@ -1,22 +1,22 @@
 package io.hhplus.concert.domain.concert;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Date;
-
 @Getter
+@AllArgsConstructor
 public class ConcertSeat {
     Long id;
-    Long concertPlaceId;
+    Long concertScheduleId;
     String location;
-    Long version;
     Long price;
+    Boolean reserved;
 
-    public ConcertSeat(Long id, Long concertPlaceId, String location, Long version, Long price) {
-        this.id = id;
-        this.concertPlaceId = concertPlaceId;
-        this.version = version;
-        this.location = location;
-        this.price = price;
+    public void reserved() {
+        this.reserved = true;
+    }
+
+    public void reservationExpired() {
+        this.reserved = false;
     }
 }

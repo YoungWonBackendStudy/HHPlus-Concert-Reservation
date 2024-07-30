@@ -14,8 +14,8 @@ import io.hhplus.concert.interfaces.presentation.concert.dto.ConcertScheduleResp
 import io.hhplus.concert.interfaces.presentation.concert.dto.ConcertSeatResponse;
 import io.hhplus.concert.interfaces.presentation.payment.dto.PaymentRequest;
 import io.hhplus.concert.interfaces.presentation.payment.dto.PaymentResponse;
-import io.hhplus.concert.interfaces.presentation.concert.dto.ReservationRequest;
-import io.hhplus.concert.interfaces.presentation.concert.dto.ReservationResponse;
+import io.hhplus.concert.interfaces.presentation.reservation.dto.ReservationRequest;
+import io.hhplus.concert.interfaces.presentation.reservation.dto.ReservationResponse;
 import io.hhplus.concert.interfaces.presentation.user.dto.AssetChargeRequest;
 import io.hhplus.concert.interfaces.presentation.user.dto.AssetChargeResponse;
 import io.hhplus.concert.interfaces.presentation.user.dto.AssetGetResponse;
@@ -130,7 +130,7 @@ public class E2ETest {
                 .header("WAITING_TOKEN", queueRes.token())
                 .body(reservationRequest)
             .when()
-                .post("/concerts/reservations")
+                .post("reservations")
             .then()
                 .statusCode(200)
                 .extract().as(ReservationResponse.class);

@@ -1,6 +1,6 @@
-package io.hhplus.concert.infra.concert.entity;
+package io.hhplus.concert.infra.reservation;
 
-import io.hhplus.concert.domain.concert.ReservationTicket;
+import io.hhplus.concert.domain.reservation.ReservationTicket;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 

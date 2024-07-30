@@ -3,6 +3,7 @@ package io.hhplus.concert.application.payment;
 import io.hhplus.concert.application.concert.ConcertFacade;
 import io.hhplus.concert.application.concert.ConcertSeatDto;
 import io.hhplus.concert.application.queue.QueueFacade;
+import io.hhplus.concert.application.reservation.ReservationFacade;
 import io.hhplus.concert.application.user.UserAssetFacade;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
@@ -16,7 +17,6 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,6 +36,9 @@ public class PaymentFacadeIntegTest {
     @Autowired
     ConcertFacade concertFacade;
 
+    @Autowired
+    ReservationFacade reservationFacade;
+
     @Test
     @DisplayName("좌석 예약을 두번 결제시도할 경우 1번째는 정상 결제 && 두번째는 토큰 만료 (결제 완료 시 토큰 만료)")
     void testPayment() {
@@ -48,16 +51,14 @@ public class PaymentFacadeIntegTest {
         assertThatThrownBy(() -> queueFacade.getQueueToken(userId))
                 .hasMessage(ExceptionCode.TOKEN_NOT_WAITING.getMessage()); //guard assertion
 
-        var reservedConcertIds = concertFacade.getReservedConcertSeats(concertScheduleId)
-                .stream().map(ConcertSeatDto::getId).collect(Collectors.toSet());
-        var concertSeats = concertFacade.getConcertSeats(0L);
+        var concertSeats = concertFacade.getConcertSeats(concertScheduleId);
         var seatsToReserve = concertSeats.stream()
+                .filter(seat -> !seat.getReserved())
                 .map(ConcertSeatDto::getId)
-                .filter(id -> !reservedConcertIds.contains(id))
                 .toList();
         assertThat(concertSeats.size()).isGreaterThanOrEqualTo(1); //guard assertion
         
-        var reservation = concertFacade.reserveSeats(userId, seatsToReserve.subList(2,3));
+        var reservation = reservationFacade.reserveSeats(userId, seatsToReserve.subList(2,3));
 
         userAssetFacade.chargeBalance(userId, reservation.getTotalPrice() * 10);
         
@@ -89,17 +90,15 @@ public class PaymentFacadeIntegTest {
         var queue = queueFacade.getQueueToken(userId);
         queueFacade.scheduleWaitingQueue();
 
-        var reservedConcertIds = concertFacade.getReservedConcertSeats(concertScheduleId)
-                .stream().map(ConcertSeatDto::getId).collect(Collectors.toSet());
-        var concertSeats = concertFacade.getConcertSeats(0L);
+        var concertSeats = concertFacade.getConcertSeats(concertScheduleId);
         var seatsToReserve = concertSeats.stream()
+                .filter(seat -> !seat.getReserved())
                 .map(ConcertSeatDto::getId)
-                .filter(id -> !reservedConcertIds.contains(id))
                 .toList();
 
         assertThat(concertSeats.size()).isGreaterThanOrEqualTo(1);
         
-        var reservation = concertFacade.reserveSeats(userId, seatsToReserve.subList(3,4));
+        var reservation = reservationFacade.reserveSeats(userId, seatsToReserve.subList(3,4));
 
         userAssetFacade.chargeBalance(userId, reservation.getTotalPrice());
 

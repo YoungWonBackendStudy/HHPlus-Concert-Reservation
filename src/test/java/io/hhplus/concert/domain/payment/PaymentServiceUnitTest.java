@@ -1,7 +1,7 @@
 package io.hhplus.concert.domain.payment;
 
 import io.hhplus.concert.domain.concert.ConcertSeat;
-import io.hhplus.concert.domain.concert.Reservation;
+import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ public class PaymentServiceUnitTest {
     void testPlacePayment() {
         //given
         Reservation reservation = new Reservation(0L, 0L, new Date(), null, List.of());
-        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 0L,100000L)));
+        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 100000L, false)));
         when(mockPaymentRepository.save(any(Payment.class))).thenAnswer(returnsFirstArg());
         
         //when
@@ -44,7 +44,7 @@ public class PaymentServiceUnitTest {
     void testPlacePaymentWithExpiredReservation() {
         //given
         Reservation reservation = new Reservation(0L, 0L, new Date(System.currentTimeMillis() - 5 * 60 * 1000L - 1), null, List.of());
-        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 0L,100000L)));
+        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 100000L, false)));
         when(mockPaymentRepository.save(any(Payment.class))).thenAnswer(returnsFirstArg());
 
         //when
@@ -59,7 +59,7 @@ public class PaymentServiceUnitTest {
     void testPlacePaymentWithCompletedReservation() {
         //given
         Reservation reservation = new Reservation(0L, 0L, new Date(), new Date(), List.of());
-        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 0L,100000L)));
+        reservation.makeTickets(List.of(new ConcertSeat(0L, 0L, "R1", 100000L, false)));
         when(mockPaymentRepository.save(any(Payment.class))).thenAnswer(returnsFirstArg());
 
         //when
