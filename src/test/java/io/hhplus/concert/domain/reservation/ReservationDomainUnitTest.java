@@ -1,6 +1,6 @@
-package io.hhplus.concert.domain.concert;
+package io.hhplus.concert.domain.reservation;
 
-import io.hhplus.concert.domain.reservation.Reservation;
+import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.*;
 
 public class ReservationDomainUnitTest {
     @Test
+    @DisplayName("Ticket 전체 금액 조회 테스트")
     void testTotalPrice() {
         //given
         long userId = 0;
@@ -30,6 +31,7 @@ public class ReservationDomainUnitTest {
     }
 
     @Test
+    @DisplayName("만료 일자 조회 테스트")
     void testExpireDate() {
         //given
         long userId = 0;
@@ -47,6 +49,7 @@ public class ReservationDomainUnitTest {
     }
 
     @Test
+    @DisplayName("예약 만료처리 테스트")
     void testCompleted() {
         //given
         long userId = 0;

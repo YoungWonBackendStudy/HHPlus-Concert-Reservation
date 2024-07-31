@@ -7,8 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ConcertServiceUnitTest {
     private final ConcertService concertService;
@@ -66,5 +65,41 @@ public class ConcertServiceUnitTest {
         //then
         assertThat(resConcertSeats).isNotNull();
         assertThat(resConcertSeats).isEqualTo(expectedConcertSeats);
+    }
+
+    @Test
+    @DisplayName("좌석을 예약하면 좌석의 reserved 값이 true로 변경")
+    public void testReserveConcertSeats() {
+        //given
+        var concertSeats = List.of(new ConcertSeat(0L, 0L, "R1", 0L, false));
+
+        //when
+        concertService.reserveConcertSeats(concertSeats);
+
+        //then
+        verify(mockConcertRepository).saveConcertSeats(argThat(seats -> {
+            assertThat(seats).isNotNull();
+            seats.forEach(seat -> assertThat(seat.getReserved()).isTrue());
+            return true;
+        }));
+    }
+
+    @Test
+    @DisplayName("좌석 예약을 만료시키면 좌석 reserved 값이 false로 변경")
+    public void testExpireConcertSeats() {
+        //given
+        var seatIds = List.of(0L);
+        when(mockConcertRepository.getConcertSeatsByIdIn(seatIds))
+                .thenReturn(List.of(new ConcertSeat(0L, 0L, "R1", 0L, true)));
+
+        //when
+        concertService.expireConcertSeats(seatIds);
+
+        //then
+        verify(mockConcertRepository).saveConcertSeats(argThat(seats -> {
+            assertThat(seats).isNotNull();
+            seats.forEach(seat -> assertThat(seat.getReserved()).isFalse());
+            return true;
+        }));
     }
 }

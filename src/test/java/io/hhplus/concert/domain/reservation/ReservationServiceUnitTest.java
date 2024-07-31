@@ -1,9 +1,7 @@
-package io.hhplus.concert.domain.concert;
+package io.hhplus.concert.domain.reservation;
 
-import io.hhplus.concert.domain.reservation.Reservation;
-import io.hhplus.concert.domain.reservation.ReservationRepository;
-import io.hhplus.concert.domain.reservation.ReservationService;
-import io.hhplus.concert.domain.reservation.ReservationTicket;
+import io.hhplus.concert.domain.concert.ConcertRepository;
+import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ReservationServiceUnitTest {
     ReservationService reservationService;
@@ -81,4 +78,22 @@ public class ReservationServiceUnitTest {
         //then
         assertThatThrownBy(reservationRes).hasMessage(ExceptionCode.SEAT_ALREADY_RESERVED.getMessage());
     }
+
+    @Test
+    @DisplayName("예약이 완료되면 CompletedAt 값이 설정됨")
+    void testReservationCompletion() {
+        //given
+        Reservation reservation = new Reservation(0L, 0L, new Date(), null, List.of());
+
+        //when
+        reservationService.completeReservation(reservation);
+
+        //then
+        verify(mockReservationRepository).saveReservation(argThat(reservationRes -> {
+            assertThat(reservationRes.getCompletedAt()).isNotNull();
+            return true;
+        }));
+    }
+
+
 }

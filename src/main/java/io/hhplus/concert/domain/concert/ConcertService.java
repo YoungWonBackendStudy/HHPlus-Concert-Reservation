@@ -27,14 +27,14 @@ public class ConcertService {
         return concertRepository.getConcertSeatsByIdIn(seatIds);
     }
 
-    public List<ConcertSeat> reserveConcertSeats(List<ConcertSeat> concertSeats) {
+    public void reserveConcertSeats(List<ConcertSeat> concertSeats) {
         concertSeats.forEach(ConcertSeat::reserved);
-        return concertRepository.saveConcertSeats(concertSeats);
+        concertRepository.saveConcertSeats(concertSeats);
     }
 
-    public List<ConcertSeat> expireConcertSeats(List<Long> seatIds) {
+    public void expireConcertSeats(List<Long> seatIds) {
         var concertSeats = concertRepository.getConcertSeatsByIdIn(seatIds);
         concertSeats.forEach(ConcertSeat::reservationExpired);
-        return concertRepository.saveConcertSeats(concertSeats);
+        concertRepository.saveConcertSeats(concertSeats);
     }
 }
