@@ -1,8 +1,9 @@
-package io.hhplus.concert.domain.concert;
+package io.hhplus.concert.domain.reservation;
 
 import java.util.Date;
 import java.util.List;
 
+import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package io.hhplus.concert.infra.concert.entity;
+package io.hhplus.concert.infra.concert;
 
 import io.hhplus.concert.domain.concert.Concert;
 import jakarta.persistence.Column;

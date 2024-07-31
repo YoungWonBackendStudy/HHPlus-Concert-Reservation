@@ -1,4 +1,4 @@
-package io.hhplus.concert.infra.concert.entity;
+package io.hhplus.concert.infra.concert;
 
 import io.hhplus.concert.domain.concert.ConcertSchedule;
 import jakarta.persistence.*;
@@ -17,6 +17,9 @@ public class ConcertScheduleEntity {
 
     @Column(name = "concert_id", nullable = false)
     long concertId;
+
+    @Column(name = "place")
+    String place;
     
     @Column(name = "reservation_st_date")
     Date reservationStDate;
@@ -27,20 +30,16 @@ public class ConcertScheduleEntity {
     @Column(name = "concert_date")
     Date concertDate;
 
-    @ManyToOne
-    @JoinColumn(name = "concert_place_id")
-    ConcertPlaceEntity concertPlace;
-
     public ConcertScheduleEntity(ConcertSchedule domain) {
         this.id = domain.getId();
         this.concertId = domain.getConcertId();
-        this.concertPlace = new ConcertPlaceEntity(domain.getConcertPlace());
+        this.place = domain.getPlace();
         this.reservationStDate = domain.getReservationStDate();
         this.reservationEndDate = domain.getReservationEndDate();
         this.concertDate = domain.getConcertDate();
     }
 
     public ConcertSchedule toDomain() {
-        return new ConcertSchedule(this.id, this.concertId, this.concertPlace.toDomain(), this.reservationStDate, this.reservationEndDate, this.concertDate);
+        return new ConcertSchedule(this.id, this.concertId, this.place, this.reservationStDate, this.reservationEndDate, this.concertDate);
     }
 }

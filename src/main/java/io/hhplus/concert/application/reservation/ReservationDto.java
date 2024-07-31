@@ -1,9 +1,9 @@
-package io.hhplus.concert.application.concert;
+package io.hhplus.concert.application.reservation;
 
 import java.util.Date;
 import java.util.List;
 
-import io.hhplus.concert.domain.concert.Reservation;
+import io.hhplus.concert.domain.reservation.Reservation;
 import lombok.Getter;
 
 @Getter

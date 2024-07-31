@@ -1,6 +1,5 @@
-package io.hhplus.concert.infra.concert;
+package io.hhplus.concert.infra.reservation;
 
-import io.hhplus.concert.infra.concert.entity.ReservationTicketEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,4 +25,6 @@ public interface ReservationTicketJpaRepository extends JpaRepository<Reservatio
             AND ticket.concertScheduleId = :scheduleId
     """)
     List<ReservationTicketEntity> findCompletedOrReservedUnder5minByConcertScheduleId(@Param("scheduleId")Long concertScheduleId);
+
+    List<ReservationTicketEntity> findByReservationIdIn(List<Long> reservationId);
 }

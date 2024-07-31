@@ -17,6 +17,8 @@
   - 토큰 만료/활성화 (Scheduler)
 #### 콘서트
   - ~~콘서트/스케줄/좌석 조회~~ > 동시성 이슈 X
+  - 좌석 예약 만료 (Scheduler)
+### 예약
   - 콘서트 좌석 예약
 #### 결제
   - 결제
@@ -40,6 +42,13 @@
    - 비지니스 로직 상 Lost Update가 발생해도 문제가 없음
    - 모두 같은 결과를 예상하기 때문에
 
+#### 좌석 예약 만료/활성화
+- Transaction 범위 : 최소 범위 (JPA)
+- 동시성 문제: 동시에 조회 -> Update로 인해 Lost Update 발생
+- 동시성 해결: 조치 X
+- 이유:
+  - 비지니스 로직 상 Lost Update가 발생해도 문제가 없음
+  - 모두 같은 결과를 예상하기 때문에
 
 #### 콘서트 좌석 예약
 - Transaction 범위: Service 함수
@@ -48,7 +57,6 @@
 - 이유:
   - 동시성 이슈가 발생했을 때 대기할 필요 없음
   - 분산락: 락 획득 시도 후 실패시 DB Connection 없이 종료 가능
-  - 낙관락 사용 불가: DB Record 를 Update 하지 않아 낙관락 사용 불가
 
 #### 결제
 - Transaction 범위: Facade 함수
@@ -343,27 +351,22 @@ Concert {
     string description
 }
 
-ConcertPlace {
-    long id PK
-    String place 
-}
-
 Concert ||--|{ ConcertSchedule : contains
-ConcertPlace ||--|{ ConcertSchedule : contains
 ConcertSchedule {
     long id PK
     long concert_id FK
-    long concert_place_id FK
+    string place
     date reservation_st_date
     date reservation_end_date
     date concert_date
 }
 
-ConcertPlace ||--|{ ConcertSeat : contains
+  ConcertSchedule ||--|{ ConcertSeat : contains
 ConcertSeat {
     long id PK
-    long concert_place_id FK
+    long concert_schedule_id FK
     string location
+    boolean reserved
     long price
 }
 

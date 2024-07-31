@@ -1,5 +1,6 @@
-package io.hhplus.concert.domain.concert;
+package io.hhplus.concert.domain.reservation;
 
+import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -12,12 +13,13 @@ import static org.assertj.core.api.Assertions.*;
 
 public class ReservationDomainUnitTest {
     @Test
+    @DisplayName("Ticket 전체 금액 조회 테스트")
     void testTotalPrice() {
         //given
         long userId = 0;
         List<ConcertSeat> seats = List.of(
-            new ConcertSeat(0L, 0L, "R1", 0L,10000L),
-            new ConcertSeat(1L, 0L, "R2", 0L,20000L)
+            new ConcertSeat(0L, 0L, "R1", 10000L, false),
+            new ConcertSeat(1L, 0L, "R2", 20000L, false)
         );
         
         //when
@@ -29,6 +31,7 @@ public class ReservationDomainUnitTest {
     }
 
     @Test
+    @DisplayName("만료 일자 조회 테스트")
     void testExpireDate() {
         //given
         long userId = 0;
@@ -46,6 +49,7 @@ public class ReservationDomainUnitTest {
     }
 
     @Test
+    @DisplayName("예약 만료처리 테스트")
     void testCompleted() {
         //given
         long userId = 0;
@@ -63,8 +67,8 @@ public class ReservationDomainUnitTest {
          //given
          long userId = 0;
          List<ConcertSeat> seats = List.of(
-             new ConcertSeat(0L, 0L, "R1", 0L, 10000L),
-             new ConcertSeat(1L, 0L, "R2", 0L, 20000L)
+             new ConcertSeat(0L, 0L, "R1", 10000L, false),
+             new ConcertSeat(1L, 0L, "R2", 20000L, false)
          );
          
          //when
