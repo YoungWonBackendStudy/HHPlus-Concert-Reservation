@@ -66,14 +66,14 @@ public class E2ETest {
         
         //then
         assertThat(queueErrorRes).isNotNull();
-        assertThat(queueErrorRes.message()).isEqualTo(ExceptionCode.TOKEN_NOT_WAITING.getMessage());
+        assertThat(queueErrorRes.message()).isEqualTo(ExceptionCode.TOKEN_IS_ACTIVATED.getMessage());
 
         //when
         ConcertResponse[] concertsRes = RestAssured
             .given()
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", queueRes.token())
+                .header("TOKEN", queueRes.token())
             .when()
                 .get("/concerts")
             .then()
@@ -88,7 +88,7 @@ public class E2ETest {
             .given()
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", queueRes.token())
+                .header("TOKEN", queueRes.token())
                 .param("concertId", concertsRes[0].id())
             .when()
                 .get("/concerts/schedules")
@@ -104,7 +104,7 @@ public class E2ETest {
             .given()
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", queueRes.token())
+                .header("TOKEN", queueRes.token())
                 .param("concertScheduleId", concertSchedulesRes[0].id())
             .when()
                 .get("/concerts/seats")
@@ -127,7 +127,7 @@ public class E2ETest {
                 .contentType("application/json")
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", queueRes.token())
+                .header("TOKEN", queueRes.token())
                 .body(reservationRequest)
             .when()
                 .post("reservations")
@@ -184,7 +184,7 @@ public class E2ETest {
                 .contentType("application/json")
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", queueRes.token())
+                .header("TOKEN", queueRes.token())
                 .body(paymentRequest)
             .when()
                 .post("/payment")
@@ -222,7 +222,7 @@ public class E2ETest {
             .given()
                 .accept("application/json")
                 .port(port)
-                .header("WAITING_TOKEN", "")
+                .header("TOKEN", "")
             .when()
                 .get("/concerts")
             .then()
@@ -231,6 +231,6 @@ public class E2ETest {
 
         //then
         assertThat(errorRes).isInstanceOf(ErrorResponse.class);
-        assertThat(errorRes.message()).isEqualTo(ExceptionCode.TOKEN_NOT_FOUND.getMessage());
+        assertThat(errorRes.message()).isEqualTo(ExceptionCode.ACTIVE_TOKEN_NOT_FOUND.getMessage());
     }
 }

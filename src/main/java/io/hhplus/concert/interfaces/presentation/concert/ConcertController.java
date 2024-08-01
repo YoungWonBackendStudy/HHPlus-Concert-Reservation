@@ -22,7 +22,7 @@ public class ConcertController {
 
     @Operation(summary = "콘서트 목록 조회 API")
     @Parameters(value = {
-        @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
+        @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
         @Parameter(name = "token", required = true, description = "ACTIVE 상태의 토큰")
     })
     @GetMapping("concerts")
@@ -35,7 +35,7 @@ public class ConcertController {
 
     @Operation(summary = "콘서트 스케줄 조회 API")
     @Parameters(value = {
-        @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
+        @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
         @Parameter(name = "concertScheduleId", required = true, description = "조회할 콘서트의 ID")
     })
     @GetMapping("concerts/schedules")
@@ -49,7 +49,7 @@ public class ConcertController {
 
     @Operation(summary = "콘서트 좌석 조회 API")
     @Parameters(value = {
-        @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
+        @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
         @Parameter(name = "concertScheduleId", required = true, description = "조회할 콘서트 스케줄의 ID")
     })
     @GetMapping("concerts/seats")

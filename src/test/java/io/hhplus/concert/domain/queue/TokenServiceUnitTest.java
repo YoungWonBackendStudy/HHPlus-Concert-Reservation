@@ -1,31 +1,25 @@
 package io.hhplus.concert.domain.queue;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
 import io.hhplus.concert.support.exception.CustomNotFoundException;
+import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import io.hhplus.concert.domain.queue.WaitingQueueToken.TokenStatus;
-import io.hhplus.concert.support.exception.ExceptionCode;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class TokenServiceUnitTest {
     TokenService tokenService;
     WaitingQueueTokenRepository mockWaitingQueueTokenRepository;
+    ActiveTokenRepository mockActiveTokenRepository;
     
     public TokenServiceUnitTest() {
         this.mockWaitingQueueTokenRepository = mock(WaitingQueueTokenRepository.class);
-        this.tokenService = new TokenService(this.mockWaitingQueueTokenRepository);
+        this.mockActiveTokenRepository = mock(ActiveTokenRepository.class);
+        this.tokenService = new TokenService(this.mockWaitingQueueTokenRepository, mockActiveTokenRepository);
     }
 
     @Test
@@ -33,17 +27,18 @@ public class TokenServiceUnitTest {
     void testGetQueueToken() {
         //given
         long userId = 0;
-        when(mockWaitingQueueTokenRepository.getActiveTokenByUserId(anyLong()))
-                .thenThrow(new CustomNotFoundException(ExceptionCode.TOKEN_NOT_FOUND));
-        when(mockWaitingQueueTokenRepository.saveToken(any(WaitingQueueToken.class))).thenAnswer(returnsFirstArg());
+        when(mockWaitingQueueTokenRepository.getWaitingQueueTokenByUserId(anyLong()))
+                .thenThrow(new CustomNotFoundException(ExceptionCode.WAITING_TOKEN_NOT_FOUND));
+        when(mockWaitingQueueTokenRepository.saveWaitingQueueToken(any(WaitingQueueToken.class))).thenAnswer(returnsFirstArg());
 
         //when
-        var token = this.tokenService.validateAndGetWaitingToken(userId);
+        var expectedIssueTime = System.currentTimeMillis();
+        var token = this.tokenService.getWaitingQueueToken(userId);
 
         //then
         assertThat(token).isNotNull();
         assertThat(token.getUserId()).isEqualTo(userId);
-        assertThat(token.getStatus()).isEqualTo(TokenStatus.WAITING);
+        assertThat(token.getIssuedAtInMillis()).isCloseTo(expectedIssueTime, within(1000L));
     }
     
     @Test
@@ -51,11 +46,11 @@ public class TokenServiceUnitTest {
     void testValidateActiveToken() {
         //given
         WaitingQueueToken testToken = new WaitingQueueToken(0);
-        testToken.activate();
-        when(mockWaitingQueueTokenRepository.getTokenByTokenString(testToken.getToken())).thenReturn(testToken);
+        var activeToken = new ActiveToken(testToken);
+        when(mockActiveTokenRepository.getActiveTokenByTokenString(testToken.getToken())).thenReturn(activeToken);
 
         //when
-        ThrowableAssert.ThrowingCallable result = () -> this.tokenService.validateAndGetActiveToken(testToken.getToken());
+        ThrowableAssert.ThrowingCallable result = () -> this.tokenService.getActiveToken(testToken.getToken());
 
         //then
         assertThatCode(result).doesNotThrowAnyException();
@@ -63,44 +58,17 @@ public class TokenServiceUnitTest {
 
     @Test
     @DisplayName("토큰 만료 테스트")
-    void testExpireTokens(){
+    void testExpireToken(){
         //given
-        List<WaitingQueueToken> tokensToExpire = List.of(new WaitingQueueToken(0));
-        when(mockWaitingQueueTokenRepository.getActiveTokensActivatedAtBefore(any())).thenReturn(tokensToExpire);
+        WaitingQueueToken token = new WaitingQueueToken(0);
+        ActiveToken activeToken = new ActiveToken(token);
+        when(mockActiveTokenRepository.getActiveTokenByTokenString(token.getToken())).thenReturn(activeToken);
 
         //when
-        tokenService.expireTokens();
+        tokenService.expireToken(token.getToken());
 
         //then
-        verify(mockWaitingQueueTokenRepository).saveTokens(anyList());
+        verify(mockActiveTokenRepository).deleteActiveToken(eq(activeToken));
     }
 
-    @Test
-    @DisplayName("WAITING 상태 토큰 검증 실패")
-    void testValidateActiveWithWaitingToken() {
-        //given
-        WaitingQueueToken testToken = new WaitingQueueToken(0);
-        when(mockWaitingQueueTokenRepository.getTokenByTokenString(testToken.getToken())).thenReturn(testToken);
-
-        //when
-        ThrowableAssert.ThrowingCallable result = () -> this.tokenService.validateAndGetActiveToken(testToken.getToken());
-
-        //then
-        assertThatThrownBy(result).hasMessage(ExceptionCode.TOKEN_NOT_ACTIVATED.getMessage());
-    }
-
-    @Test
-    @DisplayName("만료 상태 토큰 검증 실패")
-    void testValidateActiveWithExpiredToken() {
-        //given
-        WaitingQueueToken testToken = new WaitingQueueToken(0);
-        testToken.expire();
-        when(mockWaitingQueueTokenRepository.getTokenByTokenString(testToken.getToken())).thenReturn(testToken);
-
-        //when
-        ThrowableAssert.ThrowingCallable result = () -> this.tokenService.validateAndGetActiveToken(testToken.getToken());
-
-        //then
-        assertThatThrownBy(result).hasMessage(ExceptionCode.TOKEN_EXPIRED.getMessage());
-    }
 }
