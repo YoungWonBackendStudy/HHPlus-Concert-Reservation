@@ -23,7 +23,7 @@ public class ReservationController {
 
     @Operation(summary = "콘서트 좌석 예약 API")
     @Parameters(value = {
-            @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE상태의 토큰"),
+            @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE상태의 토큰"),
             @Parameter(name = "concertScheduleId", required = true, description = "예약할 콘서트 스케줄"),
             @Parameter(name = "seatIds", required = true, description = "예약할 콘서트 좌석 List"),
             @Parameter(name = "userId", hidden = true)

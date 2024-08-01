@@ -1,4 +1,3 @@
-delete from queue_token;
 delete from payment;
 delete from reservation_ticket;
 delete from reservation;

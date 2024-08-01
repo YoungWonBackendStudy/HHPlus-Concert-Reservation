@@ -1,58 +1,48 @@
 package io.hhplus.concert.domain.queue;
 
-import java.util.Date;
-import java.util.List;
-
+import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.CustomNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import io.hhplus.concert.support.exception.ExceptionCode;
 
 @Service
+@RequiredArgsConstructor
 public class TokenService {
-    private final long expireDurationInMilli = 30 * 60 * 1000L;
 
-    WaitingQueueTokenRepository waitingQueueTokenRepository;
+    private final WaitingQueueTokenRepository waitingQueueTokenRepository;
+    private final ActiveTokenRepository activeTokenRepository;
 
-    public TokenService(WaitingQueueTokenRepository waitingQueueTokenRepository) {
-        this.waitingQueueTokenRepository = waitingQueueTokenRepository;
-    }
-
-    public WaitingQueueToken validateAndGetWaitingToken(long userId) {
-        WaitingQueueToken waitingQueueToken;
+    public WaitingQueueToken getWaitingQueueToken(long userId) {
         try {
-            waitingQueueToken = waitingQueueTokenRepository.getActiveTokenByUserId(userId);
+            return waitingQueueTokenRepository.getWaitingQueueTokenByUserId(userId);
         } catch(CustomNotFoundException e) {
-            if(!e.getCode().equals(ExceptionCode.TOKEN_NOT_FOUND)) throw e;
-
-            waitingQueueToken = new WaitingQueueToken(userId);
-            waitingQueueToken = this.waitingQueueTokenRepository.saveToken(waitingQueueToken);
+            if(!e.getCode().equals(ExceptionCode.WAITING_TOKEN_NOT_FOUND)) throw e;
         }
 
-        waitingQueueToken.validateWaiting();
+        try{
+            var activeToken = activeTokenRepository.getActiveTokenByUserId(userId);
+            if(activeToken != null) {
+                throw new CustomBadRequestException(ExceptionCode.TOKEN_IS_ACTIVATED);
+            }
+        } catch(CustomNotFoundException e) {
+            if(!e.getCode().equals(ExceptionCode.ACTIVE_TOKEN_NOT_FOUND)) throw e;
+        }
+
+        WaitingQueueToken waitingQueueToken = new WaitingQueueToken(userId);
+        waitingQueueToken = this.waitingQueueTokenRepository.saveWaitingQueueToken(waitingQueueToken);
         return waitingQueueToken;
     }
 
-    public WaitingQueueToken validateAndGetActiveToken(String token) {
-        var queueToken = this.waitingQueueTokenRepository.getTokenByTokenString(token);
-    
-        queueToken.validateActivation();
-        return queueToken;
-    }
-
-    public void expireTokens() {
-        Date tokenExpireStandard = new Date(System.currentTimeMillis() - expireDurationInMilli);
-        List<WaitingQueueToken> tokensToExpire = waitingQueueTokenRepository.getActiveTokensActivatedAtBefore(tokenExpireStandard);
-
-        if(tokensToExpire == null || tokensToExpire.isEmpty()) return;
-
-        tokensToExpire.forEach(WaitingQueueToken::expire);
-        waitingQueueTokenRepository.saveTokens(tokensToExpire);
+    public ActiveToken getActiveToken(String tokenStr) {
+        var activeToken = this.activeTokenRepository.getActiveTokenByTokenString(tokenStr);
+        activeToken.renew();
+        return activeToken;
     }
 
     public void expireToken(String token) {
-        WaitingQueueToken waitingQueueToken = waitingQueueTokenRepository.getTokenByTokenString(token);
-        waitingQueueToken.expire();
-        waitingQueueTokenRepository.saveToken(waitingQueueToken);
+        ActiveToken activeToken = activeTokenRepository.getActiveTokenByTokenString(token);
+        activeTokenRepository.deleteActiveToken(activeToken);
     }
 }

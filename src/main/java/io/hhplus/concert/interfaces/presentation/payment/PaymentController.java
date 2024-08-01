@@ -25,11 +25,11 @@ public class PaymentController {
     @Operation(summary = "결제 API")
     
     @Parameters(value = {
-        @Parameter(in = ParameterIn.HEADER, name = "WAITING_TOKEN", required = true, description = "ACTIVE 상태의 토큰")
+        @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE 상태의 토큰")
     })
     @PostMapping("payment")
     public PaymentResponse placePayment(    
-        @RequestHeader(name = "WAITING_TOKEN") String token,
+        @RequestHeader(name = "TOKEN") String token,
         @RequestBody PaymentRequest paymentRequest
     ) {
         return PaymentResponse.of(paymentFacade.placePayment(token, paymentRequest.reservationId()));

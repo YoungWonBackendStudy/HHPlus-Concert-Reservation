@@ -49,7 +49,7 @@ public class PaymentFacadeIntegTest {
         var queueToken = queueFacade.getQueueToken(userId);
         queueFacade.scheduleWaitingQueue();
         assertThatThrownBy(() -> queueFacade.getQueueToken(userId))
-                .hasMessage(ExceptionCode.TOKEN_NOT_WAITING.getMessage()); //guard assertion
+                .hasMessage(ExceptionCode.TOKEN_IS_ACTIVATED.getMessage()); //guard assertion
 
         var concertSeats = concertFacade.getConcertSeats(concertScheduleId);
         var seatsToReserve = concertSeats.stream()
@@ -77,7 +77,7 @@ public class PaymentFacadeIntegTest {
         ThrowingCallable dupPayment = () -> paymentFacade.placePayment(queueToken.getToken(), reservation.getReservationId());
 
         //then
-        assertThatThrownBy(dupPayment).hasMessage(ExceptionCode.TOKEN_EXPIRED.getMessage());
+        assertThatThrownBy(dupPayment).hasMessage(ExceptionCode.ACTIVE_TOKEN_NOT_FOUND.getMessage());
     }
 
     @Test

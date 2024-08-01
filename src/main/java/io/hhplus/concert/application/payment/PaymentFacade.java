@@ -1,5 +1,6 @@
 package io.hhplus.concert.application.payment;
 
+import io.hhplus.concert.domain.queue.ActiveToken;
 import io.hhplus.concert.domain.reservation.ReservationService;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +10,6 @@ import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.domain.user.UserAssetService;
 import io.hhplus.concert.domain.queue.TokenService;
 import io.hhplus.concert.domain.queue.QueueService;
-import io.hhplus.concert.domain.queue.WaitingQueueToken;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
@@ -31,10 +31,10 @@ public class PaymentFacade {
 
     @Transactional
     public PaymentDto placePayment(String token,long reservationId) {
-        WaitingQueueToken waitingQueueToken = tokenService.validateAndGetActiveToken(token);
+        ActiveToken activeToken = tokenService.getActiveToken(token);
         Reservation reservation = reservationService.getAndLockReservation(reservationId);
 
-        userAssetService.useUserAsset(waitingQueueToken.getUserId(), reservation.getTotalPrice());
+        userAssetService.useUserAsset(activeToken.getUserId(), reservation.getTotalPrice());
         Payment payment = paymentService.placePayment(reservation);
 
         tokenService.expireToken(token);

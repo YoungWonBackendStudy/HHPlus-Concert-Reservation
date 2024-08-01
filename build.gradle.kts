@@ -38,9 +38,10 @@ dependencies {
 	//swagger-ui
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
-	//redisson
-	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	//redis
+	implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.2")
 	implementation("org.redisson:redisson-spring-boot-starter:3.33.0")
+	implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
 }
 
 tasks.withType<Test> {

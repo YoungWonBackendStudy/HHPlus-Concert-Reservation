@@ -6,6 +6,9 @@ import io.hhplus.concert.domain.concert.ConcertService;
 import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.domain.reservation.ReservationService;
 import io.hhplus.concert.domain.reservation.ReservationTicket;
+import io.hhplus.concert.support.config.MyRedisKeyspaceConfig;
+import io.hhplus.concert.support.config.RedisConfig;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,21 +16,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ReservationFacade {
     private final ConcertService concertService;
     private final ReservationService reservationService;
-
     private final RedissonLockClient redissonLockClient;
-
-    @Value("${spring.data.redis.keyspace.reservation}")
-    String keySpaceReservation;
-
-    public ReservationFacade(ConcertService concertService, ReservationService reservationService, RedissonLockClient redissonLockClient) {
-        this.concertService = concertService;
-        this.reservationService = reservationService;
-        this.redissonLockClient = redissonLockClient;
-    }
-
+    private final MyRedisKeyspaceConfig keyspace;
+    
     public ReservationDto reserveSeats(long userId, List<Long> seatIds) {
         List<ConcertSeat> concertSeats = concertService.getConcertSeatsByIds(seatIds);
         RedissonLockClient.RedissonLockedCallable<Reservation> lockedReservationCall = () -> {
@@ -36,7 +31,7 @@ public class ReservationFacade {
             return reservation;
         };
 
-        var reservation =redissonLockClient.applyLock(keySpaceReservation, seatIds.stream().map(Object::toString).toList(), 0L, 3000L, lockedReservationCall);
+        var reservation =redissonLockClient.applyLock(keyspace.getReservation(), seatIds.stream().map(Object::toString).toList(), 0L, 3000L, lockedReservationCall);
         return new ReservationDto(reservation);
     }
 
