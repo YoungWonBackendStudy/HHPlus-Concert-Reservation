@@ -74,6 +74,7 @@ public class E2ETest {
                 .accept("application/json")
                 .port(port)
                 .header("TOKEN", queueRes.token())
+                .param("page", 0L)
             .when()
                 .get("/concerts")
             .then()

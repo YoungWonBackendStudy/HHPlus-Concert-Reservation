@@ -23,12 +23,14 @@ public class ConcertController {
     @Operation(summary = "콘서트 목록 조회 API")
     @Parameters(value = {
         @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
-        @Parameter(name = "token", required = true, description = "ACTIVE 상태의 토큰")
+        @Parameter(name = "token", required = true, description = "ACTIVE 상태의 토큰"),
+        @Parameter(name = "page", required = true, description = "조회할 페이지")
     })
     @GetMapping("concerts")
     public List<ConcertResponse> getConcerts(
+            @RequestParam("page") int page
     ) {
-        return concertFacade.getConcerts()
+        return concertFacade.getConcerts(page)
             .stream().map(ConcertResponse::of)
             .toList();
     }

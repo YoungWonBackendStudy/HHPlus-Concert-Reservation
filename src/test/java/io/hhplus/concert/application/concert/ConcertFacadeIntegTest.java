@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -18,7 +21,7 @@ public class ConcertFacadeIntegTest {
     @DisplayName("콘서트/스케줄/좌석 조회 통합 테스트")
     void testConcertIntegTest() {
         //when
-        var concerts = concertFacade.getConcerts();
+        var concerts = concertFacade.getConcerts(0);
         
         //then
         assertThat(concerts).isNotNull();
@@ -37,6 +40,25 @@ public class ConcertFacadeIntegTest {
         //then
         assertThat(concertSeats).isNotNull();
         assertThat(concertSeats).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("콘서트 Paging 조회 캐싱 성능 테스트")
+    void testConcertCachingTest() {
+        //given
+        int testCnt = 100;
+        int page = 8;
+
+        List<Long> executionTimes = new ArrayList<Long>(testCnt);
+        //when
+        for(int i = 0; i < testCnt; i++) {
+            long start = System.currentTimeMillis();
+            concertFacade.getConcerts(page);
+            executionTimes.add(System.currentTimeMillis() - start);
+        }
+
+        //then
+        assertThat(executionTimes).isNotEmpty();
     }
 
 

@@ -6,6 +6,7 @@ import io.hhplus.concert.domain.concert.ConcertSchedule;
 import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.support.exception.CustomNotFoundException;
 import io.hhplus.concert.support.exception.ExceptionCode;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,8 +24,8 @@ public class ConcertRepositoryImpl implements ConcertRepository{
     }
 
     @Override
-    public List<Concert> getConcerts() {
-        return this.concertJpaRepository.findAll()
+    public List<Concert> getConcerts(int page, int pageSize) {
+        return this.concertJpaRepository.findAll(PageRequest.of(page, pageSize))
             .stream().map(ConcertEntity::toDomain)
             .toList();
     }

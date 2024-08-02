@@ -23,10 +23,10 @@ public class ConcertServiceUnitTest {
     public void testGetConcerts() {
         //given
         var expectedConcerts = List.of(new Concert(0L, "아이유 콘서트", "아이유 콘서트 2024.07.12"));
-        when(mockConcertRepository.getConcerts()).thenReturn(expectedConcerts);
+        when(mockConcertRepository.getConcerts(anyInt(), anyInt())).thenReturn(expectedConcerts);
         
         //when
-        var resConcerts = this.concertService.getConcerts();
+        var resConcerts = this.concertService.getConcerts(0);
 
         //then
         assertThat(resConcerts).isNotNull();
