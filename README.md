@@ -63,7 +63,7 @@
 
 ### 활성 토큰
 #### Q1. 어떤 데이터 타입으로 어떻게 구현?
-  - token과 userId를 통한 조회가 필요하므로 **Redis Hashe**를 사용
+  - token과 userId를 통한 조회와 TTL이 필요하므로 **Redis Hashe**를 사용
   - Redis Hashe를 구현하기에 적합한 **Spring Data Redis와 Redis Repository**를 이용하여 구현
 
 ### 대기열 토큰
