@@ -16,13 +16,12 @@ public class ConcertFacade {
         this.reservationService = reservationService;
     }
 
-    public List<ConcertDto> getConcerts() {
-        return concertService.getConcerts().stream().map(ConcertDto::new).toList();
+    public List<ConcertDto> getConcerts(int page) {
+        return concertService.getConcerts(page).stream().map(ConcertDto::new).toList();
     }
 
     public List<ConcertScheduleDto> getConcertSchedules(long concertId) {
-        return concertService.getConcertSchedules(concertId)
-            .stream().map(ConcertScheduleDto::new).toList();
+        return concertService.getConcertSchedules(concertId).stream().map(ConcertScheduleDto::new).toList();
     }
 
     public List<ConcertSeatDto> getConcertSeats(long concertScheduleId) {
