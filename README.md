@@ -34,8 +34,10 @@
    - ttl의 경우 길 수록 Heat Rate에 유리하지만, Paging 특성상 너무 길어지게 되면 Cache데이터 크기가 너무 커질 수 있음.
    - 10초 ~ 30초로 설정하는 것이 적당하다고 판단하여 20초로 구현
  - 결과
-   - Cache X: 1.6초
-   - Cache O: 1.3초
+   - Cache X: 2.092초
+   - ![Cache result - without cache](document%2Fcache-test-result-without-cache.png)
+   - Cache O: 1.52초
+   - ![Cache result - with cache](document%2Fcache-test-resul-with-cache.png)
  
 ### 개선해보고 싶은 점
  - Paging에서 Heat Rate가 낮은 Cache에 대해서는 ttl을 낮게 가져가서 페이지 낭비를 줄이는 방법을 생각해보면 좋을 것 같다
