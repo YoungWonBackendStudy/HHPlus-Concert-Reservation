@@ -24,7 +24,7 @@
 
 3. Paging에서 데이터 크기 문제
    - Page가 많아질 수록 과하게 많은 데이터가 Cache에 적재될 수 있음
-   - 뒤 쪽 페이지일 수록 Heat Rate는 낮아질 것
+   - 뒤 쪽 페이지일 수록 Hit Rate는 낮아질 것
    - Offset Paging을 이용할 때는 뒤 쪽 페이지일 수록 Caching 효율이 좋음 (뒤 페이지일 수록 SQL 조회 속도가 느려짐)
 
 ### Paging: Caching 적용
