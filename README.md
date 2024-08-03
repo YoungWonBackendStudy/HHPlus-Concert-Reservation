@@ -31,7 +31,7 @@
  - Concert 1000건을 이용하여 100개씩 Offset Paging하도록 설정 후 8페이지에 대해서 100번 조회할 때 성능 비교
  - **Caching 전략**
    - 즉각적인 반영이 중요하지 않아 Expiration 적용
-   - ttl의 경우 길 수록 Heat Rate에 유리하지만, Paging 특성상 너무 길어지게 되면 Cache데이터 크기가 너무 커질 수 있음.
+   - ttl의 경우 길 수록 Hit Rate에 유리하지만, Paging 특성상 너무 길어지게 되면 Cache데이터 크기가 너무 커질 수 있음.
    - 10초 ~ 30초로 설정하는 것이 적당하다고 판단하여 20초로 구현
  - 결과
    - Cache X: 2.092초
@@ -40,8 +40,8 @@
    - ![Cache result - with cache](document%2Fcache-test-resul-with-cache.png)
  
 ### 개선해보고 싶은 점
- - Paging에서 Heat Rate가 낮은 Cache에 대해서는 ttl을 낮게 가져가서 페이지 낭비를 줄이는 방법을 생각해보면 좋을 것 같다
-   - Ex. Default는 10초 / Heat될 때 마다 갱신하여 최대 30초까지될 수 있게...?
+ - Paging에서 Hit Rate가 낮은 Cache에 대해서는 ttl을 낮게 가져가서 페이지 낭비를 줄이는 방법을 생각해보면 좋을 것 같다
+   - Ex. Default는 10초 / Hit될 때 마다 갱신하여 최대 30초까지될 수 있게...?
  - Offset Paging이 아니라 Cursor Paging으로 변경하고 앞 페이지 일부에만 Caching을 적용하는 것도 방법이라고 생각된다.
  - 주요 Concert 조회/ 잔여좌석 조회 등 복잡한 쿼리에 대한 결과도 확인하고 싶다.
 
