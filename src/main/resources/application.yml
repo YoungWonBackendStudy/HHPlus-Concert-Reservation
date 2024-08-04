@@ -4,3 +4,8 @@ spring.application.name: concert-reservation
 spring.data.redis:
   host: localhost
   port: 6379
+  default-cache-ttl: 10
+  keyspace:
+    waiting-token: "waitingQueueToken"
+    active-token: "activeToken"
+    reservation: "reservation"

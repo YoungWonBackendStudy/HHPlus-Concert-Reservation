@@ -1,75 +1,65 @@
 package io.hhplus.concert.infra.queue;
 
 import io.hhplus.concert.domain.queue.WaitingQueueToken;
-import io.hhplus.concert.domain.queue.WaitingQueueToken.TokenStatus;
 import io.hhplus.concert.domain.queue.WaitingQueueTokenRepository;
+import io.hhplus.concert.support.config.MyRedisKeyspaceConfig;
 import io.hhplus.concert.support.exception.CustomNotFoundException;
 import io.hhplus.concert.support.exception.ExceptionCode;
-import org.springframework.data.domain.Limit;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class WaitingQueueTokenRepositoryImpl implements WaitingQueueTokenRepository {
-    private final WaitingQueueTokenJpaRepository waitingQueueTokenJpaRepository;
+    private final WaitingQueueTokenRedisRepository waitingQueueTokenRedisRepository;
+    private final RedisTemplate<String, String> waitingQueueTokenRedisTemplate;
+    private final MyRedisKeyspaceConfig keyspace;
 
-    public WaitingQueueTokenRepositoryImpl(WaitingQueueTokenJpaRepository waitingQueueTokenJpaRepository) {
-        this.waitingQueueTokenJpaRepository = waitingQueueTokenJpaRepository;
+    @Override
+    public WaitingQueueToken saveWaitingQueueToken(WaitingQueueToken token) {
+        var entity = new WaitingQueueTokenEntity(token);
+        waitingQueueTokenRedisTemplate.opsForZSet().add(keyspace.getWaitingToken(), token.getToken(), token.getIssuedAtInMillis());
+        return this.waitingQueueTokenRedisRepository.save(entity).toDomain();
     }
 
     @Override
-    public WaitingQueueToken saveToken(WaitingQueueToken waitingQueueToken) {
-        var entity = new WaitingQueueTokenEntity(waitingQueueToken);
-        return this.waitingQueueTokenJpaRepository.save(entity).toDomain();
+    public Long getWaitingQueueTokenRank(WaitingQueueToken token) {
+        var rank =  waitingQueueTokenRedisTemplate.opsForZSet().rank(keyspace.getWaitingToken(), token.getToken());
+        if(rank == null) throw new CustomNotFoundException(ExceptionCode.WAITING_TOKEN_NOT_FOUND);
+
+        return rank;
     }
 
     @Override
-    public List<WaitingQueueToken> saveTokens(List<WaitingQueueToken> waitingQueueTokens) {
-        var entities = waitingQueueTokens.stream().map(WaitingQueueTokenEntity::new).toList();
-        return this.waitingQueueTokenJpaRepository.saveAll(entities)
-                .stream().map(WaitingQueueTokenEntity::toDomain).toList();
+    public List<WaitingQueueToken> dequeFirstNWaitingQueueTokens(Long sizeN) {
+        var tokens = waitingQueueTokenRedisTemplate.opsForZSet().range(keyspace.getWaitingToken(), 0L, sizeN).stream().toList();
+        if(tokens.isEmpty()) return List.of();
+        var tokenEntities = tokens.stream().map(token -> {
+            var tokenEntity = waitingQueueTokenRedisRepository.findById(token).orElse(null);
+            if(tokenEntity == null) throw new CustomNotFoundException(ExceptionCode.WAITING_TOKEN_NOT_FOUND);
+
+            return tokenEntity;
+        }).toList();
+
+        waitingQueueTokenRedisRepository.deleteAll(tokenEntities);
+        waitingQueueTokenRedisTemplate.opsForZSet().removeRange(keyspace.getWaitingToken(), 0L, sizeN);
+
+        return tokenEntities.stream().map(WaitingQueueTokenEntity::toDomain).toList();
     }
 
     @Override
-    public WaitingQueueToken getActiveTokenByUserId(long userId) {
-        var entity = this.waitingQueueTokenJpaRepository.findByStatusAndUserId(TokenStatus.ACTIVE, userId);
-        if(entity == null) throw new CustomNotFoundException(ExceptionCode.TOKEN_NOT_FOUND);
+    public WaitingQueueToken getWaitingQueueTokenByUserId(long userId) {
+        var entity = this.waitingQueueTokenRedisRepository.findByUserId(userId);
+        if(entity == null) throw new CustomNotFoundException(ExceptionCode.WAITING_TOKEN_NOT_FOUND);
 
         return entity.toDomain();
     }
 
     @Override
-    public WaitingQueueToken getTokenByTokenString(String token) {
-        var entity = this.waitingQueueTokenJpaRepository.findByToken(token);
-        if(entity == null) throw new CustomNotFoundException(ExceptionCode.TOKEN_NOT_FOUND);
+    public void deleteWaitingQueueToken(WaitingQueueToken token) {
 
-        return entity.toDomain();
     }
-
-    @Override
-    public WaitingQueueToken getFirstTokenByStatus(TokenStatus tokenStatus) {
-        var entity = this.waitingQueueTokenJpaRepository.findFirstByStatus(tokenStatus);
-        if(entity == null) throw new CustomNotFoundException(ExceptionCode.TOKEN_NOT_FOUND);
-
-        return entity.toDomain();
-    }
-
-    @Override
-    public List<WaitingQueueToken> getTokensByStatus(TokenStatus tokenStatus, int size) {
-        return this.waitingQueueTokenJpaRepository.findByStatus(tokenStatus, Limit.of(size))
-            .stream().map(WaitingQueueTokenEntity::toDomain)
-            .toList();
-    }
-
-    @Override
-    public List<WaitingQueueToken> getActiveTokensActivatedAtBefore(Date date) {
-        return this.waitingQueueTokenJpaRepository.findByActivatedAtBefore(date)
-            .stream().map(WaitingQueueTokenEntity::toDomain)
-            .toList();
-    }
-
-    
-       
 }

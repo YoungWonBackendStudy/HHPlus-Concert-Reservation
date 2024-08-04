@@ -17,13 +17,12 @@ public class QueueFacade {
     }
 
     public WaitingQueueDto getQueueToken(long userId) {
-        WaitingQueueToken token = tokenService.validateAndGetWaitingToken(userId);
+        WaitingQueueToken token = tokenService.getWaitingQueueToken(userId);
         long waitingTokensAhead = queueService.getWaitingTokensAhead(token);
         return new WaitingQueueDto(token, waitingTokensAhead);
     }
 
     public void scheduleWaitingQueue() {
-        tokenService.expireTokens();
         queueService.activateTokens();
     }
 }

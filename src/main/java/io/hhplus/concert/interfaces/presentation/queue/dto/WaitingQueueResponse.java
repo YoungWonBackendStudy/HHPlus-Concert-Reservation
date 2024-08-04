@@ -4,10 +4,9 @@ import io.hhplus.concert.application.queue.WaitingQueueDto;
 
 public record WaitingQueueResponse(
     String token,
-    long waitingId,
     long waitingAhead
 ) {
     public static WaitingQueueResponse of(WaitingQueueDto facadeDto) {
-        return new WaitingQueueResponse(facadeDto.getToken(), facadeDto.getWaitingId(), facadeDto.getWaitingAhead());
+        return new WaitingQueueResponse(facadeDto.getToken(), facadeDto.getWaitingAhead());
     }
 }

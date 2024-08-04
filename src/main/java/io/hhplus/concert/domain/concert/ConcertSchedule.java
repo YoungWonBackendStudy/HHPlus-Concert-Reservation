@@ -10,7 +10,7 @@ import lombok.Getter;
 public class ConcertSchedule {
     Long id;
     Long concertId;
-    ConcertPlace concertPlace;
+    String place;
     Date reservationStDate;
     Date reservationEndDate;
     Date concertDate;

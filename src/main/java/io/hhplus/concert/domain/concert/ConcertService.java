@@ -1,5 +1,6 @@
 package io.hhplus.concert.domain.concert;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -7,14 +8,14 @@ import java.util.List;
 @Service
 public class ConcertService {
     private final ConcertRepository concertRepository;
-    private final ReservationRepository reservationRepository;
-    public ConcertService(ConcertRepository concertRepository, ReservationRepository reservationRepository) {
+    public ConcertService(ConcertRepository concertRepository) {
         this.concertRepository = concertRepository;
-        this.reservationRepository = reservationRepository;
     }
 
-    public List<Concert> getConcerts() {
-        return concertRepository.getConcerts();
+    @Cacheable(cacheNames = "concerts", key = "#page")
+    public List<Concert> getConcerts(int page) {
+        int defaultPageSize = 500;
+        return concertRepository.getConcerts(page, defaultPageSize);
     }
 
     public List<ConcertSchedule> getConcertSchedules(long concertId) {
@@ -22,18 +23,21 @@ public class ConcertService {
     }
 
     public List<ConcertSeat> getConcertSeats(long concertScheduleId) {
-        var concertSchedule = concertRepository.getConcertScheduleById(concertScheduleId);
-        return concertRepository.getConcertSeatsByConcertPlaceId(concertSchedule.getConcertPlace().getId());
+        return concertRepository.getConcertSeatsByConcertScheduleId(concertScheduleId);
     }
-
-    public List<ConcertSeat> getReservedConcertSeats(long concertScheduleId) {
-        var reservedTickets = reservationRepository.getCompletedOrReservedUnder5mins(concertScheduleId);
-        var seatIds = reservedTickets.stream().map(ReservationTicket::getConcertSeatId).toList();
-        return concertRepository.getConcertSeatsByIdIn(seatIds);
-    }
-
 
     public List<ConcertSeat> getConcertSeatsByIds(List<Long> seatIds) {
         return concertRepository.getConcertSeatsByIdIn(seatIds);
+    }
+
+    public void reserveConcertSeats(List<ConcertSeat> concertSeats) {
+        concertSeats.forEach(ConcertSeat::reserved);
+        concertRepository.saveConcertSeats(concertSeats);
+    }
+
+    public void expireConcertSeats(List<Long> seatIds) {
+        var concertSeats = concertRepository.getConcertSeatsByIdIn(seatIds);
+        concertSeats.forEach(ConcertSeat::reservationExpired);
+        concertRepository.saveConcertSeats(concertSeats);
     }
 }

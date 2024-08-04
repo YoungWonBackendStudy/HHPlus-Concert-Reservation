@@ -4,11 +4,9 @@ import io.hhplus.concert.domain.concert.Concert;
 import io.hhplus.concert.domain.concert.ConcertRepository;
 import io.hhplus.concert.domain.concert.ConcertSchedule;
 import io.hhplus.concert.domain.concert.ConcertSeat;
-import io.hhplus.concert.infra.concert.entity.ConcertEntity;
-import io.hhplus.concert.infra.concert.entity.ConcertScheduleEntity;
-import io.hhplus.concert.infra.concert.entity.ConcertSeatEntity;
 import io.hhplus.concert.support.exception.CustomNotFoundException;
 import io.hhplus.concert.support.exception.ExceptionCode;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,8 +24,8 @@ public class ConcertRepositoryImpl implements ConcertRepository{
     }
 
     @Override
-    public List<Concert> getConcerts() {
-        return this.concertJpaRepository.findAll()
+    public List<Concert> getConcerts(int page, int pageSize) {
+        return this.concertJpaRepository.findAll(PageRequest.of(page, pageSize))
             .stream().map(ConcertEntity::toDomain)
             .toList();
     }
@@ -51,8 +49,8 @@ public class ConcertRepositoryImpl implements ConcertRepository{
     }
 
     @Override
-    public List<ConcertSeat> getConcertSeatsByConcertPlaceId(long concertPlaceId) {
-        return this.concertSeatJpaRepository.findByConcertPlaceId(concertPlaceId)
+    public List<ConcertSeat> getConcertSeatsByConcertScheduleId(long concertScheduleId) {
+        return this.concertSeatJpaRepository.findByConcertScheduleId(concertScheduleId)
             .stream().map(ConcertSeatEntity::toDomain)
             .toList();
     }
@@ -60,6 +58,14 @@ public class ConcertRepositoryImpl implements ConcertRepository{
     @Override
     public List<ConcertSeat> getConcertSeatsByIdIn(List<Long> concertSeatIds) {
         return this.concertSeatJpaRepository.findByIdIn(concertSeatIds)
+                .stream().map(ConcertSeatEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<ConcertSeat> saveConcertSeats(List<ConcertSeat> concertSeats) {
+        var entities = concertSeats.stream().map(ConcertSeatEntity::new).toList();
+        return this.concertSeatJpaRepository.saveAll(entities)
                 .stream().map(ConcertSeatEntity::toDomain)
                 .toList();
     }

@@ -1,11 +1,8 @@
 package io.hhplus.concert.application.concert;
 
-import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.domain.concert.ConcertService;
-import io.hhplus.concert.domain.concert.Reservation;
-import io.hhplus.concert.domain.concert.ReservationService;
+import io.hhplus.concert.domain.reservation.ReservationService;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,29 +16,16 @@ public class ConcertFacade {
         this.reservationService = reservationService;
     }
 
-    public List<ConcertDto> getConcerts() {
-        return concertService.getConcerts().stream().map(ConcertDto::new).toList();
+    public List<ConcertDto> getConcerts(int page) {
+        return concertService.getConcerts(page).stream().map(ConcertDto::new).toList();
     }
 
     public List<ConcertScheduleDto> getConcertSchedules(long concertId) {
-        return concertService.getConcertSchedules(concertId)
-            .stream().map(ConcertScheduleDto::new).toList();
+        return concertService.getConcertSchedules(concertId).stream().map(ConcertScheduleDto::new).toList();
     }
 
     public List<ConcertSeatDto> getConcertSeats(long concertScheduleId) {
         return concertService.getConcertSeats(concertScheduleId).stream()
             .map(ConcertSeatDto::new).toList();
-    }
-
-    public List<ConcertSeatDto> getReservedConcertSeats(long concertScheduleId) {
-        return concertService.getReservedConcertSeats(concertScheduleId).stream()
-                .map(ConcertSeatDto::new).toList();
-    }
-
-    @Transactional
-    public ReservationDto reserveSeats(long userId, List<Long> seatIds) {
-        List<ConcertSeat> concertSeats = concertService.getConcertSeatsByIds(seatIds);
-        Reservation reservation = reservationService.lockAndReserveConcertSeats(userId, concertSeats);
-        return new ReservationDto(reservation);
     }
 }

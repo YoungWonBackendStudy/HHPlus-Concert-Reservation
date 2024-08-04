@@ -1,43 +1,30 @@
 package io.hhplus.concert.domain.queue;
 
-import io.hhplus.concert.support.exception.CustomNotFoundException;
-import io.hhplus.concert.support.exception.ExceptionCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import io.hhplus.concert.domain.queue.WaitingQueueToken.TokenStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class QueueService {
-    final int queueSize = 50;
+    final Long usersPer10s = 100L;
+    final Long threshold = 3000L;
 
-    WaitingQueueTokenRepository waitingQueueTokenRepository;
-
-    public QueueService(WaitingQueueTokenRepository waitingQueueTokenRepository) {
-        this.waitingQueueTokenRepository = waitingQueueTokenRepository;
-    }
+    private final WaitingQueueTokenRepository waitingQueueTokenRepository;
+    private final ActiveTokenRepository activeTokenRepository;
 
     public Long getWaitingTokensAhead(WaitingQueueToken token) {
-        WaitingQueueToken firstWaitingToken;
-        try{
-            firstWaitingToken = this.waitingQueueTokenRepository.getFirstTokenByStatus(TokenStatus.WAITING);
-        }catch(CustomNotFoundException e) {
-            if(!e.getCode().equals(ExceptionCode.TOKEN_NOT_FOUND)) throw e;
-
-            firstWaitingToken = token;
-        }
-        return token.getId() - firstWaitingToken.getId();
+        return this.waitingQueueTokenRepository.getWaitingQueueTokenRank(token);
     }
 
+    @Transactional
     public void activateTokens() {
-        var activeTokens = waitingQueueTokenRepository.getTokensByStatus(TokenStatus.ACTIVE, queueSize + 1);
-        if (activeTokens.size() >= queueSize)
-            return;
+        var activeTokenCnt = this.activeTokenRepository.getActiveTokensCount();
+        if(activeTokenCnt > threshold - usersPer10s) return;
 
-        var tokensToActivate = waitingQueueTokenRepository.getTokensByStatus(TokenStatus.WAITING, queueSize - activeTokens.size());
-        if (tokensToActivate == null || tokensToActivate.isEmpty())
-            return;
+        var tokensToActivate =this.waitingQueueTokenRepository.dequeFirstNWaitingQueueTokens(100L);
 
-        tokensToActivate.forEach(WaitingQueueToken::activate);
-        waitingQueueTokenRepository.saveTokens(tokensToActivate);
+        var activeTokens = tokensToActivate.stream().map(ActiveToken::new).toList();
+        activeTokenRepository.saveActiveTokens(activeTokens);
     }
 }

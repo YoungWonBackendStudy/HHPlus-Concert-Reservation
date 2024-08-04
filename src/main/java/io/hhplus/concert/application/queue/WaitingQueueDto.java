@@ -6,12 +6,10 @@ import lombok.Getter;
 @Getter
 public class WaitingQueueDto {
     String token;
-    long waitingId;
     long waitingAhead;
 
     public WaitingQueueDto(WaitingQueueToken token, long waitingAhead) {
         this.token = token.getToken();
-        this.waitingId = token.getId();
         this.waitingAhead = waitingAhead;
     }
 }
