@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.concurrent.CountDownLatch;
@@ -22,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @Sql(scripts = "classpath:testinit.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class PaymentFacadeIntegTest {
     @Autowired
@@ -46,9 +48,9 @@ public class PaymentFacadeIntegTest {
         long userId = 0L;
         long concertScheduleId = 0L;
         
-        var queueToken = queueFacade.getQueueToken(userId);
+        var queueToken = queueFacade.getQueueToken(null);
         queueFacade.scheduleWaitingQueue();
-        assertThatThrownBy(() -> queueFacade.getQueueToken(userId))
+        assertThatThrownBy(() -> queueFacade.getQueueToken(queueToken.getToken()))
                 .hasMessage(ExceptionCode.TOKEN_IS_ACTIVATED.getMessage()); //guard assertion
 
         var concertSeats = concertFacade.getConcertSeats(concertScheduleId);
@@ -64,7 +66,7 @@ public class PaymentFacadeIntegTest {
         
         //when
         var userAssetBeforePayment = userAssetFacade.getBalance(userId);
-        var payment = paymentFacade.placePayment(queueToken.getToken(), reservation.getReservationId());
+        var payment = paymentFacade.placePayment(queueToken.getToken(), userId, reservation.getReservationId());
 
         //then
         assertThat(payment).isNotNull();
@@ -74,10 +76,10 @@ public class PaymentFacadeIntegTest {
         assertThat(userAssetAfterPayment).isEqualTo(userAssetBeforePayment - payment.getTotalPrice());
 
         //when: 중복 결제
-        ThrowingCallable dupPayment = () -> paymentFacade.placePayment(queueToken.getToken(), reservation.getReservationId());
+        ThrowingCallable dupPayment = () -> paymentFacade.placePayment(queueToken.getToken(), userId, reservation.getReservationId());
 
         //then
-        assertThatThrownBy(dupPayment).hasMessage(ExceptionCode.ACTIVE_TOKEN_NOT_FOUND.getMessage());
+        assertThatThrownBy(dupPayment).hasMessage(ExceptionCode.PAYMENT_ALREADY_COMPLETED.getMessage());
     }
 
     @Test
@@ -87,7 +89,7 @@ public class PaymentFacadeIntegTest {
         long userId = 0L;
         long concertScheduleId = 0L;
         int executionCnt = 5;
-        var queue = queueFacade.getQueueToken(userId);
+        var queue = queueFacade.getQueueToken(null);
         queueFacade.scheduleWaitingQueue();
 
         var concertSeats = concertFacade.getConcertSeats(concertScheduleId);
@@ -110,7 +112,7 @@ public class PaymentFacadeIntegTest {
         for (int i =0; i < executionCnt; i++) {
             executorService.submit(() -> {
                 try{ 
-                    paymentFacade.placePayment(queue.getToken(), reservation.getReservationId());
+                    paymentFacade.placePayment(queue.getToken(), userId, reservation.getReservationId());
                 }
                 catch(CustomBadRequestException e) {
                 }finally {

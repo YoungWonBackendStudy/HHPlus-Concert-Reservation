@@ -1,6 +1,5 @@
 package io.hhplus.concert.domain.concert;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +11,6 @@ public class ConcertService {
         this.concertRepository = concertRepository;
     }
 
-    @Cacheable(cacheNames = "concerts", key = "#page")
     public List<Concert> getConcerts(int page) {
         int defaultPageSize = 500;
         return concertRepository.getConcerts(page, defaultPageSize);
