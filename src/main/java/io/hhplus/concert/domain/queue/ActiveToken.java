@@ -8,12 +8,10 @@ import lombok.Getter;
 public class ActiveToken {
     private static final Long defaultTimeToLive = 5 * 60 * 1000L;
     private String token;
-    private Long userId;
     private Long timeToLive;
 
     public ActiveToken(WaitingQueueToken waitingQueueToken) {
         this.token = waitingQueueToken.getToken();
-        this.userId = waitingQueueToken.getUserId();
         this.timeToLive = defaultTimeToLive;
     }
 

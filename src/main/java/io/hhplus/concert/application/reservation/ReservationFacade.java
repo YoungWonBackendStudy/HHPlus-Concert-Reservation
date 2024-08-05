@@ -7,9 +7,7 @@ import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.domain.reservation.ReservationService;
 import io.hhplus.concert.domain.reservation.ReservationTicket;
 import io.hhplus.concert.support.config.MyRedisKeyspaceConfig;
-import io.hhplus.concert.support.config.RedisConfig;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
@@ -22,7 +20,7 @@ public class ReservationFacade {
     private final ReservationService reservationService;
     private final RedissonLockClient redissonLockClient;
     private final MyRedisKeyspaceConfig keyspace;
-    
+
     public ReservationDto reserveSeats(long userId, List<Long> seatIds) {
         List<ConcertSeat> concertSeats = concertService.getConcertSeatsByIds(seatIds);
         RedissonLockClient.RedissonLockedCallable<Reservation> lockedReservationCall = () -> {

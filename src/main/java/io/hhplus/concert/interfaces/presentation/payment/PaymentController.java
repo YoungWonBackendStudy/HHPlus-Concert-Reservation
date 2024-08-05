@@ -1,9 +1,6 @@
 package io.hhplus.concert.interfaces.presentation.payment;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.hhplus.concert.application.payment.PaymentFacade;
 import io.hhplus.concert.interfaces.presentation.payment.dto.PaymentRequest;
@@ -25,13 +22,15 @@ public class PaymentController {
     @Operation(summary = "결제 API")
     
     @Parameters(value = {
-        @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE 상태의 토큰")
+        @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
+            @Parameter( name = "userId", required = true, description = "결제할 User의 ID")
     })
     @PostMapping("payment")
     public PaymentResponse placePayment(    
         @RequestHeader(name = "TOKEN") String token,
+        @RequestParam(name = "userId") Long userId,
         @RequestBody PaymentRequest paymentRequest
     ) {
-        return PaymentResponse.of(paymentFacade.placePayment(token, paymentRequest.reservationId()));
+        return PaymentResponse.of(paymentFacade.placePayment(token, userId, paymentRequest.reservationId()));
     }
 }

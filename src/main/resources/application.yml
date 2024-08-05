@@ -1,6 +1,5 @@
 spring.application.name: concert-reservation
 
-
 spring.data.redis:
   host: localhost
   port: 6379
@@ -9,3 +8,10 @@ spring.data.redis:
     waiting-token: "waitingQueueToken"
     active-token: "activeToken"
     reservation: "reservation"
+
+---
+spring.profiles.active: test
+
+
+---
+spring.profiles.active: test-db-mysql
