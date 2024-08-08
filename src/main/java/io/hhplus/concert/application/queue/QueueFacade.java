@@ -25,4 +25,8 @@ public class QueueFacade {
     public void scheduleWaitingQueue() {
         queueService.activateTokens();
     }
+
+    public void expireActiveToken(String token) {
+        tokenService.expireToken(token);
+    }
 }

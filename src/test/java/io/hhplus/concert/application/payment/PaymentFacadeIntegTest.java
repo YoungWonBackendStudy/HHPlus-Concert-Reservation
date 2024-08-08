@@ -1,15 +1,19 @@
 package io.hhplus.concert.application.payment;
 
+import groovy.util.logging.Slf4j;
 import io.hhplus.concert.application.concert.ConcertFacade;
 import io.hhplus.concert.application.concert.ConcertSeatDto;
 import io.hhplus.concert.application.queue.QueueFacade;
 import io.hhplus.concert.application.reservation.ReservationFacade;
 import io.hhplus.concert.application.user.UserAssetFacade;
+import io.hhplus.concert.domain.queue.TokenService;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 @ActiveProfiles("test")
 @Sql(scripts = "classpath:testinit.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Slf4j
 public class PaymentFacadeIntegTest {
     @Autowired
     PaymentFacade paymentFacade;
@@ -41,9 +46,12 @@ public class PaymentFacadeIntegTest {
     @Autowired
     ReservationFacade reservationFacade;
 
+    @Autowired
+    TokenService tokenService;
+
     @Test
-    @DisplayName("좌석 예약을 두번 결제시도할 경우 1번째는 정상 결제 && 두번째는 토큰 만료 (결제 완료 시 토큰 만료)")
-    void testPayment() {
+    @DisplayName("좌석 예약을 두번 결제시도할 경우 1번째는 정상 결제 && 두번째는 이미 결제된 예약입니다 오류 발생")
+    void testPayment() throws InterruptedException {
         //given
         long userId = 0L;
         long concertScheduleId = 0L;
@@ -80,6 +88,11 @@ public class PaymentFacadeIntegTest {
 
         //then
         assertThatThrownBy(dupPayment).hasMessage(ExceptionCode.PAYMENT_ALREADY_COMPLETED.getMessage());
+
+        //비동기 Event로 처리되는 Token 만료 확인
+        Thread.sleep(2000L);
+        assertThatThrownBy(() -> tokenService.getActiveToken(queueToken.getToken()))
+                .hasMessage(ExceptionCode.ACTIVE_TOKEN_NOT_FOUND.getMessage());
     }
 
     @Test

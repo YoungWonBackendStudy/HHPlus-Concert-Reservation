@@ -6,6 +6,11 @@
  - 2 조회 성능 테스트
  - 3 Conclusion
 
+# [서비스 확장, 트랜잭션 및 Event Driven](document%2Fbusiness-transaction-develop.md)
+ - 1 현재 트랜잭션 분석
+ - 2 Event를 이용한 결제 트랜잭션 분리
+ - 3 서비스 확장
+ - 4 설계
 ---
 # Caching
 
