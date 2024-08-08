@@ -19,8 +19,7 @@ public class TokenValidationInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request,@NonNull  HttpServletResponse response,@NonNull  Object handler) {
         String token = request.getHeader("TOKEN");
-        ActiveToken activeToken = tokenService.getActiveToken(token);
-        request.setAttribute("userId", activeToken.getUserId());
+        tokenService.getActiveToken(token);
         return true;
     }
     

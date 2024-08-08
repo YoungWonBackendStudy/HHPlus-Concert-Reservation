@@ -14,15 +14,13 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class WaitingQueueTokenRepositoryImpl implements WaitingQueueTokenRepository {
-    private final WaitingQueueTokenRedisRepository waitingQueueTokenRedisRepository;
     private final RedisTemplate<String, String> waitingQueueTokenRedisTemplate;
     private final MyRedisKeyspaceConfig keyspace;
 
     @Override
     public WaitingQueueToken saveWaitingQueueToken(WaitingQueueToken token) {
-        var entity = new WaitingQueueTokenEntity(token);
         waitingQueueTokenRedisTemplate.opsForZSet().add(keyspace.getWaitingToken(), token.getToken(), token.getIssuedAtInMillis());
-        return this.waitingQueueTokenRedisRepository.save(entity).toDomain();
+        return token;
     }
 
     @Override
@@ -35,31 +33,19 @@ public class WaitingQueueTokenRepositoryImpl implements WaitingQueueTokenReposit
 
     @Override
     public List<WaitingQueueToken> dequeFirstNWaitingQueueTokens(Long sizeN) {
-        var tokens = waitingQueueTokenRedisTemplate.opsForZSet().range(keyspace.getWaitingToken(), 0L, sizeN).stream().toList();
-        if(tokens.isEmpty()) return List.of();
-        var tokenEntities = tokens.stream().map(token -> {
-            var tokenEntity = waitingQueueTokenRedisRepository.findById(token).orElse(null);
-            if(tokenEntity == null) throw new CustomNotFoundException(ExceptionCode.WAITING_TOKEN_NOT_FOUND);
+        var tokens = waitingQueueTokenRedisTemplate.opsForZSet().range(keyspace.getWaitingToken(), 0L, sizeN);
+        if(tokens == null || tokens.isEmpty()) return List.of();
 
-            return tokenEntity;
-        }).toList();
-
-        waitingQueueTokenRedisRepository.deleteAll(tokenEntities);
         waitingQueueTokenRedisTemplate.opsForZSet().removeRange(keyspace.getWaitingToken(), 0L, sizeN);
 
-        return tokenEntities.stream().map(WaitingQueueTokenEntity::toDomain).toList();
+        return tokens.stream().map(token -> new WaitingQueueToken(token, null)).toList();
     }
 
     @Override
-    public WaitingQueueToken getWaitingQueueTokenByUserId(long userId) {
-        var entity = this.waitingQueueTokenRedisRepository.findByUserId(userId);
-        if(entity == null) throw new CustomNotFoundException(ExceptionCode.WAITING_TOKEN_NOT_FOUND);
+    public WaitingQueueToken getWaitingQueueTokenByTokenStr(String tokenStr) {
+        var issuedAt = waitingQueueTokenRedisTemplate.opsForZSet().score(keyspace.getWaitingToken(), tokenStr);
+        if(issuedAt == null) throw new CustomNotFoundException(ExceptionCode.WAITING_TOKEN_NOT_FOUND);
 
-        return entity.toDomain();
-    }
-
-    @Override
-    public void deleteWaitingQueueToken(WaitingQueueToken token) {
-
+        return new WaitingQueueToken(tokenStr, issuedAt.longValue());
     }
 }

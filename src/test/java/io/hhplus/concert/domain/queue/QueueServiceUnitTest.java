@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +25,7 @@ public class QueueServiceUnitTest {
     void testGetWaitingTokensAhead() {
         //given
         long myWaitingId = 30;
-        WaitingQueueToken token = new WaitingQueueToken("myToken", myWaitingId, System.currentTimeMillis());
+        WaitingQueueToken token = new WaitingQueueToken("myToken", System.currentTimeMillis());
         when(this.mockWaitingQueueTokenRepository.getWaitingQueueTokenRank(token)).thenReturn(myWaitingId);
 
         //when
@@ -40,7 +39,7 @@ public class QueueServiceUnitTest {
     @DisplayName("대기 중인 토큰 활성화 테스트")
     void testActivateTokens() {
         //given
-        var tokensToActivate = List.of(new WaitingQueueToken(0), new WaitingQueueToken(1), new WaitingQueueToken(2));
+        var tokensToActivate = List.of(new WaitingQueueToken(), new WaitingQueueToken(), new WaitingQueueToken());
         when(mockWaitingQueueTokenRepository.dequeFirstNWaitingQueueTokens(anyLong())).thenReturn(tokensToActivate);
 
         //when

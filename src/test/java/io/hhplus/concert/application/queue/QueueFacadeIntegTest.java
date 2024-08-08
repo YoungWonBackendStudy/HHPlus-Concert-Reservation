@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.concurrent.CountDownLatch;
@@ -18,6 +19,7 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @Sql(scripts = "classpath:testinit.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class QueueFacadeIntegTest {
     @Autowired
@@ -32,11 +34,9 @@ public class QueueFacadeIntegTest {
     @Test
     @DisplayName("토큰 발급, Activation 통합 테스트")
     void testActivateToken() {
-        //given
-        long userId = 0;
 
         //when
-        WaitingQueueDto queueInfo = queueFacade.getQueueToken(userId);
+        WaitingQueueDto queueInfo = queueFacade.getQueueToken(null);
 
         //then
         assertThat(queueInfo).isNotNull();
@@ -44,7 +44,7 @@ public class QueueFacadeIntegTest {
         
         //when
         queueFacade.scheduleWaitingQueue();
-        ThrowableAssert.ThrowingCallable resActivated = () -> queueFacade.getQueueToken(userId);
+        ThrowableAssert.ThrowingCallable resActivated = () -> queueFacade.getQueueToken(queueInfo.getToken());
 
         //then
         assertThatThrownBy(resActivated)
@@ -53,42 +53,12 @@ public class QueueFacadeIntegTest {
     }
 
     @Test
-    @DisplayName("동일한 사용자가 토큰 10개 동시에 발급 요청했을 때 정상적으로 토큰 발급")
-    void testGetTokenConsistent() throws InterruptedException {
-        //given
-        int userId = 0;
-        int executionCnt = 10;
-        ExecutorService executorService = Executors.newFixedThreadPool(executionCnt);
-        CountDownLatch latch = new CountDownLatch(executionCnt);
-
-        //when
-        for(int i = 0; i < executionCnt; i++) {
-            executorService.submit(() -> {
-                try{queueFacade.getQueueToken(userId); }
-                finally {
-                    latch.countDown();
-                }
-            });
-        }
-        latch.await();
-        executorService.shutdown();
-
-        //then
-        queueFacade.scheduleWaitingQueue();
-        assertThatCode(() -> activeTokenRepository.getActiveTokenByUserId(userId)).doesNotThrowAnyException();
-        var activeToken = activeTokenRepository.getActiveTokenByUserId(userId);
-        assertThat(activeToken).isNotNull();
-    }
-
-
-
-    @Test
     @DisplayName("200개의 토큰이 대기중인 상태에서 토큰 만료/활성화 Scheduling이 10번 동시에 발생할 때 100개만 Activation")
     void testScheduleTokenConsistent() throws InterruptedException {
         //given
         int users = 200;
         for(int i = 0; i < users; i++) {
-            queueFacade.getQueueToken(i);
+            queueFacade.getQueueToken(null);
         }
         int executionCnt = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(executionCnt);

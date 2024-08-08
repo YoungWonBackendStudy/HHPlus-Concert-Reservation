@@ -39,7 +39,7 @@ public class ReservationServiceUnitTest {
         List<ReservationTicket> tickets = seats
                 .stream().map(seat -> new ReservationTicket(0L, seat))
                 .toList();
-        Reservation reservation = new Reservation(0L, userId, new Date(), null, tickets);
+        Reservation reservation = new Reservation(0L, userId, Reservation.ReservationStatus.RESERVED, new Date(), null, tickets);
 
         when(mockReservationRepository.saveReservation(any(Reservation.class))).thenReturn(reservation);
 
@@ -68,7 +68,7 @@ public class ReservationServiceUnitTest {
                 .toList();
 
         seats.forEach(ConcertSeat::reserved);
-        Reservation reservation = new Reservation(reservationId, userId, new Date(), null, tickets);
+        Reservation reservation = new Reservation(reservationId, userId, Reservation.ReservationStatus.RESERVED,new Date(), null, tickets);
 
         when(mockReservationRepository.saveReservation(any(Reservation.class))).thenReturn(reservation);
 
@@ -80,10 +80,10 @@ public class ReservationServiceUnitTest {
     }
 
     @Test
-    @DisplayName("예약이 완료되면 CompletedAt 값이 설정됨")
+    @DisplayName("예약이 완료되면 COMPLETE로 상태 변경됨")
     void testReservationCompletion() {
         //given
-        Reservation reservation = new Reservation(0L, 0L, new Date(), null, List.of());
+        Reservation reservation = new Reservation(0L, 0L, Reservation.ReservationStatus.RESERVED,new Date(), null, List.of());
 
         //when
         reservationService.completeReservation(reservation);
@@ -91,6 +91,7 @@ public class ReservationServiceUnitTest {
         //then
         verify(mockReservationRepository).saveReservation(argThat(reservationRes -> {
             assertThat(reservationRes.getCompletedAt()).isNotNull();
+            assertThat(reservationRes.getStatus()).isEqualTo(Reservation.ReservationStatus.COMPLETED);
             return true;
         }));
     }

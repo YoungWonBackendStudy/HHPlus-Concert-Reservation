@@ -49,22 +49,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationTicket> getCompletedOrReservedUnder5mins(List<Long> seadIds) {
-        return reservationTicketJpaRepository.findCompletedOrReservedUnder5minBySeatIds(seadIds)
-                .stream().map(ReservationTicketEntity::toDomain)
-                .toList();
-    }
-
-    @Override
-    public List<ReservationTicket> getCompletedOrReservedUnder5mins(Long concertScheduleId) {
-        return reservationTicketJpaRepository.findCompletedOrReservedUnder5minByConcertScheduleId(concertScheduleId)
-                .stream().map(ReservationTicketEntity::toDomain)
-                .toList();
-    }
-
-    @Override
-    public List<Reservation> getReservedOver5mins() {
-        var expiredReservations = reservationJpaRepository.findByReservedAtBefore(new Date(System.currentTimeMillis() - 5 * 60 * 1000L));
+    public List<Reservation> getReservedOver5minsAndStatusStillReserved() {
+        var expiredReservations = reservationJpaRepository.findByStatusAndReservedAtBefore(Reservation.ReservationStatus.RESERVED, new Date(System.currentTimeMillis() - 5 * 60 * 1000L));
         var expiredTicketDomains = reservationTicketJpaRepository.findByReservationIdIn(expiredReservations.stream().map(ReservationEntity::getId).toList())
                 .stream().map(ReservationTicketEntity::toDomain)
                 .toList();

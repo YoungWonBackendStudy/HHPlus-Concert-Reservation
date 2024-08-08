@@ -57,7 +57,7 @@ public class RedisConfig {
                 .disableCachingNullValues();
 
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-        cacheConfigurations.put("concerts", defaults.entryTtl(Duration.ofSeconds(20)));
+        cacheConfigurations.put("ConcertFacade.getConcerts", defaults.entryTtl(Duration.ofSeconds(20)));
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaults)

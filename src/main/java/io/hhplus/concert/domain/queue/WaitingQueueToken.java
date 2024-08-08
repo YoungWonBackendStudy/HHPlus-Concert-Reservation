@@ -9,11 +9,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class WaitingQueueToken {
     String token;
-    Long userId;
     Long issuedAtInMillis;
 
-    public WaitingQueueToken(long userId) {
-        this.userId = userId;
+    public WaitingQueueToken() {
         this.issuedAtInMillis = System.currentTimeMillis();
         this.token = UUID.randomUUID().toString();
     }

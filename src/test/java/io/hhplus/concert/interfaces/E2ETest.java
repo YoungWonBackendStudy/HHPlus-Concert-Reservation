@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 import io.hhplus.concert.interfaces.controlleradvice.ErrorResponse;
@@ -24,6 +25,7 @@ import io.hhplus.concert.support.exception.ExceptionCode;
 import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 @Sql(scripts = "classpath:testinit.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class E2ETest {
     @LocalServerPort
@@ -40,7 +42,6 @@ public class E2ETest {
             .given()
                 .accept("application/json")
                 .port(port)
-                .param("userId", userId)
             .when()
                 .get("/queue/token")
             .then()
@@ -51,13 +52,13 @@ public class E2ETest {
         assertThat(queueRes).isNotNull();
         assertThat(queueRes.token()).isNotNull();
 
-        //when:5초 대기 후 조회 시 Token 대기 상태가 아닙니다 Error 발생
-        Thread.sleep(5 * 1000L);
+        //when:15초 대기 후 조회 시 Token 대기 상태가 아닙니다 Error 발생
+        Thread.sleep(15 * 1000L);
         var queueErrorRes = RestAssured
             .given()
                 .accept("application/json")
                 .port(port)
-                .param("userId", userId)
+                .header("TOKEN", queueRes.token())
             .when()
                 .get("/queue/token")
             .then()
@@ -129,6 +130,7 @@ public class E2ETest {
                 .accept("application/json")
                 .port(port)
                 .header("TOKEN", queueRes.token())
+                .queryParam("userId", userId)
                 .body(reservationRequest)
             .when()
                 .post("reservations")
@@ -186,6 +188,7 @@ public class E2ETest {
                 .accept("application/json")
                 .port(port)
                 .header("TOKEN", queueRes.token())
+                .queryParam("userId", userId)
                 .body(paymentRequest)
             .when()
                 .post("/payment")
