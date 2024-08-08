@@ -25,7 +25,7 @@ public class ConcertRepositoryImpl implements ConcertRepository{
 
     @Override
     public List<Concert> getConcerts(int page, int pageSize) {
-        return this.concertJpaRepository.findAll(PageRequest.of(page, pageSize))
+        return this.concertJpaRepository.findConcertsAvailableToday(PageRequest.of(page, pageSize))
             .stream().map(ConcertEntity::toDomain)
             .toList();
     }

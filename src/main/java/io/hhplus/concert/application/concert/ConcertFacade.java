@@ -17,7 +17,8 @@ public class ConcertFacade {
         this.reservationService = reservationService;
     }
 
-    @Cacheable(cacheNames = "concerts", key = "#page")
+
+    @Cacheable(cacheNames = "ConcertFacade.getConcerts", key = "#page")
     public List<ConcertDto> getConcerts(int page) {
         return concertService.getConcerts(page).stream().map(ConcertDto::new).toList();
     }

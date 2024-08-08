@@ -1,18 +1,12 @@
 package io.hhplus.concert.infra.reservation;
 
-import java.util.Date;
-
 import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.domain.reservation.ReservationTicket;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -27,6 +21,10 @@ public class ReservationEntity {
     @Column(name = "user_id")
     long userId;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    Reservation.ReservationStatus status;
+
     @Column(name = "reserved_at")
     Date reservedAt;
 
@@ -36,11 +34,12 @@ public class ReservationEntity {
     public ReservationEntity(Reservation domain) {
         this.id = domain.getId();
         this.userId = domain.getUserId();
+        this.status = domain.getStatus();
         this.reservedAt = domain.getReservedAt();
         this.completedAt = domain.getCompletedAt();
     }
 
     public Reservation toDomain(List<ReservationTicket> reservationTickets) {
-        return new Reservation(this.id, this.userId, this.reservedAt, this.completedAt, reservationTickets);
+        return new Reservation(this.id, this.userId, this.status, this.reservedAt, this.completedAt, reservationTickets);
     }
 }

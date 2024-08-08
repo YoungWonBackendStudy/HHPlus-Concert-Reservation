@@ -34,7 +34,7 @@ public class ReservationFacade {
     }
 
     public void updateSeatsExpired() {
-        var reservations = this.reservationService.getExpiredReservations();
+        var reservations = this.reservationService.expiresAndGetReservations();
         var seatIds = new LinkedList<Long>();
         for(var reservation : reservations) {
             seatIds.addAll(reservation.getReservationTickets().stream().map(ReservationTicket::getConcertSeatId).toList());

@@ -49,7 +49,7 @@ public class ReservationDomainUnitTest {
     }
 
     @Test
-    @DisplayName("예약 만료처리 테스트")
+    @DisplayName("예약 완료/만료 처리 테스트")
     void testCompleted() {
         //given
         long userId = 0;
@@ -59,7 +59,14 @@ public class ReservationDomainUnitTest {
         reservation.completed();
 
         //then
+        assertThat(reservation.getStatus()).isEqualTo(Reservation.ReservationStatus.COMPLETED);
         assertThat(reservation.getCompletedAt()).isNotNull();
+
+        //when
+        reservation.expired();
+
+        //then
+        assertThat(reservation.getStatus()).isEqualTo(Reservation.ReservationStatus.EXPIRED);
     }
 
     @Test

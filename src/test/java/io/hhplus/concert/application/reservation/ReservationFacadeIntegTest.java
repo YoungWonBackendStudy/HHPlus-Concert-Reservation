@@ -1,6 +1,6 @@
 package io.hhplus.concert.application.reservation;
 
-import io.hhplus.concert.domain.reservation.ReservationRepository;
+import io.hhplus.concert.infra.reservation.ReservationTicketJpaRepository;
 import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import org.assertj.core.api.ThrowableAssert;
@@ -28,7 +28,7 @@ public class ReservationFacadeIntegTest {
     ReservationFacade reservationFacade;
 
     @Autowired
-    ReservationRepository reservationRepository;
+    ReservationTicketJpaRepository reservationTicketJpaRepository;
 
     @Test
     @DisplayName("두 좌석에 대한 예약을 두번 시도할 경우 -> 1번은 정상 예약, 2번째는 이미 예약된 좌석 오류")
@@ -66,6 +66,7 @@ public class ReservationFacadeIntegTest {
 
 
         //when: 100번 동시에 예약할 때
+        var reservationTicketsBefore = reservationTicketJpaRepository.count();
         for (Long userId : userIdsToApply) {
             executorService.submit(() -> {
                 try{ reservationFacade.reserveSeats(userId, reservationSeats); }
@@ -79,7 +80,7 @@ public class ReservationFacadeIntegTest {
         executorService.shutdown();
 
         //then: 1회의 예약 제외 모두 실패 -> ReservationTicket 2개만 발급
-        var reservationTickets = reservationRepository.getCompletedOrReservedUnder5mins(reservationSeats);
-        assertThat(reservationTickets.size()).isEqualTo(reservationSeats.size());
+        var reservationTicketsAfter = reservationTicketJpaRepository.count();
+        assertThat(reservationTicketsAfter).isEqualTo(reservationTicketsBefore + reservationSeats.size());
     }
 }
