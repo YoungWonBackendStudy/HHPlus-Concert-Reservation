@@ -9,6 +9,11 @@ spring.data.redis:
     active-token: "activeToken"
     reservation: "reservation"
 
+spring.async.execution.pool:
+  core-size: 4
+  max-size: 20
+  queue-capacity: 500
+
 ---
 spring.config.activate.on-profile: test
 
