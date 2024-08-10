@@ -2,11 +2,13 @@ package io.hhplus.concert.infra.concert;
 
 import io.hhplus.concert.domain.concert.ConcertSeat;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "concert_seat")
 @NoArgsConstructor
+@AllArgsConstructor
 public class ConcertSeatEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -35,8 +35,14 @@ public class ReservationService {
         reservationRepository.saveReservation(reservation);
     }
 
-    public List<Reservation> getExpiredReservations() {
-        return this.reservationRepository.getReservedOver5mins();
+    public List<Reservation> expiresAndGetReservations() {
+        var expiredReservations =  this.reservationRepository.getReservedOver5minsAndStatusStillReserved();
+        expiredReservations.forEach(reservation -> {
+            reservation.expired();
+            reservationRepository.saveReservation(reservation);
+        });
+
+        return expiredReservations;
     }
 
 }

@@ -12,9 +12,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Reservation {
+    public enum ReservationStatus {
+        RESERVED, COMPLETED, EXPIRED
+    }
+
     static final long expireDurationInMilli = 5 * 60 * 1000L;
     Long id;
     Long userId;
+    ReservationStatus status;
     Date reservedAt;
     Date completedAt;
     List<ReservationTicket> reservationTickets;
@@ -23,6 +28,7 @@ public class Reservation {
         this.userId = userId;
         this.reservedAt = new Date();
         reservationTickets = List.of();
+        this.status = ReservationStatus.RESERVED;
     }
 
     public void makeTickets(List<ConcertSeat> seats) {
@@ -40,6 +46,12 @@ public class Reservation {
 
     public void completed() {
         this.completedAt = new Date();
+        this.status = ReservationStatus.COMPLETED;
+    }
+
+    public void expired() {
+        this.completedAt = new Date();
+        this.status = ReservationStatus.EXPIRED;
     }
 
     public Date getExpireDate() {

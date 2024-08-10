@@ -1,5 +1,6 @@
 package io.hhplus.concert.infra.reservation;
 
+import io.hhplus.concert.domain.reservation.Reservation;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -13,5 +14,5 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationEntit
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<ReservationEntity> findAndLockById(@NonNull Long id);
 
-    List<ReservationEntity> findByReservedAtBefore(Date reservedAt);
+    List<ReservationEntity> findByStatusAndReservedAtBefore(Reservation.ReservationStatus status, Date reservedAt);
 }
