@@ -1,10 +1,10 @@
 package io.hhplus.concert.application.queue;
 
-import org.springframework.stereotype.Component;
-
-import io.hhplus.concert.domain.queue.TokenService;
+import io.hhplus.concert.domain.queue.ActiveToken;
 import io.hhplus.concert.domain.queue.QueueService;
+import io.hhplus.concert.domain.queue.TokenService;
 import io.hhplus.concert.domain.queue.WaitingQueueToken;
+import org.springframework.stereotype.Component;
 
 @Component
 public class QueueFacade {
@@ -20,6 +20,10 @@ public class QueueFacade {
         WaitingQueueToken token = tokenService.getWaitingQueueToken(tokenStr);
         long waitingTokensAhead = queueService.getWaitingTokensAhead(token);
         return new WaitingQueueDto(token, waitingTokensAhead);
+    }
+
+    public ActiveToken getActiveToken(String tokenStr) {
+        return tokenService.getActiveToken(tokenStr);
     }
 
     public void scheduleWaitingQueue() {

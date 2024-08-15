@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class DatasendFacade {
-    DatasendService datasendService;
+    private final DatasendService datasendService;
 
     public boolean sendPayment(Payment payment){
         return datasendService.sendPayment(payment);

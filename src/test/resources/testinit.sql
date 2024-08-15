@@ -20,9 +20,9 @@ values
 insert into 
     concert_schedule(id, concert_id, place, reservation_st_date, reservation_end_date, concert_date)
 values 
-    (0, 0, '잠실', '2024-07-01', '2024-07-05', '2024-07-17'),
-    (1, 0, '잠실', '2024-07-01', '2024-07-05', '2024-07-18'),
-    (2, 0, '잠실', '2024-07-01', '2024-07-05', '2024-07-19');
+    (0, 0, '잠실', '2024-07-01', '2024-12-05', '2024-12-17'),
+    (1, 0, '잠실', '2024-07-01', '2024-12-05', '2024-12-18'),
+    (2, 0, '잠실', '2024-07-01', '2024-12-05', '2024-12-19');
 
 insert into 
     concert_seat(id, concert_schedule_id, location, price, reserved)
