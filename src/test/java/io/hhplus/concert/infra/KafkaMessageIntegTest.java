@@ -15,7 +15,7 @@ import static org.awaitility.Awaitility.await;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@EmbeddedKafka(partitions = 1, topics = { "test-topic" })
+@EmbeddedKafka(topics = "test-topic",  brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092"})
 public class KafkaMessageIntegTest {
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;

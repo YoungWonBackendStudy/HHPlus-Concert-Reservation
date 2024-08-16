@@ -6,12 +6,14 @@ import io.hhplus.concert.support.exception.CustomBadRequestException;
 import io.hhplus.concert.support.exception.ExceptionCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Slf4j
 public class PaymentSuccessMessage {
     public static final int RESEND_THRESHOLD = 3;
@@ -19,7 +21,7 @@ public class PaymentSuccessMessage {
     private String id;
     private Long paymentId;
     private int resendCnt;
-    private String message;
+    private String payload;
     private Long producedAt;
     private PaymentMessageStatus status;
 
@@ -31,7 +33,7 @@ public class PaymentSuccessMessage {
         this.producedAt = System.currentTimeMillis();
 
         ObjectMapper objectMapper = new ObjectMapper();
-        this.message = objectMapper.writeValueAsString(paymentSuccessEvent);
+        this.payload = objectMapper.writeValueAsString(paymentSuccessEvent);
     }
 
     public void messageResent() {
