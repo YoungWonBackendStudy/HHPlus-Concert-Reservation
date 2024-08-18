@@ -23,7 +23,9 @@ public enum ExceptionCode {
     PAYMENT_AMOUNT_CANNOT_BE_NEGATIVE("400", "0보다 적은 금액은 결제할 수 없습니다."),
     PAYMENT_ALREADY_COMPLETED("400", "이미 처리 완료된 예약입니다."),
 
-    FAIL_TO_GET_REDISSON_LOCK("400", "실패했습니다.");
+    FAIL_TO_GET_REDISSON_LOCK("400", "실패했습니다."),
+
+    MESSAGE_RESENT_THRESHOLD("400", "Message 재발행 회수가 Threshold에 도달했습니다. 이후 해당 Message는 재발행되지 않습니다.");
 
     final String errorCode;
     final String message;

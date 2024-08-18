@@ -1,5 +1,6 @@
 package io.hhplus.concert.application.payment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.hhplus.concert.domain.payment.Payment;
 import io.hhplus.concert.domain.payment.PaymentService;
 import io.hhplus.concert.domain.reservation.Reservation;
@@ -18,7 +19,7 @@ public class PaymentFacade {
 
 
     @Transactional
-    public PaymentDto placePayment(String token, long userId, long reservationId) {
+    public PaymentDto placePayment(String token, long userId, long reservationId) throws JsonProcessingException {
         Reservation reservation = reservationService.getAndLockReservation(reservationId);
 
         userAssetService.useUserAsset(userId, reservation.getTotalPrice());
@@ -27,5 +28,9 @@ public class PaymentFacade {
         paymentService.paymentCompleted(token, payment);
 
         return new PaymentDto(payment);
+    }
+
+    public void handleFailedPayment() {
+        paymentService.handleFailedMessages();
     }
 }

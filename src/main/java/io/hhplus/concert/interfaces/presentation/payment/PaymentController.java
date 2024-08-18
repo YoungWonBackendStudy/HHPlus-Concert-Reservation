@@ -1,5 +1,6 @@
 package io.hhplus.concert.interfaces.presentation.payment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.*;
 
 import io.hhplus.concert.application.payment.PaymentFacade;
@@ -30,7 +31,7 @@ public class PaymentController {
         @RequestHeader(name = "TOKEN") String token,
         @RequestParam(name = "userId") Long userId,
         @RequestBody PaymentRequest paymentRequest
-    ) {
+    ) throws JsonProcessingException {
         return PaymentResponse.of(paymentFacade.placePayment(token, userId, paymentRequest.reservationId()));
     }
 }

@@ -1,5 +1,6 @@
 package io.hhplus.concert.domain.payment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.hhplus.concert.domain.concert.ConcertSeat;
 import io.hhplus.concert.domain.reservation.Reservation;
 import io.hhplus.concert.support.exception.ExceptionCode;
@@ -7,6 +8,7 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,11 +22,13 @@ public class PaymentServiceUnitTest {
     PaymentService paymentService;
     PaymentRepository mockPaymentRepository;
     PaymentEventPublisher mockPaymentEventPublisher;
+    PaymentOutboxRepository mockPaymentOutboxRepository;
 
     public PaymentServiceUnitTest() {
         mockPaymentRepository = mock(PaymentRepository.class);
         mockPaymentEventPublisher = mock(PaymentEventPublisher.class);
-        paymentService = new PaymentService(mockPaymentRepository, mockPaymentEventPublisher);
+        mockPaymentOutboxRepository = mock(PaymentOutboxRepository.class);
+        paymentService = new PaymentService(mockPaymentRepository, mockPaymentEventPublisher, mockPaymentOutboxRepository);
     }
     
     @Test
@@ -44,7 +48,7 @@ public class PaymentServiceUnitTest {
 
     @Test
     @DisplayName("결제 완료 이벤트 전송 성공")
-    void testPaymentCompleted() {
+    void testPaymentCompleted() throws JsonProcessingException {
         //given
         String token = "testToken";
         Reservation reservation = new Reservation(0L, 0L, Reservation.ReservationStatus.RESERVED, new Date(), null, List.of());
@@ -60,7 +64,6 @@ public class PaymentServiceUnitTest {
             return true;
         }));
     }
-
 
     @Test
     @DisplayName("5분이 넘은 예약을 결제하려 할 때 예약 만료 오류 발생")
@@ -90,5 +93,56 @@ public class PaymentServiceUnitTest {
 
         //then
         assertThatThrownBy(throwRes).hasMessage(ExceptionCode.PAYMENT_ALREADY_COMPLETED.getMessage());
+    }
+
+    @Test
+    @DisplayName("결제 Message 전송에 실패한 경우 재전송 테스트")
+    void testHandleFailedMessages() throws JsonProcessingException {
+        //given
+        var paymentSuccessEvents = List.of(
+                new PaymentSuccessEvent(new Payment(0L, 0L, 0L, new Date(System.currentTimeMillis() - 5 * 60 * 60 * 1000L)), "testToken"),
+                new PaymentSuccessEvent(new Payment(1L, 0L, 1L, new Date(System.currentTimeMillis() - 5 * 60 * 60 * 1000L)), "testToken")
+        );
+        var paymentSuccessMessages = new ArrayList<PaymentSuccessMessage>(2);
+        for(var paymentSuccessEvent : paymentSuccessEvents) {
+            paymentSuccessMessages.add(new PaymentSuccessMessage(paymentSuccessEvent));
+        }
+        when(mockPaymentOutboxRepository.getPaymentSuccessMessagesOver3MinsAndStillInit()).thenReturn(paymentSuccessMessages);
+
+        //when
+        paymentService.handleFailedMessages();
+
+        //then
+        verify(mockPaymentEventPublisher, times(paymentSuccessEvents.size())).publishPaymentSuccessMessageEvent(argThat((resPaymentSuccessEvent) -> {
+            assertThat(resPaymentSuccessEvent.getResendCnt()).isEqualTo(1);
+            return true;
+        }));
+    }
+
+    @Test
+    @DisplayName("결제 Message 재전송이 Threshold에 달하면 상태를 SKIPPED로 변경")
+    void testResendMessagesOverThreshold() throws JsonProcessingException {
+        //given
+        var paymentSuccessEvents = List.of(
+                new PaymentSuccessEvent(new Payment(0L, 0L, 0L, new Date(System.currentTimeMillis() - 5 * 60 * 60 * 1000L)), "testToken"),
+                new PaymentSuccessEvent(new Payment(1L, 0L, 1L, new Date(System.currentTimeMillis() - 5 * 60 * 60 * 1000L)), "testToken")
+        );
+        var paymentSuccessMessages = new ArrayList<PaymentSuccessMessage>(2);
+        for(var paymentSuccessEvent : paymentSuccessEvents) {
+            paymentSuccessMessages.add(new PaymentSuccessMessage(paymentSuccessEvent));
+        }
+        for(int i = 0; i < PaymentSuccessMessage.RESEND_THRESHOLD - 1; i ++ ) {
+            paymentSuccessMessages.forEach(PaymentSuccessMessage::messageResent);
+        }
+        when(mockPaymentOutboxRepository.getPaymentSuccessMessagesOver3MinsAndStillInit()).thenReturn(paymentSuccessMessages);
+
+        //when
+        paymentService.handleFailedMessages();
+
+        //then
+        verify(mockPaymentEventPublisher, times(paymentSuccessEvents.size())).publishPaymentSuccessMessageEvent(argThat((resPaymentSuccessEvent) -> {
+            assertThat(resPaymentSuccessEvent.getStatus()).isEqualTo(PaymentMessageStatus.SKIPPED);
+            return true;
+        }));
     }
 }
