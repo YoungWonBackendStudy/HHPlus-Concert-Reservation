@@ -2,32 +2,32 @@
 ---
 ## 문제 해결 Docs
 
-### [1. 동시성 처리](document%2Fconsistency-problem.md)
+### [1. 동시성 처리](document/consistency-problem.md)
  - 락: Pros & Cons
  - UseCase 분석
  - UseCase 별 동시성 처리 전략
 
-### [2. Caching](document%2Fcaching.md)
+### [2. Caching](document/caching.md)
  - 쿼리 분석
  - Caching 전략 수립
  - Caching 적용
  - 개선할 점
 
-### [3. Redis를 이용한 대기열 구현](document%2Fqueue-with-redis.md)
+### [3. Redis를 이용한 대기열 구현](document/queue-with-redis.md)
  - Redis 데이터 타입 및 구현 방법 설계
  - 대기열을 이용한 Transactions 관리
 
-### [4. DB Indexing](document%2Fdb-index.md)
+### [4. DB Indexing](document/db-index.md)
  - Intro. RDB에서 DB Indexing이란?
- - 1 쿼리 분석 및 전략 수립
- - 2 조회 성능 테스트
- - 3 Conclusion
+ - 쿼리 분석 및 전략 수립
+ - 조회 성능 테스트
+ - Conclusion
 
-### [5. 서비스 확장, 트랜잭션 및 Event Driven](document%2Fbusiness-transaction-develop.md)
- - 1 현재 트랜잭션 분석
- - 2 Event를 이용한 결제 트랜잭션 분리
- - 3 서비스 확장
- - 4 설계
+### [5. 서비스 확장, 트랜잭션 및 Event Driven](document/business-transaction-develop.md)
+ - 현재 트랜잭션 분석
+ - Event를 이용한 결제 트랜잭션 분리
+ - 서비스 확장
+ - 설계
 
 ---
 
