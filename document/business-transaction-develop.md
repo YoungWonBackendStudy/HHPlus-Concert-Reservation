@@ -104,7 +104,7 @@ void paymentSuccessEventHandler(PaymentSuccessEvent paymentSuccessEvent) {
 }
 ```
 - 결제가 완료된 이후 토큰이 만료되어야 하고, 결제의 Transaction에 영향을 주지 않기 위해 `AFTER_COMMIT`정책을 이용한다.
-- 결제의 `요청 Thread`에 영향을 주지않기 위해 `Asyc`로 동작하도록 한다.
+- 결제의 `요청 Thread`에 영향을 주지않기 위해 `Async`로 동작하도록 한다.
 
 ```java
 @Async @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -113,7 +113,7 @@ void paymentSuccessEventHandler(PaymentSuccessEvent paymentSuccessEvent) {
 }
 ```
 - 결제가 완료된 이후 데이터 전송이 되어야 하고, 결제의 Transaction에 영향을 주지 않기 위해 `AFTER_COMMIT`정책을 이용한다.
-- 결제의 `요청 Thread`에 영향을 주지않기 위해 `Asyc`로 동작하도록 한다.
+- 결제의 `요청 Thread`에 영향을 주지않기 위해 `Async`로 동작하도록 한다.
 
 
 ## 3.서비스 확장
@@ -148,11 +148,11 @@ void paymentSuccessEventHandler(PaymentSuccessEvent paymentSuccessEvent) {
 - 결제의 경우 거의 모든 도메인에서 필요로할 가능성이 매우 높고, PG사 등 연계된 결제사를 서비스간 공유하기 위해서는 결제는 추후에 분리해야할 가능성이 높다.
 
 #### 발생할 수 있는 문제점
-- 결제의 경우 `원자성`이 매우 중요한 서비스이다. 
+- 결제의 경우 `원자성`이 매우 중요한 서비스이다.
   - 금액만 청구되고, 주문완료처리 되지 않거나, 그 반대로 주문완료처리되었는데, 금액이 청구되지 않는다면 큰 문제가 발생할 수 있다.
 - 해당 원자성을 보존해주기 위해 `분산 트랜잭션`을 철저하게 관리해야 한다.
 - 다양한 도메인으로 부터 `결제로 요청되는 트래픽`을 어떻게 관리할 것인지 결정해야 한다.
-- 또한 위 상황에서 어떤 `동시성 문제` 문제가 발생할 수 있는 지, 철저하게 관리해야 한다. 
+- 또한 위 상황에서 어떤 `동시성 문제` 문제가 발생할 수 있는 지, 철저하게 관리해야 한다.
 
 ### 3.3 대기열
 #### 분리해야하나?!
@@ -192,7 +192,7 @@ void paymentSuccessEventHandler(PaymentSuccessEvent paymentSuccessEvent) {
 - 트랜잭션이 분리된 서비스 간 `원자성`이 보장되어야하는 작업을 진행할 때 실패시 다른 서비스에게 알려서 같이 RollBack할 수 있도록 보상 트랜잭션을 실행한다.
 
 ### 설계
-- 예약 트랙잭션 
+- 예약 트랙잭션s
 ```mermaid
 flowchart TD
 
