@@ -1,9 +1,13 @@
 spring.application.name: concert-reservation
 
+spring.profiles.group:
+  "local": "local-infra,test-db"
+  "test":  "docker-infra,test-db"
+  "query-test": "docker-infra,query-test-db"
+  "local-docker": "docker-infra,test-db"
+
 # Redis Config
 spring.data.redis:
-  host: localhost
-  port: 6379
   default-cache-ttl: 10
   keyspace:
     waiting-token: "waitingQueueToken"
@@ -17,9 +21,7 @@ spring.async.execution.pool:
   queue-capacity: 500
 
 # Kafka Consumer/Producer Config
-spring:
-  kafka:
-    bootstrap-servers: localhost:9092
+spring.kafka:
     consumer:
       group-id: ${spring.application.name}
       auto-offset-reset: earliest
@@ -30,13 +32,31 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 ---
-spring.config.activate.on-profile: test
+spring.config.activate.on-profile: local-infra
+
+spring.data.redis:
+  host: re
+  port: 6379
+
+spring.kafka.bootstrap-servers: localhost:9092
+
+---
+spring.config.activate.on-profile: docker-infra
+
+spring.data.redis:
+  host: redis
+  port:
+
+spring.kafka.bootstrap-servers: kafka-broker
+
+---
+spring.config.activate.on-profile: test-db
 
 spring.datasource:
   driver-class-name: org.h2.Driver
 
 ---
-spring.config.activate.on-profile: query-test
+spring.config.activate.on-profile: query-test-db
 
 spring.datasource:
   driver-class-name: org.mariadb.jdbc.Driver
