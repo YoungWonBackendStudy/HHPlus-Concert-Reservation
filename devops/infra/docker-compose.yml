@@ -37,7 +37,7 @@ services:
     image: mariadb:latest
     container_name: hhplus-mariadb
     environment:
-      - MYSQL_ROOT_PASSWORD=dnjs12
+      - MYSQL_ROOT_PASSWORD=1234
     ports:
       - 3306:3306
     networks:

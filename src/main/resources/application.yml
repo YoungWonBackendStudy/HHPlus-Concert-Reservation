@@ -35,31 +35,41 @@ spring.kafka:
 spring.config.activate.on-profile: local-infra
 
 spring.data.redis:
-  host: re
+  host: host.docker.internal
   port: 6379
 
-spring.kafka.bootstrap-servers: localhost:9092
+spring.kafka.bootstrap-servers:  host.docker.internal:9092
 
 ---
 spring.config.activate.on-profile: docker-infra
 
 spring.data.redis:
-  host: redis
-  port:
+  host: host.docker.internal
+  port: 6379
 
-spring.kafka.bootstrap-servers: kafka-broker
-
+spring.kafka.bootstrap-servers: host.docker.internal:9092
+spring.kafka.consumer:
+  client-id: consumer-concert-reservation-1
 ---
 spring.config.activate.on-profile: test-db
 
-spring.datasource:
-  driver-class-name: org.h2.Driver
-
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
 ---
 spring.config.activate.on-profile: query-test-db
 
-spring.datasource:
-  driver-class-name: org.mariadb.jdbc.Driver
-  username: root
-  password: 1234
-  url: jdbc:mariadb://localhost:3306/hpp_concert?characterEncoding=utf8
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+    password: 1234
+    url: jdbc:mariadb://host.docker.internal:3306/hpp_concert?characterEncoding=utf8

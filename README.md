@@ -29,6 +29,9 @@
  - 서비스 확장
  - 설계
 
+### [6. 부하테스트](document/load-test.md)
+### [7. ]
+
 ---
 
 ## 요구사항 분석 (Sequence Diagram)

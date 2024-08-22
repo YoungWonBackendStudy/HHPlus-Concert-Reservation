@@ -1,3 +1,0 @@
-services:
-  k6:
-    image: grafana/k6

@@ -18,7 +18,10 @@
 			]
 		}
 	},
-
+	"runArgs": [
+		"--memory=4096m",
+		"--cpus=2.0"
+	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 

@@ -1,14 +1,15 @@
 services:
   concert-reservation:
+    container_name: concert-reservation
     build:
       context: .
       dockerfile: Dockerfile
     environment:
       PROFILE: local-docker
-    networks:
-      - hhplus
-
-networks:
-  hhplus:
-    driver: bridge
-    external: true
+    ports:
+      - 8080:8080
+    deploy:  
+      resources:  
+        limits:  
+          cpus: '0.25'
+          memory: '2G'
