@@ -26,7 +26,7 @@ public class RedisConfig {
     String url;
 
     @Value("${spring.data.redis.port}")
-    int port;
+    String port;
 
     @Value("${spring.data.redis.default-cache-ttl}")
     int defaultTtl;
