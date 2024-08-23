@@ -31,6 +31,13 @@ spring.kafka:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
+# Prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
+
 ---
 spring.config.activate.on-profile: local-infra
 
@@ -50,12 +57,16 @@ spring.data.redis:
 spring.kafka.bootstrap-servers: host.docker.internal:9092
 spring.kafka.consumer:
   client-id: consumer-concert-reservation-1
+
+logging.level.root: INFO
 ---
 spring.config.activate.on-profile: test-db
 
 spring:
   datasource:
     driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 50
   jpa:
     defer-datasource-initialization: true
     hibernate:

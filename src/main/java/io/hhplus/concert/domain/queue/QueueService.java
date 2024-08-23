@@ -22,7 +22,7 @@ public class QueueService {
         var activeTokenCnt = this.activeTokenRepository.getActiveTokensCount();
         if(activeTokenCnt > threshold - usersPer10s) return;
 
-        var tokensToActivate =this.waitingQueueTokenRepository.dequeFirstNWaitingQueueTokens(100L);
+        var tokensToActivate =this.waitingQueueTokenRepository.dequeFirstNWaitingQueueTokens(50L);
 
         var activeTokens = tokensToActivate.stream().map(ActiveToken::new).toList();
         activeTokenRepository.saveActiveTokens(activeTokens);

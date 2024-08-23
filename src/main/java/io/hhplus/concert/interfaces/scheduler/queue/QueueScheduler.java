@@ -13,7 +13,7 @@ public class QueueScheduler {
         this.queueFacade = queueFacade;
     }
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 1000)
     void scheduleQueue() {
         queueFacade.scheduleWaitingQueue();
     }

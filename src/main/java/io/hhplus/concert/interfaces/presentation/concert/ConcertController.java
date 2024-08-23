@@ -41,7 +41,7 @@ public class ConcertController {
         @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
         @Parameter(name = "concertScheduleId", required = true, description = "조회할 콘서트의 ID")
     })
-    @GetMapping("concerts/schedules")
+    @GetMapping("concert/schedules")
     public List<ConcertScheduleResponse> concertSchedules(
         ConcertScheduleRequest concertScheduleRequest
     ) {
@@ -55,7 +55,7 @@ public class ConcertController {
         @Parameter(in = ParameterIn.HEADER, name = "TOKEN", required = true, description = "ACTIVE 상태의 토큰"),
         @Parameter(name = "concertScheduleId", required = true, description = "조회할 콘서트 스케줄의 ID")
     })
-    @GetMapping("concerts/seats")
+    @GetMapping("concert/seats")
     public List<ConcertSeatResponse> concertSeats(
         ConcertSeatRequest concertSeatRequest
     ) {

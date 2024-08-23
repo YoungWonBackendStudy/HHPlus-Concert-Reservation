@@ -15,12 +15,6 @@ public class TokenService {
     private final ActiveTokenRepository activeTokenRepository;
 
     public WaitingQueueToken getWaitingQueueToken(String token) {
-        if(token == null || token.isEmpty()) {
-            WaitingQueueToken waitingQueueToken = new WaitingQueueToken();
-            waitingQueueToken = this.waitingQueueTokenRepository.saveWaitingQueueToken(waitingQueueToken);
-            return waitingQueueToken;
-        }
-
         try{
             var activeToken = activeTokenRepository.getActiveTokenByTokenString(token);
             if(activeToken != null) {
@@ -30,7 +24,15 @@ public class TokenService {
             if(!e.getCode().equals(ExceptionCode.ACTIVE_TOKEN_NOT_FOUND)) throw e;
         }
 
-        return waitingQueueTokenRepository.getWaitingQueueTokenByTokenStr(token);
+        try{
+            return waitingQueueTokenRepository.getWaitingQueueTokenByTokenStr(token);
+        } catch(CustomNotFoundException e) {
+            if(!e.getCode().equals(ExceptionCode.WAITING_TOKEN_NOT_FOUND)) throw e;
+        }
+
+        WaitingQueueToken waitingQueueToken = new WaitingQueueToken();
+        waitingQueueToken = this.waitingQueueTokenRepository.saveWaitingQueueToken(waitingQueueToken);
+        return waitingQueueToken;
     }
 
     public ActiveToken getActiveToken(String tokenStr) {

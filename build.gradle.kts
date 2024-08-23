@@ -46,6 +46,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.2")
 	implementation("org.redisson:redisson-spring-boot-starter:3.33.0")
 	implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
+
+	//prometheus
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 }
 
 tasks.withType<Test> {
