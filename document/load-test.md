@@ -105,7 +105,7 @@ export const options = {
     concert: {
       executor: 'constant-vus',
       vus: 100,
-      duration: '120s',
+      duration: '180s',
     },
   },
 };
