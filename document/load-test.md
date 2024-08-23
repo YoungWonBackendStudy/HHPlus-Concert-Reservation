@@ -23,7 +23,7 @@
 
 ## 2. 시나리오 설정
 ### Intro. 서버 스펙 설정
-- cpu: 2 core
+- cpu: 1 core
 - memory: 2G
 
 ```yml 
@@ -41,7 +41,7 @@ services:
     deploy:  
       resources:  
         limits:  
-          cpus: '0.25' // 2 core
+          cpus: '0.25' // 1 core
           memory: '2G'
 ```
 
@@ -54,7 +54,7 @@ export const options = {
   scenarios: {
     queue: {
       executor: 'per-vu-iterations',
-      vus: 500,
+      vus: 100,
       iterations: 2,
       maxDuration: '180s'
     }
@@ -97,7 +97,7 @@ export default function() {
 
 #### 1.2 콘서트 조회/주문/결제
 > 토큰 발급부터 결제까지 모든 과정을 반복하는 시나리오
-> 100 VUS가 1분간 지속적으로 유지되는 상황이다.
+> 특정 VUS가 2분간 지속적으로 유지되는 상황이다.
 ```js
 // concert-test.js
 export const options = {
@@ -105,7 +105,7 @@ export const options = {
     concert: {
       executor: 'constant-vus',
       vus: 100,
-      duration: '60s',
+      duration: '120s',
     },
   },
 };
@@ -217,7 +217,7 @@ export default function() {
 ![alt text](image-3.png)
 - `duration p(95): 397.05ms`로 많이 개선된 모습을 보여준다.
 - 그러나 여전히 check 비율은 `99.84%`를 보이는 것을 알 수 있다.
-- 부하를 줄여 성능을 향상시켜서 `100VU: 1579 iterations`에 비해 크게 떨어지지 않는 `1307 iterations`을 확인할 수 있다.
+- 부하를 줄여 성능을 향상시켜서 `100 VUS: 1579 iterations`에 비해 크게 떨어지지 않는 `1307 iterations`을 확인할 수 있다.
 
 ## 결론
 ### 1.1 대기열 조회

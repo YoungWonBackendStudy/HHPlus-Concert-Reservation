@@ -5,7 +5,7 @@ export const options = {
   scenarios: {
     queue: {
       executor: 'per-vu-iterations',
-      vus: 300,
+      vus: 200,
       iterations: 2,
       maxDuration: '180s'
     }

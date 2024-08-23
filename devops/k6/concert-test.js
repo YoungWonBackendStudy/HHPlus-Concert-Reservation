@@ -8,7 +8,7 @@ export const options = {
     concert: {
       executor: 'constant-vus',
       vus: 100,
-      duration: '60s',
+      duration: '180s',
     },
   },
 };
@@ -25,7 +25,7 @@ export default function() {
     let resBody = JSON.parse(tokenRes.body);
     if(resBody.code && resBody.code == '400' && resBody.message == '토큰이 활성화 되었습니다.') break;
     token = resBody.token;
-    sleep(1);
+    sleep(2);
   }
 
   
