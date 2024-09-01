@@ -1,4 +1,4 @@
-# 항해 백엔드 플러스 과제 Chapter2. Concert Reservation
+# 항해 백엔드 플러스 과제: Concert Reservation
 ---
 ## 문제 해결 Docs
 
