@@ -30,7 +30,14 @@
  - 설계
 
 ### [6. 부하테스트](document/load-test.md)
-### [7. ]
+ - API 분석
+ - 부하테스트 결과 분석
+
+### [7. 장애대응 보고서](document/handle-failure.md)
+ - 장애 발생 상황 Timeline
+ - 원인분석
+ - 대응 조치
+ - 재발 방지 대
 
 ---
 
